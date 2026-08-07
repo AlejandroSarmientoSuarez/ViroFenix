@@ -1,0 +1,110 @@
+/* === MENÚ DE USUARIO (DESPLEGABLE) === */
+.user-menu-container {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  z-index: 1000;
+  font-family: 'KomikaAxis', sans-serif;
+}
+
+/* Contenedor con nombre + botón */
+.user-general {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+}
+
+.username {
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* Botón del icono */
+.user-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  overflow: hidden;
+  padding: 0;
+  transition: transform 0.2s ease;
+}
+
+.user-icon-btn:hover {
+  transform: scale(1.1);
+}
+
+.user-icon-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+/* Lista desplegable */
+.dropdown-menu {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background-color: #2e2e2e;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  min-width: 220px;
+  display: none;
+  z-index: 999;
+}
+
+/* Cuando está activa */
+.dropdown-menu.show {
+  display: block;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Elementos del menú */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  color: #ccc;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #444;
+  color: white;
+}
+
+.dropdown-item i {
+  width: 25px;
+  text-align: center;
+  margin-right: 10px;
+  color: #aaa;
+  transition: color 0.2s;
+}
+
+.dropdown-item:hover i {
+  color: white;
+}
+
+/* Separador */
+.dropdown-divider {
+  height: 1px;
+  margin: 6px 0;
+  background-color: #444;
+}
+
+/* Animación */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+

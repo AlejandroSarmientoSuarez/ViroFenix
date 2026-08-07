@@ -1,0 +1,86 @@
+/* Estilos generales */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #1e1e2f, #2a2a4a);
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Caja del formulario */
+.Logbox {
+    background: #fff;
+    padding: 40px 50px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 350px;
+    transition: all 0.3s ease;
+}
+
+.Logbox:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Título */
+.indtitle {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: #2a2a4a;
+}
+
+/* Campos del formulario */
+.indform {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border: 1.5px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.indform:focus {
+    border-color: #5b6dff;
+    box-shadow: 0 0 8px rgba(91, 109, 255, 0.2);
+}
+
+/* Botón */
+.indbutton {
+    width: 100%;
+    padding: 12px 0;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #5b6dff, #8690ff);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indbutton:hover {
+    background: linear-gradient(135deg, #4a5ae0, #7382ff);
+    transform: scale(1.03);
+    box-shadow: 0 5px 15px rgba(91, 109, 255, 0.3);
+}
+
+/* Adaptable a pantallas pequeñas */
+@media (max-width: 480px) {
+    .Logbox {
+        width: 90%;
+        padding: 30px 25px;
+    }
+
+    .indtitle {
+        font-size: 22px;
+    }
+}
