@@ -21,14 +21,6 @@
   <!-- Font Awesome (iconos) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Script del menú -->
-  <!-- Script del menú -->
-  <script src="js/menu.js" defer></script>
-
-  <link rel="stylesheet" href="/proyecto1_final/assets/css/responsive.css">
-  <script src="/proyecto1_final/assets/js/menu.js" defer></script>
-
-
   <script src="../js/crud.js" defer></script>
 
   <script src="../js/trabajador.js" defer></script>
@@ -204,20 +196,6 @@
       <p>© 2025 Marca Ropa. Todos los derechos reservados.</p>
     </div>
   </footer>
-
-
-  <div id="chatbot-btn">💬</div>
-  <div id="chatbot">
-    <div class="chat-header">
-      <span>Asistente Virtual</span>
-      <button id="close-chat">✖</button>
-    </div>
-    <div class="chat-body" id="chat-body"></div>
-    <div class="chat-footer">
-      <input type="text" id="user-input" placeholder="Escribe aquí..." />
-      <button id="send-btn">➤</button>
-    </div>
-  </div>
 
 
   <div id="cart-popup" class="hidden">

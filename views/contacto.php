@@ -17,14 +17,6 @@
   <!-- Font Awesome (iconos) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Script del menú -->
-  <!-- Script del menú -->
-  <script src="js/menu.js" defer></script>
-
-  <link rel="stylesheet" href="/proyecto1_final/assets/css/responsive.css">
-  <script src="/proyecto1_final/assets/js/menu.js" defer></script>
-
-
   <script src="../js/crud.js" defer></script>
 
 </head>

@@ -1,17 +1,7 @@
-const chatbotBtn = document.getElementById("chatbot-btn");
-const chatbot = document.getElementById("chatbot");
-const closeChat = document.getElementById("close-chat");
-const sendBtn = document.getElementById("send-btn");
-const userInput = document.getElementById("user-input");
-const chatBody = document.getElementById("chat-body");
-
-let state = "menu_principal";
-
-// Detecta cuando los elementos entran al viewport
 const reveals = document.querySelectorAll('.reveal');
 
 function revealOnScroll() {
-    const triggerBottom = window.innerHeight * 0.85; // 85% del alto de la ventana
+    const triggerBottom = window.innerHeight * 0.85;
 
     reveals.forEach(el => {
         const boxTop = el.getBoundingClientRect().top;
@@ -19,194 +9,13 @@ function revealOnScroll() {
         if (boxTop < triggerBottom) {
             el.classList.add('visible');
         } else {
-            el.classList.remove('visible'); // Quita la animación al salir (opcional)
+            el.classList.remove('visible');
         }
     });
 }
 
 window.addEventListener('scroll', revealOnScroll);
 window.addEventListener('load', revealOnScroll);
-
-const optionsMap = {
-    "menu_principal": ["1️⃣ Ver catálogo", "2️⃣ Información de envíos", "3️⃣ Contacto con soporte", "4️⃣ Hablar con agente en vivo"],
-    "catalogo": ["1️⃣ Hombre", "2️⃣ Mujer", "3️⃣ Accesorios", "0️⃣ Volver", "4️⃣ Hablar con agente en vivo"],
-    "envios": ["1️⃣ Sí", "2️⃣ No", "0️⃣ Volver", "4️⃣ Hablar con agente en vivo"],
-    "contacto": ["0️⃣ Volver", "4️⃣ Hablar con agente en vivo"]
-};
-
-chatbotBtn.addEventListener("click", () => {
-    chatbot.style.display = "flex";
-    chatbotBtn.style.display = "none";
-    startChat();
-});
-
-closeChat.addEventListener("click", () => {
-    chatbot.style.display = "none";
-    chatbotBtn.style.display = "flex";
-    chatBody.innerHTML = "";
-    state = "menu_principal";
-});
-
-sendBtn.addEventListener("click", sendMessage);
-userInput.addEventListener("keypress", e => { if (e.key === "Enter") sendMessage(); });
-
-function startChat() {
-    botReply("👋 ¡Hola! Soy tu asistente virtual. Elige una opción:", optionsMap["menu_principal"]);
-}
-
-function sendMessage() {
-    const msg = userInput.value.trim();
-    if (!msg) return;
-    addMessage(msg, "user");
-    userInput.value = "";
-    showTyping();
-    setTimeout(() => { hideTyping(); handleReply(msg); }, 800);
-}
-
-function addMessage(text, sender) {
-    const msgDiv = document.createElement("div");
-    msgDiv.classList.add("msg", sender);
-
-    const avatar = document.createElement("div");
-    avatar.classList.add("avatar");
-    avatar.textContent = sender === "bot" ? "🤖" : "👤";
-
-    const bubble = document.createElement("div");
-    bubble.classList.add("bubble");
-    bubble.textContent = text;
-
-    const time = document.createElement("div");
-    time.classList.add("time");
-    time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    const wrap = document.createElement("div");
-    wrap.appendChild(bubble);
-    wrap.appendChild(time);
-
-    msgDiv.appendChild(avatar);
-    msgDiv.appendChild(wrap);
-    chatBody.appendChild(msgDiv);
-    chatBody.scrollTop = chatBody.scrollHeight;
-}
-
-function botReply(text, options = []) {
-    addMessage(text, "bot");
-
-    Array.from(document.querySelectorAll(".option-btn")).forEach(b => b.remove());
-
-    if (options.length > 0) {
-        options.forEach(opt => {
-            const btn = document.createElement("button");
-            btn.classList.add("option-btn");
-            btn.textContent = opt;
-            btn.onclick = () => {
-                const reply = opt.split("️⃣")[0] || opt.charAt(0);
-                addMessage(opt, "user");
-                handleReply(reply);
-            };
-            chatBody.appendChild(btn);
-        });
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }
-}
-
-function showTyping() {
-    const typing = document.createElement("div");
-    typing.classList.add("typing");
-    typing.id = "typing";
-    typing.textContent = "El bot está escribiendo...";
-    chatBody.appendChild(typing);
-    chatBody.scrollTop = chatBody.scrollHeight;
-}
-
-function hideTyping() {
-    const t = document.getElementById("typing");
-    if (t) t.remove();
-}
-
-const goLiveAgent = () => { window.location.href = "hablarconagenteenvivo.html"; };
-const backToMenu = () => {
-    state = "menu_principal";
-    botReply("🔙 Menú principal", optionsMap["menu_principal"]);
-};
-const invalidOption = (currentState) => {
-    botReply("⚠️ Por favor escribe una opción válida.", optionsMap[currentState]);
-};
-const endConversation = (message) => {
-    state = "fin";
-    botReply(`${message}\n👉 Conversación finalizada.`);
-};
-
-const stateTransitions = {
-    "menu_principal": {
-        "1": { state: "catalogo", reply: "📦 ¿Qué catálogo quieres ver?", options: optionsMap["catalogo"] },
-        "2": { state: "envios", reply: "🚚 Envíos a todo el país. ¿Quieres conocer costos?", options: optionsMap["envios"] },
-        "3": { state: "contacto", reply: "📩 Contacto: soporte@empresa.com 📞 +54 11 1234-5678", options: optionsMap["contacto"] },
-        "4": { action: goLiveAgent },
-        "default": (msg) => {
-            if (msg.includes("catálogo") || msg.includes("catalogo")) { state = "catalogo"; botReply("📦 ¿Qué catálogo quieres ver?", optionsMap["catalogo"]); }
-            else if (msg.includes("envíos") || msg.includes("envios")) { state = "envios"; botReply("🚚 Envíos a todo el país. ¿Quieres conocer costos?", optionsMap["envios"]); }
-            else if (msg.includes("contacto")) { state = "contacto"; botReply("📩 Contacto: soporte@empresa.com 📞 +54 11 1234-5678", optionsMap["contacto"]); }
-            else if (msg.includes("agente")) { goLiveAgent(); }
-            else { invalidOption("menu_principal"); }
-        }
-    },
-    "catalogo": {
-        "1": { action: () => endConversation("👕 Hombre: remeras, jeans y zapatillas.") },
-        "2": { action: () => endConversation("👗 Mujer: vestidos, blusas y sandalias.") },
-        "3": { action: () => endConversation("🧢 Accesorios: gorras, mochilas y relojes.") },
-        "0": { action: backToMenu },
-        "4": { action: goLiveAgent },
-        "default": (msg) => {
-            if (msg.includes("hombre")) stateTransitions.catalogo["1"].action();
-            else if (msg.includes("mujer")) stateTransitions.catalogo["2"].action();
-            else if (msg.includes("accesorio")) stateTransitions.catalogo["3"].action();
-            else if (msg.includes("agente")) stateTransitions.catalogo["4"].action();
-            else invalidOption("catalogo");
-        }
-    },
-    "envios": {
-        "1": { action: () => endConversation("💰 Costo de envío: $1500 a todo el país.") },
-        "2": { action: () => endConversation("✅ Ya sabes que enviamos a todo el país.") },
-        "0": { action: backToMenu },
-        "4": { action: goLiveAgent },
-        "default": (msg) => {
-            if (msg.includes("sí") || msg.includes("si")) stateTransitions.envios["1"].action();
-            else if (msg.includes("no")) stateTransitions.envios["2"].action();
-            else if (msg.includes("agente")) stateTransitions.envios["4"].action();
-            else invalidOption("envios");
-        }
-    },
-    "contacto": {
-        "0": { action: backToMenu },
-        "4": { action: goLiveAgent },
-        "default": (msg) => {
-            if (msg.includes("agente")) stateTransitions.contacto["4"].action();
-            else botReply("📩 Ya tienes nuestro contacto. 0️⃣ Volver", optionsMap["contacto"]);
-        }
-    },
-    "fin": {
-        "0": { action: backToMenu },
-        "default": () => backToMenu()
-    }
-};
-
-function handleReply(msg) {
-    msg = msg.trim().toLowerCase();
-    const currentState = stateTransitions[state];
-    const transition = currentState[msg];
-
-    if (transition) {
-        if (transition.action) {
-            transition.action();
-        } else {
-            state = transition.state;
-            botReply(transition.reply, transition.options);
-        }
-    } else {
-        currentState.default(msg);
-    }
-}
 
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('nav-links');
@@ -235,6 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const costoEnvioEl = document.getElementById("costo-envio");
     const irAPagarBtn = document.getElementById("ir-a-pagar");
 
+    const vaciarBtn = document.getElementById("vaciar-carrito");
+
 
     let cart = JSON.parse(localStorage.getItem("cartData")) || [];
     let envioCosto = 0;
@@ -262,8 +73,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function addToCart(name, price, img) {
+        const MAX_ITEMS = 50;
+        const totalItems = cart.reduce((s, it) => s + it.quantity, 0);
+
+        if (totalItems >= MAX_ITEMS) {
+            alert(`Has alcanzado el límite máximo de ${MAX_ITEMS} productos en el carrito.`);
+            return;
+        }
+
         const existing = cart.find(item => item.name === name);
         if (existing) {
+            if (totalItems + 1 > MAX_ITEMS) {
+                alert(`No puedes agregar más productos. Límite ${MAX_ITEMS}.`);
+                return;
+            }
             existing.quantity += 1;
         } else {
             cart.push({ name, price, img, quantity: 1 });
@@ -304,6 +127,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         document.addEventListener('removeItem', (e) => removeFromCart(e.detail), { once: true });
+
+        // Actualizar boton vaciar
+        if (vaciarBtn) vaciarBtn.disabled = cart.length === 0;
 
         const totalWithEnvio = subtotal + envioCosto;
         cartTotal.textContent = `$${formatPrice(totalWithEnvio)}`;
@@ -351,6 +177,25 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
     });
+
+
+    // Vaciar carrito
+    if (vaciarBtn) {
+        vaciarBtn.addEventListener('click', () => {
+            if (!cart || cart.length === 0) {
+                alert('El carrito ya está vacío.');
+                return;
+            }
+            const confirmado = confirm('¿Estás seguro de que quieres vaciar todo el carrito?');
+            if (confirmado) {
+                cart.length = 0; // vaciar array
+                envioCosto = 0;
+                saveCart();
+                updateCartUI();
+                alert('Carrito vaciado.');
+            }
+        });
+    }
 
 
     const searchForm = document.querySelector('.search-bar form');
