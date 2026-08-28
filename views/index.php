@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Script del menú -->
-    <script src="js/menu.js" defer></script>
 
     <link rel="stylesheet" href="../css/reveral.css">
     <script src="../js/reveral.js" defer></script>
@@ -84,32 +83,7 @@
 
     <!-- === SECCIONES PRINCIPALES === -->
 
-    <section id="inicio" class="carousel reveal">
-        <div class="slides">
-            <div class="slide active"><img src="../img/banner.png" alt="Banner principal"></div>
-            <div class="slide"><img src="../img/banner2.png" alt="Banner 2">
-                <div class="slide-text">
-                    <h1>Minimalismo con Actitud</h1>
-                    <p>Diseños simples, líneas limpias, impacto total.</p>
-                    <a href="coleccion.php" class="btn">Ver Más</a>
-                </div>
-            </div>
-            <div class="slide"><img src="../img/banner3.png" alt="Banner 3">
-                <div class="slide-text">
-                    <h1>Nueva Colección 2025</h1>
-                    <p>Inspirada en la libertad, creada para vos.</p>
-                    <a href="coleccion.php" class="btn">Descubrir</a>
-                </div>
-            </div>
-        </div>
-        <button class="prev reveal">&#10094;</button>
-        <button class="next">&#10095;</button>
-        <div class="indicators">
-            <span class="dot active"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-        </div>
-    </section>
+    
 
     <section id="inicio">
         <div class="hero-content reveal">
@@ -187,8 +161,6 @@
             <p>© 2025 Marca Ropa. Todos los derechos reservados.</p>
         </div>
     </footer>
-
-    <!-- === CHATBOT === -->
 
     <!-- === CARRITO POPUP === -->
     <div id="cart-popup" class="hidden reveal">

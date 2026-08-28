@@ -19,10 +19,10 @@ while ($row = $query->fetch_assoc()) {
   <link rel="stylesheet" href="../css/reveral.css">
   <title>Clothing Brand - Elegancia y Estilo</title>
   <link rel="stylesheet" href="../css/coleccion.css">
-  <link rel="icon" href="../img/iconopagina.png">
+  
 
   <!-- Estilos -->
-  <link rel="stylesheet" href="../css/style.css">
+  
   <link rel="stylesheet" href="../css/menu.css">
 
 
@@ -31,54 +31,16 @@ while ($row = $query->fetch_assoc()) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Script del menú -->
-  <!-- Script del menú -->
-  <script src="js/menu.js" defer></script>
-
-
   <link rel="stylesheet" href="../css/estetica.css">
-  <link rel="stylesheet" href="/proyecto1_final/assets/css/responsive.css">
-  <script src="/proyecto1_final/assets/js/menu.js" defer></script>
+  <link rel="stylesheet" href="../css/style.css">
 
 
 
   <script src="../js/crud.js" defer></script>
-
-
-
-
-
-
-
 </head>
 
 <body>
-
-
-
   <header>
-
-    <!-- === MENÚ DE USUARIO DESPLEGABLE === -->
-    <div class="user-menu-container reveal">
-      <div class="user-general">
-        <p class="username">Usuario</p>
-        <button class="user-icon-btn" id="userBtn" aria-expanded="false" aria-controls="dropdownMenu">
-          <img src="../php/css/img/user.png" alt="Usuario">
-        </button>
-      </div>
-      <ul class="dropdown-menu reveal" id="dropdownMenu" role="menu">
-        <li><a class="dropdown-item reveal" href="modification.php"><i class="fas fa-key"></i> Modificar contraseña</a></li>
-
-
-        <!-- 🔹 Nueva sección CRUD -->
-        <li><a class="dropdown-item reveal" href="#" onclick="accessCRUD()"><i class="fas fa-database"></i> CRUD</a></li>
-
-        <li class="dropdown-divider reveal"></li>
-        <li><a class="dropdown-item reveal" href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
-      </ul>
-    </div>
-
-
-
     <!-- === NAVEGACIÓN PRINCIPAL === -->
     <nav>
       <div class="logo reveal">
@@ -114,12 +76,6 @@ while ($row = $query->fetch_assoc()) {
         </div>
       </div>
     </nav>
-    <nav>
-
-
-
-    </nav>
-
   </header>
 
 
@@ -155,7 +111,7 @@ while ($row = $query->fetch_assoc()) {
 
 
     <div class="gallery">
-      <div class="product-item camisas reveal ">
+      <div class="product-item camisas reveal " data-product-id="1" data-stock="15">
 
         <img src="../img/producto1.jpg" alt="Camisa de algodón">
         <h3>Camisa minimalista</h3>
@@ -174,7 +130,7 @@ while ($row = $query->fetch_assoc()) {
         <i class="fa-regular fa-heart favorito" data-id="producto1"></i>
 
       </div>
-      <div class="product-item pantalones reveal">
+      <div class="product-item pantalones reveal" data-product-id="2" data-stock="12">
         <img src="../img/producto2.jpg" alt="Pantalones de corte recto">
         <h3>Pantalones suaves</h3>
 
@@ -192,7 +148,7 @@ while ($row = $query->fetch_assoc()) {
         <i class="fa-regular fa-heart favorito" data-id="producto2"></i>
 
       </div>
-      <div class="product-item chaquetas reveal">
+      <div class="product-item chaquetas reveal" data-product-id="3" data-stock="10">
         <img src="../img/producto3.jpg" alt="Chaqueta ligera">
         <h3>Chaqueta versátil</h3>
 
@@ -210,7 +166,7 @@ while ($row = $query->fetch_assoc()) {
         <button class="btn-detalles">Más detalles</button>
         <i class="fa-regular fa-heart favorito" data-id="producto3"></i>
       </div>
-      <div class="product-item vestidos reveal">
+      <div class="product-item vestidos reveal" data-product-id="4" data-stock="8">
         <img src="../img/producto4.jpg" alt="Vestido elegante">
         <h3>Vestido elegante</h3>
         <p>Vestido elegante para eventos especiales.</p>
@@ -228,7 +184,7 @@ while ($row = $query->fetch_assoc()) {
         <i class="fa-regular fa-heart favorito" data-id="producto4"></i>
 
       </div>
-      <div class="product-item chaquetas reveal">
+      <div class="product-item chaquetas reveal" data-product-id="5" data-stock="10">
         <img src="../img/foto1A.jpg" alt="Suéter acogedor">
         <h3>Suéter acogedor</h3>
         <p>Suéter de lana suave ideal para climas fríos.</p>
@@ -245,7 +201,7 @@ while ($row = $query->fetch_assoc()) {
         <i class="fa-regular fa-heart favorito" data-id="producto5"></i>
 
       </div>
-      <div class="product-item camisas  reveal">
+      <div class="product-item camisas  reveal" data-product-id="6" data-stock="25">
         <img src="../img/foto2A.jpg" alt="Camiseta básica">
         <h3>Camiseta básica</h3>
         <p>Camiseta de algodón ligera y cómoda para uso diario.</p>
@@ -262,7 +218,7 @@ while ($row = $query->fetch_assoc()) {
         <i class="fa-regular fa-heart favorito" data-id="producto6"></i>
 
       </div>
-      <div class="product-item chaquetas  reveal">
+      <div class="product-item chaquetas  reveal" data-product-id="7" data-stock="6">
         <img src="../img/foto3A.jpg" alt="Blazer elegante">
         <h3>Blazer elegante</h3>
         <p>Blazer moderno perfecto para eventos formales o de oficina.</p>
@@ -279,7 +235,7 @@ while ($row = $query->fetch_assoc()) {
         <i class="fa-regular fa-heart favorito" data-id="producto7"></i>
 
       </div>
-      <div class="product-item chaquetas reveal">
+      <div class="product-item chaquetas reveal" data-product-id="8" data-stock="20">
         <img src="../img/foto4A.jpg" alt="Sudadera casual">
         <h3>Sudadera casual</h3>
         <p>Sudadera con capucha y bolsillo frontal, ideal para un look urbano.</p>
@@ -296,7 +252,7 @@ while ($row = $query->fetch_assoc()) {
         <i class="fa-regular fa-heart favorito" data-id="producto8"></i>
 
       </div>
-      <div class="product-item pantalones reveal">
+      <div class="product-item pantalones reveal" data-product-id="9" data-stock="30">
         <img src="../img/foto5A.jpg" alt="Shorts frescos">
         <h3>Shorts frescos</h3>
         <p>Shorts de algodón para días cálidos y estilo relajado.</p>
@@ -313,7 +269,7 @@ while ($row = $query->fetch_assoc()) {
         <i class="fa-regular fa-heart favorito" data-id="producto9"></i>
 
       </div>
-      <div class="product-item chaquetas reveal">
+      <div class="product-item chaquetas reveal" data-product-id="10" data-stock="5">
         <img src="../img/foto6A.jpg" alt="Abrigo clásico">
         <h3>Abrigo clásico</h3>
         <p>Abrigo largo con corte moderno para la temporada invernal.</p>
@@ -331,7 +287,7 @@ while ($row = $query->fetch_assoc()) {
         <i class="fa-regular fa-heart favorito" data-id="producto10"></i>
 
       </div>
-      <div class="product-item chaquetas reveal">
+      <div class="product-item chaquetas reveal" data-product-id="11" data-stock="4">
         <img src="../img/foto8A.jpg" alt="Chaqueta de Cuero">
         <h3>Chaqueta de Cuero</h3>
         <p>Chaqueta cómoda y negra de hombre con un estilo rockero.</p>
@@ -348,7 +304,7 @@ while ($row = $query->fetch_assoc()) {
         <i class="fa-regular fa-heart favorito" data-id="producto11"></i>
 
       </div>
-      <div class="product-item trajes reveal">
+      <div class="product-item trajes reveal" data-product-id="12" data-stock="3">
         <img src="../img/foto9A.jpg" alt="Traje Azul">
         <h3>Traje Azul Elegante</h3>
         <p>Traje Azul moderno y elegante, ideal para eventos especiales.</p>
@@ -365,7 +321,7 @@ while ($row = $query->fetch_assoc()) {
         <i class="fa-regular fa-heart favorito" data-id="producto12"></i>
 
       </div>
-      <div class="product-item accesorios reveal">
+      <div class="product-item accesorios reveal" data-product-id="13" data-stock="40">
         <img src="../img/foto10A.jpg" alt="Bufanda moderna">
         <h3>Bufanda moderna</h3>
         <p>Bufanda de lana tejida, perfecta para complementar tu outfit.</p>
@@ -382,7 +338,7 @@ while ($row = $query->fetch_assoc()) {
         <i class="fa-regular fa-heart favorito" data-id="producto13"></i>
 
       </div>
-      <div class="product-item camisas reveal">
+      <div class="product-item camisas reveal" data-product-id="14" data-stock="10">
         <img src="../img/foto11A.jpg" alt="Camisa Negra">
         <h3>Camisa Negra</h3>
         <p>Camisa Negra de hombre y moderna pegada al cuerpo, perfecta para lucir bien y fresco.</p>
@@ -399,7 +355,7 @@ while ($row = $query->fetch_assoc()) {
         <i class="fa-regular fa-heart favorito" data-id="producto14"></i>
 
       </div>
-      <div class="product-item pantalones reveal">
+      <div class="product-item pantalones reveal" data-product-id="15" data-stock="7">
         <img src="../img/foto11A.jpg" alt="Pantalon de Vestir">
         <h3>Pantalon de Vestir</h3>
         <p>Pantalon de Vestir Azul Oscuro y moderno, ideal para eventos importantes.</p>
@@ -587,18 +543,6 @@ while ($row = $query->fetch_assoc()) {
   </footer>
 
 
-  <div id="chatbot-btn">💬</div>
-  <div id="chatbot">
-    <div class="chat-header">
-      <span>Asistente Virtual</span>
-      <button id="close-chat">✖</button>
-    </div>
-    <div class="chat-body" id="chat-body"></div>
-    <div class="chat-footer">
-      <input type="text" id="user-input" placeholder="Escribe aquí..." />
-      <button id="send-btn">➤</button>
-    </div>
-  </div>
   <script src="../js/scripts.js"></script>
   <div id="cart-popup" class="hidden">
     <h3>🛒 Carrito de Compras</h3>
@@ -612,7 +556,10 @@ while ($row = $query->fetch_assoc()) {
     </div>
 
     <p>Total: <span id="cart-total">$0</span></p>
-    <button id="ir-a-pagar">Ir a pagar</button>
+    <div class="cart-actions">
+      <button id="ir-a-pagar">Ir a pagar</button>
+      <button id="vaciar-carrito">Vaciar carrito</button>
+    </div>
   </div>
 
   <script>
@@ -715,94 +662,7 @@ while ($row = $query->fetch_assoc()) {
   </script>
 
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const botonesFiltro = document.querySelectorAll('.filtros button');
-      const productos = document.querySelectorAll('.gallery .product-item');
-
-      botonesFiltro.forEach(boton => {
-        boton.addEventListener('click', () => {
-          const filtro = boton.getAttribute('data-filter');
-
-          productos.forEach(producto => {
-
-            if (filtro === 'todos') {
-              producto.style.display = 'block';
-            } else {
-
-              if (producto.classList.contains(filtro)) {
-                producto.style.display = 'block';
-              } else {
-                producto.style.display = 'none';
-              }
-            }
-          });
-        });
-      });
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const modal = document.getElementById('modal-detalles');
-      const modalImg = document.getElementById('modal-img');
-      const modalTitle = document.getElementById('modal-title');
-      const modalDesc = document.getElementById('modal-description');
-      const modalMaterials = document.getElementById('modal-materials');
-      const modalSizes = document.getElementById('modal-sizes');
-      const modalColors = document.getElementById('modal-colors');
-      const modalPrice = document.getElementById('modal-price');
-      const modalStars = document.getElementById('modal-stars');
-      const closeModal = document.getElementById('close-modal');
-      const navbar = document.querySelector('nav'); // tu navbar
-
-      const botonesDetalles = document.querySelectorAll('.btn-detalles');
-
-      botonesDetalles.forEach(boton => {
-        boton.addEventListener('click', () => {
-          const product = boton.closest('.product-item');
-
-          // Datos del producto
-          const imgSrc = product.querySelector('img').src;
-          const title = product.querySelector('h3').textContent;
-          const description = product.querySelector('p').textContent;
-          const price = product.querySelector('.precio').textContent;
-          const stars = product.querySelector('.estrellas').innerHTML;
-
-          // Info extra personalizada (puedes editar según tus productos)
-          const materials = "Material: Algodón Premium";
-          const sizes = "Tallas: S, M, L, XL";
-          const colors = "Colores: Negro, Blanco, Azul";
-
-          // Setear datos en el modal
-          modalImg.src = imgSrc;
-          modalTitle.textContent = title;
-          modalDesc.textContent = description;
-          modalMaterials.textContent = materials;
-          modalSizes.textContent = sizes;
-          modalColors.textContent = colors;
-          modalPrice.textContent = price;
-          modalStars.innerHTML = stars;
-
-          // Mostrar modal y esconder navbar
-          modal.classList.remove('hidden');
-          navbar.style.display = 'none';
-        });
-      });
-
-      // Cerrar modal y mostrar navbar
-      function cerrarModal() {
-        modal.classList.add('hidden');
-        navbar.style.display = 'flex';
-      }
-
-      closeModal.addEventListener('click', cerrarModal);
-
-      window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          cerrarModal();
-        }
-      });
-    });
-  </script>
+  
   <script>
     const hamburger = document.getElementById('hamburger');
     const navLinks = document.getElementById('nav-links');
@@ -811,7 +671,6 @@ while ($row = $query->fetch_assoc()) {
       navLinks.classList.toggle('show');
     });
 
-    // Opcional: cerrar menú al hacer clic en un enlace
     const links = navLinks.querySelectorAll('a');
     links.forEach(link => {
       link.addEventListener('click', () => {
@@ -855,7 +714,6 @@ while ($row = $query->fetch_assoc()) {
     </div>
   </div>
 
-  <script src="../js/scripts.js"></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -904,8 +762,7 @@ while ($row = $query->fetch_assoc()) {
          FILTRO DE PRODUCTOS (INCLUYE "favoritos")
       ============================================ */
 
-      const botonesFiltro = document.querySelectorAll(".filtros button");
-      const items = document.querySelectorAll(".product-item");
+      
 
       botonesFiltro.forEach(boton => {
         boton.addEventListener("click", () => {
@@ -989,36 +846,7 @@ while ($row = $query->fetch_assoc()) {
     });
   </script>
 
-  <Script>
-    document.getElementById("form-newsletter").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const datos = new FormData(e.target);
-
-      const respuesta = await fetch("../server/requests/guardar_newsletter.php", {
-        method: "POST",
-        body: datos
-      });
-
-      const resultado = await respuesta.text();
-      const msg = document.getElementById("newsletter-msg");
-
-      if (resultado === "OK") {
-        msg.textContent = "Gracias por suscribirte. Muy pronto recibirás nuestras novedades.";
-        msg.style.color = "green";
-        e.target.reset();
-      } else if (resultado === "EMAIL_INVALIDO") {
-        msg.textContent = "Por favor ingresa un correo válido.";
-        msg.style.color = "red";
-      } else if (resultado === "EDAD_INSUFICIENTE") {
-        msg.textContent = "Debes tener al menos 13 años para suscribirte.";
-        msg.style.color = "red";
-      } else {
-        msg.textContent = "Hubo un error. Inténtalo más tarde.";
-        msg.style.color = "red";
-      }
-    });
-  </Script>
+  
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {

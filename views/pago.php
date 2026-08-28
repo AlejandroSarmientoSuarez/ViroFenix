@@ -25,12 +25,8 @@ session_start();
 
   <!-- Script del menú -->
   <!-- Script del menú -->
-  <script src="js/menu.js" defer></script>
-
-
   <link rel="stylesheet" href="../css/estetica.css">
-  <link rel="stylesheet" href="/proyecto1_final/assets/css/responsive.css">
-  <script src="/proyecto1_final/assets/js/menu.js" defer></script>
+  <link rel="stylesheet" href="../css/style.css">
 
 
 
