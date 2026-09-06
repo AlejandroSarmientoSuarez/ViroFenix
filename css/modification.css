@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;400;500&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  background: linear-gradient(to right, #fffdf7, #f9f6f1);
+  font-family: 'Poppins', sans-serif;
+  color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('../img/fondo_textura_suave.jpg'); /* opcional, puede ser tela o mármol */
+  background-size: cover;
+  background-position: center;
+}
+
+/* === CONTENEDOR PRINCIPAL === */
+.mainbox {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 18px;
+  padding: 50px 40px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+  animation: fadeIn 0.6s ease-out;
+  backdrop-filter: blur(8px);
+}
+
+/* === TÍTULO === */
+.indtitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 30px;
+  color: #000000;
+  letter-spacing: 1px;
+  position: relative;
+}
+
+.indtitle::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: #d4af37;
+  margin: 10px auto 0;
+  border-radius: 2px;
+}
+
+/* === CAMPOS DE ENTRADA === */
+.indform {
+  width: 100%;
+  margin: 10px 0;
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  outline: none;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  color: #000000;
+  transition: all 0.3s ease;
+}
+
+.indform::placeholder {
+  color: #444;
+}
+
+.indform:focus {
+  border-color: #d4af37;
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+}
+
+/* === BOTÓN PRINCIPAL === */
+.indbutton {
+  margin-top: 20px;
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #d4af37, #b99629);
+  color: #000000;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.indbutton:hover {
+  background: linear-gradient(135deg, #f0d76d, #c1a23f);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+}
+
+/* === LINK VOLVER === */
+.AskButton {
+  display: inline-block;
+  margin-top: 25px;
+  color: #222;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.AskButton:hover {
+  color: #b99629;
+}
+
+/* === ANIMACIÓN DE ENTRADA === */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === RESPONSIVO === */
+@media (max-width: 480px) {
+  .mainbox {
+    width: 90%;
+    padding: 40px 25px;
+  }
+  .indtitle {
+    font-size: 1.5rem;
+  }
+}
