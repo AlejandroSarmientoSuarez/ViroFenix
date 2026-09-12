@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Perfil from "./pages/Perfil";
 import Coleccion from "./pages/Coleccion";
+import Contacto from "./pages/contacto";
 import Carrito from "./pages/Carrito";
 import RecuperarPassword from "./pages/RecuperarPassword";
 import RestablecerPassword from "./pages/RestablecerPassword";
@@ -28,6 +29,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/coleccion" element={<Coleccion />} />
+            <Route path="/contacto" element={<Contacto />} />
             <Route
               path="/perfil"
               element={
