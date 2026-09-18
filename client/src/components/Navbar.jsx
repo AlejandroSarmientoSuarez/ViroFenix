@@ -25,6 +25,10 @@ function Navbar() {
         <nav className="navbar-links navbar-links-desktop">
           <Link to="/">Inicio</Link>
           <Link to="/coleccion">Colección</Link>
+<<<<<<< HEAD
+=======
+          <Link to="/nosotros">Nosotros</Link>
+>>>>>>> origin/Pedro-Wang
         </nav>
 
         <div className="navbar-actions">
