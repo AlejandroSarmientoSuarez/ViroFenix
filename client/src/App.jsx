@@ -9,10 +9,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Perfil from "./pages/Perfil";
 import Coleccion from "./pages/Coleccion";
-<<<<<<< HEAD
-=======
 import Nosotros from "./pages/Nosotros";
->>>>>>> origin/Pedro-Wang
+import Contacto from "./pages/contacto";
 import Carrito from "./pages/Carrito";
 import RecuperarPassword from "./pages/RecuperarPassword";
 import RestablecerPassword from "./pages/RestablecerPassword";
@@ -32,10 +30,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/coleccion" element={<Coleccion />} />
-<<<<<<< HEAD
-=======
             <Route path="/nosotros" element={<Nosotros />} />
->>>>>>> origin/Pedro-Wang
+            <Route path="/contacto" element={<Contacto />} />
             <Route
               path="/perfil"
               element={
@@ -60,4 +56,4 @@ function App() {
   );
 }
 
-export default App;
+export default App;   
