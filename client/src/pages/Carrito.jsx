@@ -9,6 +9,7 @@ import {
 import { IMG_BASE_URL } from "../services/productService";
 import { useCart } from "../context/CartContext";
 import "../assets/css/carrito.css";
+import ConfirmModal from "../components/ConfirmModal";
 
 function Carrito() {
   const [items, setItems] = useState([]);
@@ -19,6 +20,13 @@ function Carrito() {
   const [pedidoConfirmado, setPedidoConfirmado] = useState(null);
   const { refrescarCarrito } = useCart();
   const navigate = useNavigate();
+
+  const [productoAEliminar, setProductoAEliminar] = useState(null);
+
+  async function confirmarEliminar() {
+    await eliminarItem(productoAEliminar);
+    setProductoAEliminar(null);
+  }
 
   async function cargarCarrito() {
     try {
@@ -123,11 +131,20 @@ function Carrito() {
               </button>
             </div>
             <p className="carrito-item-subtotal">${(item.Cantidad * item.Precio).toFixed(2)}</p>
-            <button className="carrito-item-eliminar" onClick={() => eliminarItem(item.ProductoID)}>
+            <button className="carrito-item-eliminar" onClick={() => setProductoAEliminar(item.ProductoID)}>
               Eliminar
             </button>
           </div>
         ))}
+       <ConfirmModal
+          open={!!productoAEliminar}
+          title="Eliminar producto"
+          message="¿Seguro que querés quitar este producto del carrito?"
+          confirmLabel="Eliminar"
+          danger
+          onConfirm={confirmarEliminar}
+          onCancel={() => setProductoAEliminar(null)}
+        /> 
       </div>
 
       <div className="carrito-resumen">

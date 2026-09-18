@@ -74,13 +74,13 @@ function Home() {
         </Reveal>
         <div className="home-categorias-grid">
           <Reveal delay={60}>
-            <Link to="/coleccion" className="home-categoria-tile">
+            <Link to="/coleccion?categoria=Hombre" className="home-categoria-tile">
               <PlaceholderImage src="/img/categoria-hombre.jpg" ratio="4 / 5" label="Categoría — Hombre" />
               <span>Hombre</span>
             </Link>
           </Reveal>
           <Reveal delay={120}>
-            <Link to="/coleccion" className="home-categoria-tile">
+            <Link to="/coleccion?categoria=Mujer" className="home-categoria-tile">
               <PlaceholderImage src="/img/categoria-mujer.jpg" ratio="4 / 5" label="Categoría — Mujer" />
               <span>Mujer</span>
             </Link>

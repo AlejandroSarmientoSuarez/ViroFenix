@@ -12,7 +12,10 @@ const cartRoutes = require("./routes/cartRoutes");
 const pedidoRoutes = require("./routes/pedidoRoutes");
 const newsletterRoutes = require("./routes/newsletterRoutes");
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
 app.use(express.json());
 app.use("/api/favoritos", favoritoRoutes);
 app.use("/api/newsletter", newsletterRoutes);

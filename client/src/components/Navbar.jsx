@@ -38,6 +38,7 @@ function Navbar() {
                 Carrito {cantidadItems > 0 && <span className="navbar-cart-badge">{cantidadItems}</span>}
               </Link>
               <Link to="/perfil" className="navbar-links-desktop">Mi cuenta</Link>
+              <Link to="/pedidos" className="navbar-links-desktop">Mis pedidos</Link>
               <button onClick={logout} className="navbar-logout navbar-links-desktop">Salir</button>
             </>
           ) : (

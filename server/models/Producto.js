@@ -43,6 +43,11 @@ const Producto = sequelize.define("Producto", {
     allowNull: false,
     defaultValue: false,
   },
+  Categoria: {
+    type: DataTypes.ENUM("Hombre", "Mujer", "Unisex"),
+    allowNull: false,
+    defaultValue: "Unisex",
+  },
 }, {
   tableName: "productos",
   timestamps: true,

@@ -84,7 +84,21 @@ async function listarPedidos(req, res) {
       where: { UsuarioID: req.usuario.id },
       order: [["FechaCreacion", "DESC"]],
     });
-    return res.status(200).json({ status: "ok", data: pedidos });
+
+    const pedidosConItems = await Promise.all(
+      pedidos.map(async (pedido) => {
+        const items = await sequelize.query(
+          `SELECT dp.ProductoID, dp.Cantidad, dp.PrecioUnitario, p.Nombre, p.Imagen
+           FROM detalle_pedido dp
+           INNER JOIN productos p ON p.ProductoID = dp.ProductoID
+           WHERE dp.PedidoID = :pedidoId`,
+          { replacements: { pedidoId: pedido.PedidoID }, type: QueryTypes.SELECT }
+        );
+        return { ...pedido.toJSON(), items };
+      })
+    );
+
+    return res.status(200).json({ status: "ok", data: pedidosConItems });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ status: "error", message: "Error al obtener pedidos" });

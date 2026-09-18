@@ -32,3 +32,8 @@ export async function crearPedido() {
   const respuesta = await axios.post(PEDIDOS_URL, {}, getAuthHeader());
   return respuesta.data;
 }
+
+export async function obtenerPedidos() {
+  const respuesta = await axios.get(PEDIDOS_URL, getAuthHeader());
+  return respuesta.data;
+}

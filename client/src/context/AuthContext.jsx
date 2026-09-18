@@ -1,4 +1,5 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
+import { registerSessionExpiredHandler } from "../services/axiosConfig";
 
 const AuthContext = createContext();
 
@@ -19,6 +20,12 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("usuario");
     setUsuario(null);
   }
+
+  useEffect(() => {
+    registerSessionExpiredHandler(() => {
+      logout();
+    });
+  }, []);
 
   return (
     <AuthContext.Provider value={{ usuario, login, logout }}>
