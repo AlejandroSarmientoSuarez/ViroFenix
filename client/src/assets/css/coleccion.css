@@ -1,0 +1,385 @@
+.coleccion-container {
+  padding: 0 0 80px;
+}
+
+/* === Galería de modelos === */
+.coleccion-galeria-modelos {
+  display: grid;
+  grid-template-columns: repeat(3, 4fr);
+  gap: 25px;
+  margin: 25px 0;
+}
+
+@media (max-width: 640px) {
+  .coleccion-galeria-modelos {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === Wrapper único: TODO el contenido de texto/controles/grid comparte este mismo padding === */
+.coleccion-contenido {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 60px;
+}
+
+.coleccion-header {
+  padding-top: 60px;
+}
+
+.coleccion-kicker {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.coleccion-header h1 {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+
+.coleccion-header p {
+  color: var(--stone);
+  font-size: 14px;
+  margin: 0;
+}
+
+.coleccion-separador {
+  height: 1px;
+  background: var(--line);
+  margin-top: 32px;
+}
+
+/* === Toolbar: categorías a la izquierda, búsqueda + favoritos a la derecha === */
+.coleccion-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 24px;
+  flex-wrap: wrap;
+}
+
+.coleccion-categorias {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.categoria-chip {
+  height: 34px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--stone);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.categoria-chip:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.categoria-chip.activo {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.coleccion-toolbar-derecha {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  min-width: 260px;
+  max-width: 460px;
+  justify-content: flex-end;
+}
+
+.coleccion-buscador {
+  flex: 1;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+}
+
+.coleccion-buscador:focus {
+  border-color: var(--gold);
+}
+
+.filtro-favoritos {
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--stone);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.filtro-favoritos:hover,
+.filtro-favoritos.activo {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* === Info de resultados === */
+.coleccion-resultado-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0 32px;
+  font-size: 12px;
+  color: var(--stone);
+}
+
+.coleccion-limpiar-chip {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--gold);
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.coleccion-limpiar-chip:hover {
+  border-color: var(--gold);
+}
+
+.coleccion-limpiar-chip-boton {
+  margin-top: 16px;
+}
+
+/* === Grid de productos (mismo padding que el resto, ya no 60px propio) === */
+.coleccion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 48px 28px;
+}
+
+.coleccion-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.coleccion-imagen-link {
+  display: block;
+}
+
+.coleccion-imagen-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4.4;
+  overflow: hidden;
+  background: var(--paper-alt);
+  margin-bottom: 16px;
+}
+
+.coleccion-imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.4s ease;
+}
+
+.coleccion-imagen-hover {
+  opacity: 0;
+}
+
+.coleccion-card:hover .coleccion-imagen-hover {
+  opacity: 1;
+}
+
+.coleccion-agotado-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(250, 249, 247, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink);
+  z-index: 1;
+}
+
+.coleccion-card-titulo-link {
+  display: block;
+}
+
+.coleccion-card h3 {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0 0 6px;
+  color: var(--ink);
+  transition: color 0.2s ease;
+}
+
+.coleccion-card-titulo-link:hover h3 {
+  color: var(--gold);
+}
+
+.coleccion-descripcion {
+  color: var(--stone);
+  font-size: 12px;
+  margin: 0 0 8px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 36px;
+}
+
+.coleccion-precio {
+  color: var(--gold);
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+
+.boton-favorito {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(250, 249, 247, 0.85);
+  color: var(--ink);
+  font-size: 17px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: transform 0.2s ease;
+}
+
+.boton-favorito:hover {
+  transform: scale(1.08);
+}
+
+.boton-favorito.activo {
+  color: var(--gold);
+}
+
+.badge-pocas-unidades {
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  margin-bottom: 10px;
+  background: var(--paper-alt);
+  color: var(--danger);
+  width: fit-content;
+}
+
+.coleccion-agregar-carrito {
+  width: 100%;
+  height: 38px;
+  margin-top: auto;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-size: 11px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.coleccion-agregar-carrito:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.coleccion-agregar-carrito:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* === Cargar más === */
+.coleccion-cargar-mas-wrap {
+  text-align: center;
+  padding-top: 56px;
+}
+
+.coleccion-cargar-mas {
+  height: 46px;
+  padding: 0 32px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-size: 11.5px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.coleccion-cargar-mas:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.coleccion-cargar-mas:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* === Banner secundario === */
+.coleccion-banner-secundario {
+  margin-top: 80px;
+}
+
+/* === Vacío === */
+.coleccion-loading,
+.coleccion-vacio {
+  text-align: center;
+  color: var(--stone);
+  padding: 80px 0;
+}
+
+@media (max-width: 900px) {
+  .coleccion-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .coleccion-toolbar-derecha {
+    max-width: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .coleccion-contenido {
+    padding: 0 20px;
+  }
+}

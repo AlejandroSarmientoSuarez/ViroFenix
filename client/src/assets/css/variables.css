@@ -1,0 +1,35 @@
+:root {
+  --paper: #faf9f7;
+  --paper-alt: #f2f0eb;
+  --ink: #141414;
+  --stone: #6b6b6b;
+  --line: #e4e0d8;
+  --gold: #a8834f;
+  --danger: #b3453a;
+  --success: #5c7a52;
+  --radius: 2px;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+html, body, #root {
+  width: 100%;
+  min-height: 100vh;
+}

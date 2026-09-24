@@ -1,0 +1,45 @@
+.pedidos-container { max-width: 900px; margin: 0 auto; padding: 50px 24px; }
+
+.pedidos-container h1 {
+  font-family: var(--font-display); font-size: 28px; font-weight: 400;
+  color: var(--ink); margin: 0 0 32px;
+}
+
+.pedidos-vacio { color: var(--stone); text-align: center; padding: 60px 0; }
+
+.pedidos-lista { display: flex; flex-direction: column; gap: 20px; }
+
+.pedido-card {
+  border: 1px solid var(--line); padding: 24px;
+}
+
+.pedido-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--line);
+}
+
+.pedido-numero { font-size: 14px; font-weight: 500; color: var(--ink); margin: 0 0 4px; }
+.pedido-fecha { font-size: 12px; color: var(--stone); margin: 0; text-transform: capitalize; }
+
+.pedido-estado {
+  font-size: 10.5px; letter-spacing: 0.5px; text-transform: uppercase;
+  padding: 5px 12px; background: var(--paper-alt); color: var(--stone);
+}
+
+.pedido-estado-pagado, .pedido-estado-entregado { color: #5c7a52; }
+.pedido-estado-cancelado { color: #b3453a; }
+
+.pedido-items { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+
+.pedido-item { display: flex; align-items: center; gap: 14px; }
+
+.pedido-item img {
+  width: 48px; height: 60px; object-fit: cover; background: var(--paper-alt);
+}
+
+.pedido-item p { font-size: 13px; color: var(--ink); margin: 0; }
+.pedido-item span { font-size: 12px; color: var(--stone); }
+
+.pedido-total {
+  text-align: right; font-size: 15px; font-weight: 600; color: var(--gold); margin: 0;
+}
