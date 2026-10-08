@@ -27,6 +27,7 @@ function Navbar() {
           <Link to="/coleccion">Colección</Link>
           <Link to="/nosotros">Nosotros</Link>
           <Link to="/Contacto">Contacto</Link>
+          <Link to="/Faq">Preguntas frecuentes</Link>
           
         </nav>
 

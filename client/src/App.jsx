@@ -45,6 +45,7 @@ function App() {
               <Route path="/coleccion" element={<Coleccion />} />
               <Route path="/nosotros" element={<Nosotros />} />
               <Route path="/contacto" element={<Contacto />} />
+              <Route path="/faq" element={<Faq />} />
               <Route
                 path="/perfil"
                 element={

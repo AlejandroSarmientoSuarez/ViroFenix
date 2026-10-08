@@ -18,7 +18,7 @@ function Footer() {
 
         <div className="footer-col">
           <h4>Ayuda</h4>
-          <span>Preguntas frecuentes</span>
+          <span>Preguntas frecuentes y política de privacidad</span>
           <span>Envíos y devoluciones</span>
           <span>Términos y condiciones</span>
         </div>
