@@ -8,13 +8,22 @@ const Producto = require("../models/Producto");
 const { obtenerOCrearCarritoActivo } = require("./cartController");
 
 async function crearPedido(req, res) {
+  const { direccion, email } = req.body;
+
+  if (!direccion || direccion.trim().length < 5) {
+    return res.status(400).json({ status: "error", message: "La dirección es obligatoria" });
+  }
+  if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+    return res.status(400).json({ status: "error", message: "El email no es válido" });
+  }
+
   const t = await sequelize.transaction();
 
   try {
     const carrito = await obtenerOCrearCarritoActivo(req.usuario.id);
 
     const items = await sequelize.query(
-      `SELECT cd.ProductoID, cd.Cantidad, p.Precio, p.StockActual, p.Nombre
+      `SELECT cd.ProductoID, cd.Cantidad, p.Precio, p.StockActual, p.Nombre, p.Imagen
        FROM carrito_detalle cd
        INNER JOIN productos p ON p.ProductoID = cd.ProductoID
        WHERE cd.CarritoID = :carritoId`,
@@ -39,7 +48,13 @@ async function crearPedido(req, res) {
     const total = items.reduce((acc, item) => acc + item.Cantidad * Number(item.Precio), 0);
 
     const pedido = await Pedido.create(
-      { UsuarioID: req.usuario.id, Total: total, Estado: "Pendiente" },
+      {
+        UsuarioID: req.usuario.id,
+        Total: total,
+        Estado: "Pendiente",
+        DireccionEnvio: direccion.trim(),
+        EmailContacto: email.trim(),
+      },
       { transaction: t }
     );
 
@@ -69,7 +84,20 @@ async function crearPedido(req, res) {
     return res.status(201).json({
       status: "ok",
       message: "Pedido creado correctamente",
-      data: { pedidoId: pedido.PedidoID, total },
+      data: {
+        pedidoId: pedido.PedidoID,
+        total,
+        fecha: pedido.FechaCreacion || new Date(),
+        direccion: pedido.DireccionEnvio,
+        email: pedido.EmailContacto,
+        items: items.map((i) => ({
+          ProductoID: i.ProductoID,
+          Nombre: i.Nombre,
+          Imagen: i.Imagen,
+          Cantidad: i.Cantidad,
+          Precio: i.Precio,
+        })),
+      },
     });
   } catch (error) {
     await t.rollback();

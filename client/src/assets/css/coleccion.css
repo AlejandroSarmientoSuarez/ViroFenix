@@ -2,12 +2,184 @@
   padding: 0 0 80px;
 }
 
-/* === Galería de modelos === */
+/* ============================================= */
+/* === BANNERS CON TEXTO SUPERPUESTO === */
+/* ============================================= */
+
+.banner-hero,
+.banner-zapatos,
+.banner-secundario-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  text-align: left;
+  padding: 0 80px;
+  z-index: 2;
+}
+
+.banner-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    rgba(10, 10, 10, 0.62) 0%,
+    rgba(10, 10, 10, 0.32) 45%,
+    rgba(10, 10, 10, 0) 75%
+  );
+  z-index: -1;
+}
+
+.banner-kicker {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+}
+
+.banner-titulo {
+  font-family: var(--font-display);
+  font-weight: 400;
+  color: #fff;
+  margin: 0 0 14px;
+  line-height: 1.05;
+}
+
+.banner-hero .banner-titulo {
+  font-size: 52px;
+  max-width: 560px;
+}
+
+.banner-zapatos .banner-titulo {
+  font-size: 40px;
+}
+
+.banner-secundario-wrap .banner-titulo {
+  font-size: 34px;
+}
+
+.banner-subtitulo {
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 14.5px;
+  line-height: 1.6;
+  max-width: 420px;
+  margin: 0 0 28px;
+}
+
+.banner-cta {
+  height: 46px;
+  padding: 0 30px;
+  border: 1px solid #fff;
+  background: transparent;
+  color: #fff;
+  font-size: 11.5px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.banner-cta:hover {
+  background: #fff;
+  color: var(--ink);
+}
+
+.banner-cta--claro {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.banner-cta--claro:hover {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold);
+}
+
+@media (max-width: 900px) {
+  .banner-overlay {
+    padding: 0 32px;
+    align-items: center;
+    text-align: center;
+  }
+  .banner-hero .banner-titulo {
+    font-size: 34px;
+    max-width: 100%;
+  }
+  .banner-zapatos .banner-titulo {
+    font-size: 28px;
+  }
+  .banner-subtitulo {
+    max-width: 100%;
+  }
+}
+
+/* === Galería de modelos (clickeable, sin texto superpuesto) === */
 .coleccion-galeria-modelos {
   display: grid;
-  grid-template-columns: repeat(3, 4fr);
-  gap: 25px;
-  margin: 25px 0;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin: 60px 0;
+}
+
+.galeria-item {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  display: block;
+}
+
+.galeria-item-imagen-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.galeria-item-imagen-wrap img,
+.galeria-item-imagen-wrap :global(img) {
+  transition: transform 0.5s ease;
+}
+
+.galeria-item:hover .galeria-item-imagen-wrap {
+  opacity: 0.92;
+}
+
+.galeria-item-nombre {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink);
+  transition: color 0.2s ease, gap 0.2s ease;
+}
+
+.galeria-item-nombre::after {
+  content: "→";
+  color: var(--gold);
+  transition: transform 0.2s ease;
+}
+
+.galeria-item:hover .galeria-item-nombre {
+  color: var(--gold);
+  gap: 14px;
+}
+
+.galeria-item:hover .galeria-item-nombre::after {
+  transform: translateX(3px);
 }
 
 @media (max-width: 640px) {
@@ -16,7 +188,7 @@
   }
 }
 
-/* === Wrapper único: TODO el contenido de texto/controles/grid comparte este mismo padding === */
+/* === Wrapper único: todo el contenido de texto/controles/grid comparte este padding === */
 .coleccion-contenido {
   max-width: 1600px;
   margin: 0 auto;
@@ -24,36 +196,38 @@
 }
 
 .coleccion-header {
-  padding-top: 60px;
+  padding-top: 72px;
+  text-align: center;
 }
 
 .coleccion-kicker {
   display: block;
   font-size: 11px;
-  letter-spacing: 1.5px;
+  letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--gold);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .coleccion-header h1 {
   font-family: var(--font-display);
-  font-size: 36px;
+  font-size: 40px;
   font-weight: 400;
   color: var(--ink);
-  margin: 0 0 10px;
+  margin: 0 0 12px;
 }
 
 .coleccion-header p {
   color: var(--stone);
   font-size: 14px;
-  margin: 0;
+  margin: 0 auto;
+  max-width: 480px;
 }
 
 .coleccion-separador {
   height: 1px;
   background: var(--line);
-  margin-top: 32px;
+  margin-top: 40px;
 }
 
 /* === Toolbar: categorías a la izquierda, búsqueda + favoritos a la derecha === */
@@ -61,8 +235,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  padding-top: 24px;
+  gap: 24px;
+  padding-top: 28px;
   flex-wrap: wrap;
 }
 
@@ -73,13 +247,13 @@
 }
 
 .categoria-chip {
-  height: 34px;
-  padding: 0 16px;
+  height: 36px;
+  padding: 0 18px;
   border: 1px solid var(--line);
   background: transparent;
   color: var(--stone);
   font-size: 11px;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
   cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
@@ -107,7 +281,7 @@
 
 .coleccion-buscador {
   flex: 1;
-  height: 40px;
+  height: 42px;
   padding: 0 16px;
   border: 1px solid var(--line);
   background: var(--paper);
@@ -115,6 +289,7 @@
   font-family: var(--font-body);
   font-size: 13px;
   outline: none;
+  transition: border-color 0.2s ease;
 }
 
 .coleccion-buscador:focus {
@@ -122,13 +297,13 @@
 }
 
 .filtro-favoritos {
-  height: 40px;
+  height: 42px;
   padding: 0 18px;
   border: 1px solid var(--line);
   background: transparent;
   color: var(--stone);
   font-size: 11px;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
   cursor: pointer;
   white-space: nowrap;
@@ -146,7 +321,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 0 32px;
+  padding: 20px 0 36px;
+  margin-top: 8px;
+  border-top: 1px solid var(--line);
   font-size: 12px;
   color: var(--stone);
 }
@@ -157,24 +334,25 @@
   color: var(--gold);
   font-size: 11px;
   letter-spacing: 0.4px;
-  padding: 6px 12px;
+  padding: 7px 14px;
   cursor: pointer;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .coleccion-limpiar-chip:hover {
   border-color: var(--gold);
+  background: var(--paper-alt);
 }
 
 .coleccion-limpiar-chip-boton {
   margin-top: 16px;
 }
 
-/* === Grid de productos (mismo padding que el resto, ya no 60px propio) === */
+/* === Grid de productos === */
 .coleccion-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 48px 28px;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 56px 32px;
 }
 
 .coleccion-card {
@@ -194,7 +372,7 @@
   aspect-ratio: 3 / 4.4;
   overflow: hidden;
   background: var(--paper-alt);
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .coleccion-imagen {
@@ -203,7 +381,11 @@
   object-fit: cover;
   position: absolute;
   inset: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.5s ease, transform 0.6s ease;
+}
+
+.coleccion-card:hover .coleccion-imagen-base {
+  transform: scale(1.045);
 }
 
 .coleccion-imagen-hover {
@@ -234,7 +416,7 @@
 
 .coleccion-card h3 {
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 500;
   margin: 0 0 6px;
   color: var(--ink);
@@ -248,30 +430,31 @@
 .coleccion-descripcion {
   color: var(--stone);
   font-size: 12px;
-  margin: 0 0 8px;
-  line-height: 1.5;
+  margin: 0 0 10px;
+  line-height: 1.55;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 36px;
+  min-height: 37px;
 }
 
 .coleccion-precio {
   color: var(--gold);
-  font-size: 13px;
-  margin: 0 0 8px;
+  font-size: 14px;
+  margin: 0 0 10px;
+  font-family: var(--font-display);
 }
 
 .boton-favorito {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 10px;
+  right: 10px;
   width: 40px;
   height: 40px;
   border-radius: 50%;
   border: none;
-  background: rgba(250, 249, 247, 0.85);
+  background: rgba(250, 249, 247, 0.88);
   color: var(--ink);
   font-size: 17px;
   cursor: pointer;
@@ -304,13 +487,13 @@
 
 .coleccion-agregar-carrito {
   width: 100%;
-  height: 38px;
+  height: 40px;
   margin-top: auto;
   border: 1px solid var(--ink);
   background: transparent;
   color: var(--ink);
   font-size: 11px;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.7px;
   text-transform: uppercase;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
@@ -329,17 +512,17 @@
 /* === Cargar más === */
 .coleccion-cargar-mas-wrap {
   text-align: center;
-  padding-top: 56px;
+  padding-top: 64px;
 }
 
 .coleccion-cargar-mas {
-  height: 46px;
-  padding: 0 32px;
+  height: 48px;
+  padding: 0 34px;
   border: 1px solid var(--ink);
   background: transparent;
   color: var(--ink);
   font-size: 11.5px;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.7px;
   text-transform: uppercase;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
@@ -355,9 +538,9 @@
   cursor: wait;
 }
 
-/* === Banner secundario === */
+/* === Banner secundario (dentro del wrapper, con margen propio) === */
 .coleccion-banner-secundario {
-  margin-top: 80px;
+  margin-top: 90px;
 }
 
 /* === Vacío === */
@@ -365,7 +548,7 @@
 .coleccion-vacio {
   text-align: center;
   color: var(--stone);
-  padding: 80px 0;
+  padding: 90px 0;
 }
 
 @media (max-width: 900px) {
@@ -376,10 +559,16 @@
   .coleccion-toolbar-derecha {
     max-width: none;
   }
+  .coleccion-grid {
+    gap: 44px 20px;
+  }
 }
 
 @media (max-width: 640px) {
   .coleccion-contenido {
     padding: 0 20px;
+  }
+  .coleccion-header {
+    padding-top: 48px;
   }
 }

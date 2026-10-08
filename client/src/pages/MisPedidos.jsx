@@ -37,35 +37,43 @@ function MisPedidos() {
         <p className="pedidos-vacio">Todavía no hiciste ningún pedido.</p>
       ) : (
         <div className="pedidos-lista">
-          {pedidos.map((pedido) => (
-            <div key={pedido.PedidoID} className="pedido-card">
-              <div className="pedido-header">
-                <div>
-                  <p className="pedido-numero">Pedido #{pedido.PedidoID}</p>
-                  <p className="pedido-fecha">
-                    {new Date(pedido.FechaCreacion).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}
-                  </p>
-                </div>
-                <span className={`pedido-estado pedido-estado-${pedido.Estado.toLowerCase()}`}>
-                  {ESTADO_LABEL[pedido.Estado] || pedido.Estado}
-                </span>
-              </div>
-
-              <div className="pedido-items">
-                {pedido.items.map((item) => (
-                  <div key={item.ProductoID} className="pedido-item">
-                    <img src={`${IMG_BASE_URL}${item.Imagen}`} alt={item.Nombre} />
-                    <div>
-                      <p>{item.Nombre}</p>
-                      <span>{item.Cantidad} × ${item.PrecioUnitario}</span>
-                    </div>
+          {pedidos.map((pedido) => {
+            const fecha = new Date(pedido.FechaCreacion);
+            return (
+              <div key={pedido.PedidoID} className="pedido-card">
+                <div className="pedido-header">
+                  <div>
+                    <p className="pedido-numero">Pedido #{pedido.PedidoID}</p>
+                    <p className="pedido-fecha">
+                      {fecha.toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}
+                      {" · "}
+                      {fecha.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })} hs
+                    </p>
+                    {pedido.DireccionEnvio && (
+                      <p className="pedido-fecha">Envío a: {pedido.DireccionEnvio}</p>
+                    )}
                   </div>
-                ))}
-              </div>
+                  <span className={`pedido-estado pedido-estado-${pedido.Estado.toLowerCase()}`}>
+                    {ESTADO_LABEL[pedido.Estado] || pedido.Estado}
+                  </span>
+                </div>
 
-              <p className="pedido-total">Total: ${Number(pedido.Total).toFixed(2)}</p>
-            </div>
-          ))}
+                <div className="pedido-items">
+                  {pedido.items.map((item) => (
+                    <div key={item.ProductoID} className="pedido-item">
+                      <img src={`${IMG_BASE_URL}${item.Imagen}`} alt={item.Nombre} />
+                      <div>
+                        <p>{item.Nombre}</p>
+                        <span>{item.Cantidad} × ${item.PrecioUnitario}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="pedido-total">Total: ${Number(pedido.Total).toFixed(2)}</p>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

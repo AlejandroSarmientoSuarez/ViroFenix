@@ -81,6 +81,7 @@ function Coleccion() {
 
   function cambiarCategoria(cat) {
     setSearchParams(cat === "Todos" ? {} : { categoria: cat });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function limpiarFiltros() {
@@ -138,20 +139,53 @@ function Coleccion() {
 
   return (
     <div className="coleccion-container">
-      <PlaceholderImage src="/img/banner-principal.jpg" ratio="21 / 11" label="Banner principal — 1600×680" />
-
-      <div className="coleccion-galeria-modelos">
-        <PlaceholderImage src="/img/banners/portada1.jpg" ratio="3 / 4" label="Modelo — Hombre" />
-        <PlaceholderImage src="/img/banners/portada2.jpg" ratio="3 / 4" label="Modelo — Mujer" />
-        <PlaceholderImage src="/img/banners/portada3.jpg" ratio="3 / 4" label="Modelo — Niño" />
+      {/* === HERO: banner principal con texto superpuesto === */}
+      <div className="banner-hero">
+        <PlaceholderImage src="/img/banner-principal.jpg" ratio="21 / 11" label="Banner principal — 1600×680" />
+        <div className="banner-overlay">
+          <span className="banner-kicker">Temporada 2026</span>
+          <h1 className="banner-titulo">Estilo que se nota</h1>
+          <p className="banner-subtitulo">
+            Prendas y calzado pensados para combinar carácter, comodidad y una estética atemporal.
+          </p>
+          <button className="banner-cta" onClick={() => cambiarCategoria("Todos")}>
+            Ver colección
+          </button>
+        </div>
       </div>
+
+      {/* === Galería de categorías (clickeable, sin texto superpuesto) === */}
+      <div className="coleccion-contenido">
+        <div className="coleccion-galeria-modelos">
+          <button className="galeria-item" onClick={() => cambiarCategoria("Hombre")}>
+            <div className="galeria-item-imagen-wrap">
+              <PlaceholderImage src="/img/banners/portada1.jpg" ratio="3 / 4" label="Modelo — Hombre" />
+            </div>
+            <span className="galeria-item-nombre">Hombre</span>
+          </button>
+          <button className="galeria-item" onClick={() => cambiarCategoria("Mujer")}>
+            <div className="galeria-item-imagen-wrap">
+              <PlaceholderImage src="/img/banners/portada2.jpg" ratio="3 / 4" label="Modelo — Mujer" />
+            </div>
+            <span className="galeria-item-nombre">Mujer</span>
+          </button>
+          <button className="galeria-item" onClick={() => cambiarCategoria("Unisex")}>
+            <div className="galeria-item-imagen-wrap">
+              <PlaceholderImage src="/img/banners/portada3.jpg" ratio="3 / 4" label="Modelo — Unisex" />
+            </div>
+            <span className="galeria-item-nombre">Unisex</span>
+          </button>
+        </div>
+      </div>
+
+      
 
       <div className="coleccion-contenido">
         <Reveal>
           <header className="coleccion-header">
             <span className="coleccion-kicker">Catálogo completo</span>
             <h1>{tituloSeccion}</h1>
-            <p>Prendas pensadas para combinar estilo y comodidad en cada ocasión.</p>
+            <p>Prendas y calzado pensados para combinar estilo y comodidad en cada ocasión.</p>
           </header>
         </Reveal>
 
@@ -280,7 +314,17 @@ function Coleccion() {
 
             {!hayFiltrosActivos && (
               <div className="coleccion-banner-secundario">
-                <PlaceholderImage src="/img/banners/banner.jpg" ratio="21 / 7" label="Banner secundario — 1600×540" />
+                <div className="banner-secundario-wrap">
+                  <PlaceholderImage src="/img/banners/banner.jpg" ratio="21 / 7" label="Banner secundario — 1600×540" />
+                  <div className="banner-overlay">
+                    <span className="banner-kicker">Edición limitada</span>
+                    <h2 className="banner-titulo">No te lo pierdas</h2>
+                    <p className="banner-subtitulo">Piezas seleccionadas, stock limitado.</p>
+                    <button className="banner-cta" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+                      Volver arriba
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </>

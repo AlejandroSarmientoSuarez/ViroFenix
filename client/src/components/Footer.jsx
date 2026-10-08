@@ -14,13 +14,17 @@ function Footer() {
           <h4>Navegación</h4>
           <Link to="/">Inicio</Link>
           <Link to="/coleccion">Colección</Link>
+          <Link to="/nosotros">Nosotros</Link>
+          <Link to="/contacto">Contacto</Link>
         </div>
 
         <div className="footer-col">
           <h4>Ayuda</h4>
-          <span>Preguntas frecuentes</span>
-          <span>Envíos y devoluciones</span>
-          <span>Términos y condiciones</span>
+          <Link to="/faq#preguntas">Preguntas frecuentes</Link>
+          <Link to="/faq#envios">Envíos</Link>
+          <Link to="/faq#devoluciones">Cambios y devoluciones</Link>
+          <Link to="/faq#privacidad">Privacidad</Link>
+          <Link to="/faq#terminos">Términos y condiciones</Link>
         </div>
 
         <div className="footer-col">

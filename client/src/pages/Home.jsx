@@ -6,11 +6,7 @@ import Reveal from "../components/Reveal";
 import PlaceholderImage from "../components/PlaceholderImage";
 import NewsletterForm from "../components/NewsletterForm";
 import "../assets/css/home.css";
-<<<<<<< HEAD
 
-=======
-              
->>>>>>> origin/Pedro-Wang
 const slides = [
   {
     src: "/img/banner-3.jpg",

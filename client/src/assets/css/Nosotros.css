@@ -1,110 +1,654 @@
+
+/* =========================================================
+   NOSOTROS
+   ViroFenix — Premium / Editorial
+   ========================================================= */
+
 .nosotros-container {
-  padding: 0 0 60px;
+  width: 100%;
+  padding: 0 0 100px;
+  overflow: hidden;
+  background: var(--background, #fff);
+  color: var(--ink, #171717);
 }
 
-.placeholder-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center; 
+/* =========================================================
+   ELEMENTOS GENERALES
+   ========================================================= */
+
+.nosotros-eyebrow {
+  display: inline-block;
+  margin-bottom: 18px;
+
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.4px;
+  line-height: 1.4;
+  text-transform: uppercase;
+
+  color: var(--gold, #a48655);
 }
+
+.nosotros-container em {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* =========================================================
+   HEADER / INTRO
+   ========================================================= */
 
 .nosotros-header {
-  padding: 50px 40px 30px;
-  max-width: 900px;
+  max-width: 1050px;
   margin: 0 auto;
+  padding: 95px 40px 105px;
+
   text-align: center;
 }
 
 .nosotros-header h1 {
+  margin: 0;
+
   font-family: var(--font-display);
-  font-size: 34px;
+  font-size: clamp(42px, 6vw, 78px);
   font-weight: 400;
-  color: var(--ink);
-  margin: 0 0 16px;
+  line-height: 0.98;
+  letter-spacing: -2.5px;
+
+  color: var(--ink, #171717);
+}
+
+.nosotros-header h1 em {
+  color: var(--gold, #a48655);
+}
+
+.nosotros-header-line {
+  width: 55px;
+  height: 1px;
+
+  margin: 32px auto 28px;
+
+  background: var(--gold, #a48655);
 }
 
 .nosotros-header p {
-  color: var(--stone);
+  max-width: 690px;
+  margin: 0 auto;
+
+  color: var(--stone, #777);
+
+  font-family: var(--font-body);
   font-size: 14px;
-  line-height: 1.7;
-  margin: 0;
+  font-weight: 400;
+  line-height: 1.9;
 }
 
-.nosotros-seccion {
-  max-width: 1600px;
+/* =========================================================
+   HISTORIA
+   ========================================================= */
+
+.nosotros-historia {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(380px, 0.85fr);
+
+  max-width: 1500px;
+  min-height: 560px;
+
   margin: 0 auto;
-  padding: 40px 60px 0;
+  padding: 0 60px;
+}
+
+.nosotros-historia-contenido {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 80px 10% 80px 0;
+}
+
+.nosotros-historia-contenido h2 {
+  margin: 0 0 28px;
+
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4vw, 54px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+}
+
+.nosotros-historia-contenido h2 em {
+  color: var(--gold, #a48655);
+}
+
+.nosotros-historia-contenido > p {
+  max-width: 570px;
+  margin: 0 0 18px;
+
+  color: var(--stone, #777);
+
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.nosotros-historia-dato {
+  display: flex;
+  flex-direction: column;
+
+  margin-top: 25px;
+  padding-top: 22px;
+
+  border-top: 1px solid var(--line, #e7e2da);
+}
+
+.nosotros-historia-dato strong {
+  margin-bottom: 5px;
+
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 400;
+}
+
+.nosotros-historia-dato span {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+
+  color: var(--stone, #777);
+}
+
+.nosotros-historia-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 520px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(164, 134, 85, 0.08),
+      rgba(0, 0, 0, 0.02)
+    );
+}
+
+.nosotros-historia-marco {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 68%;
+  aspect-ratio: 1 / 1;
+
+  border: 1px solid rgba(164, 134, 85, 0.45);
+}
+
+.nosotros-historia-marco::before {
+  content: "";
+
+  position: absolute;
+  inset: 18px;
+
+  border: 1px solid rgba(164, 134, 85, 0.25);
+}
+
+.nosotros-historia-marco span {
+  position: relative;
+  z-index: 1;
+
+  font-family: var(--font-display);
+  font-size: clamp(60px, 8vw, 110px);
+  font-weight: 400;
+  letter-spacing: -7px;
+
+  color: var(--gold, #a48655);
+}
+
+/* =========================================================
+   SECCIONES
+   ========================================================= */
+
+.nosotros-seccion {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 120px 60px 0;
+}
+
+.nosotros-seccion-header {
+  max-width: 650px;
+  margin: 0 auto 60px;
+
+  text-align: center;
 }
 
 .nosotros-subtitulo {
+  margin: 0 0 18px;
+
   font-family: var(--font-display);
-  font-size: 24px;
+  font-size: clamp(35px, 4vw, 50px);
   font-weight: 400;
-  color: var(--ink);
-  text-align: center;
-  margin: 0 0 36px;
+  line-height: 1;
+
+  letter-spacing: -1.2px;
 }
+
+.nosotros-subtitulo em {
+  color: var(--gold, #a48655);
+}
+
+.nosotros-seccion-header p {
+  margin: 0;
+
+  color: var(--stone, #777);
+
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* =========================================================
+   VALORES
+   ========================================================= */
 
 .nosotros-valores-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 28px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+
+  background: var(--line, #e7e2da);
+  border: 1px solid var(--line, #e7e2da);
 }
 
 .nosotros-valor-card {
-  border: 1px solid var(--line);
-  padding: 28px 24px;
-  text-align: center;
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: 290px;
+  padding: 35px 32px;
+
+  background: var(--background, #fff);
+
+  transition:
+    transform 0.3s ease,
+    background-color 0.3s ease;
 }
 
-.nosotros-valor-card h3 {
+.nosotros-valor-card:hover {
+  transform: translateY(-4px);
+  background: #faf9f7;
+}
+
+.nosotros-valor-numero {
+  margin-bottom: auto;
+
   font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin: 0 0 10px;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+
+  color: var(--gold, #a48655);
 }
 
-.nosotros-valor-card p {
-  color: var(--stone);
-  font-size: 13px;
-  line-height: 1.6;
+.nosotros-valor-contenido {
+  max-width: 330px;
+}
+
+.nosotros-valor-contenido h3 {
+  margin: 0 0 13px;
+
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 400;
+}
+
+.nosotros-valor-contenido p {
   margin: 0;
+
+  color: var(--stone, #777);
+
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.nosotros-valor-arrow {
+  position: absolute;
+  right: 30px;
+  bottom: 28px;
+
+  font-size: 18px;
+  color: var(--gold, #a48655);
+
+  opacity: 0.65;
+
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.nosotros-valor-card:hover .nosotros-valor-arrow {
+  opacity: 1;
+  transform: translate(3px, -3px);
+}
+
+/* =========================================================
+   FILOSOFÍA
+   ========================================================= */
+
+.nosotros-filosofia {
+  max-width: 1200px;
+
+  margin: 130px auto 0;
+  padding: 100px 40px;
+
+  text-align: center;
+
+  border-top: 1px solid var(--line, #e7e2da);
+  border-bottom: 1px solid var(--line, #e7e2da);
+}
+
+.nosotros-filosofia-marca {
+  display: block;
+  margin-bottom: 35px;
+
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 4px;
+
+  color: var(--gold, #a48655);
+}
+
+.nosotros-filosofia blockquote {
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  font-family: var(--font-display);
+  font-size: clamp(27px, 4vw, 48px);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -1px;
+
+  color: var(--ink, #171717);
+}
+
+.nosotros-filosofia-linea {
+  display: block;
+
+  width: 40px;
+  height: 1px;
+
+  margin: 35px auto 0;
+
+  background: var(--gold, #a48655);
+}
+
+/* =========================================================
+   EQUIPO
+   ========================================================= */
+
+.nosotros-equipo {
+  padding-top: 130px;
 }
 
 .nosotros-equipo-grid {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 280px));
   justify-content: center;
-  gap: 32px; 
-  flex-wrap: wrap;
+  gap: 55px;
 }
 
 .nosotros-equipo-card {
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  width: 280px;
+  min-width: 0;
 }
 
-.nosotros-equipo-card h3 {
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--ink);
-  margin: 14px 0 4px;
+.nosotros-equipo-imagen {
+  position: relative;
+
+  overflow: hidden;
+
+  width: 100%;
+  aspect-ratio: 1 / 1;
+
+  background: #f4f2ef;
 }
 
-.nosotros-equipo-card p {
-  color: var(--stone);
-  font-size: 12px;
+.nosotros-equipo-imagen .placeholder-image {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center top;
+
+  transition: transform 0.5s ease;
+}
+
+.nosotros-equipo-card:hover .placeholder-image {
+  transform: scale(1.035);
+}
+
+.nosotros-equipo-numero {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+
+  padding: 6px 9px;
+
+  background: rgba(255, 255, 255, 0.9);
+
+  font-size: 9px;
+  letter-spacing: 1px;
+
+  color: var(--ink, #171717);
+}
+
+.nosotros-equipo-info {
+  padding-top: 18px;
+}
+
+.nosotros-equipo-info h3 {
+  margin: 0 0 5px;
+
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 400;
+
+  color: var(--ink, #171717);
+}
+
+.nosotros-equipo-info p {
   margin: 0;
+
+  font-size: 10px;
+  letter-spacing: 1.1px;
+  line-height: 1.5;
+  text-transform: uppercase;
+
+  color: var(--stone, #777);
 }
+
+/* =========================================================
+   CIERRE
+   ========================================================= */
+
+.nosotros-cierre {
+  max-width: 850px;
+
+  margin: 140px auto 0;
+  padding: 0 40px;
+
+  text-align: center;
+}
+
+.nosotros-cierre h2 {
+  margin: 0 0 25px;
+
+  font-family: var(--font-display);
+  font-size: clamp(38px, 5vw, 60px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -1.8px;
+}
+
+.nosotros-cierre h2 em {
+  color: var(--gold, #a48655);
+}
+
+.nosotros-cierre p {
+  max-width: 580px;
+
+  margin: 0 auto;
+
+  color: var(--stone, #777);
+
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .nosotros-header {
+    padding: 75px 30px 80px;
+  }
+
+  .nosotros-historia {
+    grid-template-columns: 1fr;
+    padding: 0 35px;
+  }
+
+  .nosotros-historia-contenido {
+    padding: 70px 0;
+  }
+
+  .nosotros-historia-visual {
+    min-height: 420px;
+  }
+
+  .nosotros-seccion {
+    padding-right: 35px;
+    padding-left: 35px;
+  }
+
+  .nosotros-valores-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nosotros-valor-card {
+    min-height: 240px;
+  }
+
+  .nosotros-equipo-grid {
+    gap: 35px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
 @media (max-width: 640px) {
+  .nosotros-container {
+    padding-bottom: 70px;
+  }
+
+  .nosotros-header {
+    padding: 60px 24px 65px;
+  }
+
+  .nosotros-header h1 {
+    font-size: 42px;
+    letter-spacing: -1.5px;
+  }
+
+  .nosotros-header p {
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .nosotros-eyebrow {
+    font-size: 9px;
+    letter-spacing: 1.8px;
+  }
+
+  .nosotros-historia {
+    padding: 0 24px;
+  }
+
+  .nosotros-historia-contenido {
+    padding: 60px 0;
+  }
+
+  .nosotros-historia-contenido h2 {
+    font-size: 38px;
+  }
+
+  .nosotros-historia-visual {
+    min-height: 330px;
+  }
+
+  .nosotros-historia-marco {
+    width: 65%;
+  }
+
   .nosotros-seccion {
-    padding: 30px 24px 0;
+    padding: 90px 24px 0;
+  }
+
+  .nosotros-seccion-header {
+    margin-bottom: 40px;
+  }
+
+  .nosotros-subtitulo {
+    font-size: 38px;
+  }
+
+  .nosotros-valor-card {
+    min-height: 260px;
+    padding: 28px 24px;
+  }
+
+  .nosotros-filosofia {
+    margin-top: 90px;
+    padding: 75px 24px;
+  }
+
+  .nosotros-filosofia blockquote {
+    font-size: 29px;
+  }
+
+  .nosotros-equipo {
+    padding-top: 90px;
+  }
+
+  .nosotros-equipo-grid {
+    grid-template-columns: minmax(0, 300px);
+    gap: 45px;
+  }
+
+  .nosotros-cierre {
+    margin-top: 100px;
+    padding: 0 24px;
+  }
+
+  .nosotros-cierre h2 {
+    font-size: 39px;
+  }
+}
+
+/* =========================================================
+   REDUCCIÓN DE MOVIMIENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .nosotros-valor-card,
+  .nosotros-valor-arrow,
+  .nosotros-equipo-imagen .placeholder-image {
+    transition: none;
   }
 }

@@ -28,8 +28,8 @@ export async function eliminarDelCarrito(productoId) {
   return respuesta.data;
 }
 
-export async function crearPedido() {
-  const respuesta = await axios.post(PEDIDOS_URL, {}, getAuthHeader());
+export async function crearPedido(datosEnvio) {
+  const respuesta = await axios.post(PEDIDOS_URL, datosEnvio, getAuthHeader());
   return respuesta.data;
 }
 

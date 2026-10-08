@@ -15,6 +15,8 @@ import Coleccion from "./pages/Coleccion";
 import Nosotros from "./pages/Nosotros";
 import Contacto from "./pages/contacto";
 import Carrito from "./pages/Carrito";
+import Checkout from "./pages/Checkout";
+import Faq from "./pages/Faq";
 import RecuperarPassword from "./pages/RecuperarPassword";
 import RestablecerPassword from "./pages/RestablecerPassword";
 import ProductoDetalle from "./pages/ProductoDetalle";
@@ -45,6 +47,7 @@ function App() {
               <Route path="/coleccion" element={<Coleccion />} />
               <Route path="/nosotros" element={<Nosotros />} />
               <Route path="/contacto" element={<Contacto />} />
+              <Route path="/faq" element={<Faq />} />
               <Route
                 path="/perfil"
                 element={
@@ -58,6 +61,14 @@ function App() {
                 element={
                   <RutaProtegida>
                     <Carrito />
+                  </RutaProtegida>
+                }
+              />
+              <Route
+                path="/checkout"
+                element={
+                  <RutaProtegida>
+                    <Checkout />
                   </RutaProtegida>
                 }
               />
@@ -79,4 +90,4 @@ function App() {
   );
 }
 
-export default App;   
+export default App;

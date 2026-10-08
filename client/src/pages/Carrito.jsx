@@ -4,7 +4,6 @@ import {
   obtenerCarrito,
   actualizarCantidadCarrito,
   eliminarDelCarrito,
-  crearPedido,
 } from "../services/cartService";
 import { IMG_BASE_URL } from "../services/productService";
 import { useCart } from "../context/CartContext";
@@ -15,9 +14,6 @@ function Carrito() {
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [cargando, setCargando] = useState(true);
-  const [procesando, setProcesando] = useState(false);
-  const [error, setError] = useState("");
-  const [pedidoConfirmado, setPedidoConfirmado] = useState(null);
   const { refrescarCarrito } = useCart();
   const navigate = useNavigate();
 
@@ -64,34 +60,7 @@ function Carrito() {
     }
   }
 
-  async function finalizarCompra() {
-    setError("");
-    setProcesando(true);
-    try {
-      const respuesta = await crearPedido();
-      setPedidoConfirmado(respuesta.data);
-      await refrescarCarrito();
-      setItems([]);
-      setTotal(0);
-    } catch (err) {
-      setError(err.response?.data?.message || "Error al procesar el pedido");
-    } finally {
-      setProcesando(false);
-    }
-  }
-
   if (cargando) return <p className="carrito-loading">Cargando carrito...</p>;
-
-  if (pedidoConfirmado) {
-    return (
-      <div className="carrito-confirmacion">
-        <h1>Pedido confirmado</h1>
-        <p>Tu pedido #{pedidoConfirmado.pedidoId} fue registrado correctamente.</p>
-        <p className="carrito-confirmacion-total">Total: ${pedidoConfirmado.total}</p>
-        <Link to="/coleccion" className="carrito-seguir">Seguir comprando</Link>
-      </div>
-    );
-  }
 
   if (items.length === 0) {
     return (
@@ -105,8 +74,6 @@ function Carrito() {
   return (
     <div className="carrito-container">
       <h1>Tu carrito</h1>
-
-      {error && <p className="error-message">{error}</p>}
 
       <div className="carrito-items">
         {items.map((item) => (
@@ -136,7 +103,7 @@ function Carrito() {
             </button>
           </div>
         ))}
-       <ConfirmModal
+        <ConfirmModal
           open={!!productoAEliminar}
           title="Eliminar producto"
           message="¿Seguro que querés quitar este producto del carrito?"
@@ -144,13 +111,13 @@ function Carrito() {
           danger
           onConfirm={confirmarEliminar}
           onCancel={() => setProductoAEliminar(null)}
-        /> 
+        />
       </div>
 
       <div className="carrito-resumen">
         <p>Total: <span>${total.toFixed(2)}</span></p>
-        <button onClick={finalizarCompra} disabled={procesando} className="carrito-finalizar">
-          {procesando ? "Procesando..." : "Finalizar compra"}
+        <button onClick={() => navigate("/checkout")} className="carrito-finalizar">
+          Finalizar compra
         </button>
       </div>
     </div>

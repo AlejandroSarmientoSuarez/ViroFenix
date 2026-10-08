@@ -21,6 +21,15 @@ const Pedido = sequelize.define("Pedido", {
     allowNull: false,
     defaultValue: "Pendiente",
   },
+
+  DireccionEnvio: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
+  EmailContacto: {
+    type: DataTypes.STRING(150),
+    allowNull: true,
+  },
 }, {
   tableName: "pedidos",
   timestamps: true,

@@ -20,15 +20,14 @@ function Navbar() {
   return (
     <>
       <header className="navbar">
-        <Link to="/" className="navbar-logo">Clothing Brand</Link>
+        <Link to="/" className="navbar-logo">Viro Fenix</Link>
 
         <nav className="navbar-links navbar-links-desktop">
           <Link to="/">Inicio</Link>
           <Link to="/coleccion">Colección</Link>
-<<<<<<< HEAD
-=======
           <Link to="/nosotros">Nosotros</Link>
->>>>>>> origin/Pedro-Wang
+          <Link to="/contacto">Contacto</Link>
+          <Link to="/faq">FAQ</Link>
         </nav>
 
         <div className="navbar-actions">
@@ -65,9 +64,13 @@ function Navbar() {
         <nav className="navbar-drawer-links">
           <Link to="/" onClick={() => setMenuAbierto(false)}>Inicio</Link>
           <Link to="/coleccion" onClick={() => setMenuAbierto(false)}>Colección</Link>
+          <Link to="/nosotros" onClick={() => setMenuAbierto(false)}>Nosotros</Link>
+          <Link to="/contacto" onClick={() => setMenuAbierto(false)}>Contacto</Link>
+          <Link to="/faq" onClick={() => setMenuAbierto(false)}>FAQ</Link>
           {usuario ? (
             <>
               <Link to="/carrito" onClick={() => setMenuAbierto(false)}>Carrito</Link>
+              <Link to="/pedidos" onClick={() => setMenuAbierto(false)}>Mis pedidos</Link>
               <Link to="/perfil" onClick={() => setMenuAbierto(false)}>Mi cuenta</Link>
               <button onClick={() => { logout(); setMenuAbierto(false); }}>Salir</button>
             </>
@@ -78,8 +81,6 @@ function Navbar() {
 
         <div className="navbar-drawer-proximamente">
           <p className="navbar-drawer-label">Próximamente</p>
-          <span>Nosotros</span>
-          <span>Contacto</span>
           <span>Blog</span>
         </div>
       </div>
