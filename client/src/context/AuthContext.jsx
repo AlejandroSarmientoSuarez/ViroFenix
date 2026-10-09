@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import { registerSessionExpiredHandler } from "../services/axiosConfig";
+import { obtenerPerfil } from "../services/userService";
 
 const AuthContext = createContext();
 
@@ -25,6 +26,41 @@ export function AuthProvider({ children }) {
     registerSessionExpiredHandler(() => {
       logout();
     });
+  }, []);
+
+  // Al cargar la app, trae los datos reales del servidor (por ejemplo el rol)
+  // para que un cambio hecho en la base se refleje sin tener que volver a loguearse
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    let cancelado = false;
+
+    obtenerPerfil()
+      .then((respuesta) => {
+        if (cancelado) return;
+        const p = respuesta.data;
+        const actualizado = {
+          id: p.UsuarioID,
+          nombre: p.Nombre,
+          apellido: p.Apellido,
+          email: p.Email,
+          rol: p.Rol,
+        };
+
+        const guardado = localStorage.getItem("usuario");
+        if (guardado !== JSON.stringify(actualizado)) {
+          localStorage.setItem("usuario", JSON.stringify(actualizado));
+          setUsuario(actualizado);
+        }
+      })
+      .catch(() => {
+        // Si falla, se sigue con los datos guardados
+      });
+
+    return () => {
+      cancelado = true;
+    };
   }, []);
 
   return (

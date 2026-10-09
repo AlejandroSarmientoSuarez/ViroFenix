@@ -5,6 +5,7 @@ import { CartProvider } from "./context/CartContext";
 import { ToastProvider, useToast } from "./context/ToastContext";
 import { registerToastHandler } from "./services/axiosConfig";
 import RutaProtegida from "./components/RutaProtegida";
+import RutaAdmin from "./components/RutaAdmin";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -17,6 +18,7 @@ import Contacto from "./pages/contacto";
 import Carrito from "./pages/Carrito";
 import Checkout from "./pages/Checkout";
 import Faq from "./pages/Faq";
+import AdminUsuarios from "./pages/AdminUsuarios";
 import RecuperarPassword from "./pages/RecuperarPassword";
 import RestablecerPassword from "./pages/RestablecerPassword";
 import ProductoDetalle from "./pages/ProductoDetalle";
@@ -78,6 +80,14 @@ function App() {
                   <RutaProtegida>
                     <MisPedidos />
                   </RutaProtegida>
+                }
+              />
+              <Route
+                path="/admin/usuarios"
+                element={
+                  <RutaAdmin>
+                    <AdminUsuarios />
+                  </RutaAdmin>
                 }
               />
               <Route path="*" element={<NotFound />} />

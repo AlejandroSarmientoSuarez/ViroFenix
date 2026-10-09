@@ -30,7 +30,7 @@ const Usuario = sequelize.define("Usuario", {
     defaultValue: "Cliente",
   },
   Estado: {
-    type: DataTypes.ENUM("Activo", "Bloqueado", "Pendiente"),
+    type: DataTypes.ENUM("Activo", "Bloqueado", "Pendiente", "Eliminado"),
     allowNull: false,
     defaultValue: "Activo",
   },

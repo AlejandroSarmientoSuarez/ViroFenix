@@ -8,6 +8,7 @@ function Navbar() {
   const { usuario, logout } = useAuth();
   const { cantidadItems, refrescarCarrito } = useCart();
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const esAdmin = usuario?.rol === "Admin";
 
   useEffect(() => {
     refrescarCarrito();
@@ -38,6 +39,9 @@ function Navbar() {
               </Link>
               <Link to="/perfil" className="navbar-links-desktop">Mi cuenta</Link>
               <Link to="/pedidos" className="navbar-links-desktop">Mis pedidos</Link>
+              {esAdmin && (
+                <Link to="/admin/usuarios" className="navbar-links-desktop">Admin</Link>
+              )}
               <button onClick={logout} className="navbar-logout navbar-links-desktop">Salir</button>
             </>
           ) : (
@@ -72,6 +76,9 @@ function Navbar() {
               <Link to="/carrito" onClick={() => setMenuAbierto(false)}>Carrito</Link>
               <Link to="/pedidos" onClick={() => setMenuAbierto(false)}>Mis pedidos</Link>
               <Link to="/perfil" onClick={() => setMenuAbierto(false)}>Mi cuenta</Link>
+              {esAdmin && (
+                <Link to="/admin/usuarios" onClick={() => setMenuAbierto(false)}>Panel admin</Link>
+              )}
               <button onClick={() => { logout(); setMenuAbierto(false); }}>Salir</button>
             </>
           ) : (

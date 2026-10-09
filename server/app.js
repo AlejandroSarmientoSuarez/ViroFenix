@@ -11,6 +11,7 @@ const favoritoRoutes = require("./routes/favoritoRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const pedidoRoutes = require("./routes/pedidoRoutes");
 const newsletterRoutes = require("./routes/newsletterRoutes");
+const adminRoutes = require("./routes/adminRoutes"); // NUEVO
 
 app.use(cors({
   origin: "http://localhost:5173",
@@ -25,6 +26,7 @@ app.use("/img", express.static(path.join(__dirname, "public/img")));
 app.use("/api/productos", productRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/admin", adminRoutes); // NUEVO
 app.get("/", (req, res) => {
   res.json({ message: "Servidor funcionando" });
 });
