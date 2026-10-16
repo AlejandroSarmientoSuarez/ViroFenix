@@ -62,6 +62,7 @@ const PREGUNTAS = [
   {
     categoria: "Cuenta y productos",
     items: [
+    
       {
         p: "¿Necesito una cuenta para comprar?",
         r: "Sí. Con tu cuenta podés usar el carrito, guardar favoritos y consultar tus pedidos. Registrarte es gratis y toma menos de un minuto.",
@@ -80,7 +81,9 @@ const PREGUNTAS = [
       },
     ],
   },
-];
+  
+    ],
+  
 
 const POLITICAS = [
   {
@@ -198,7 +201,7 @@ function Faq() {
         ))}
       </section>
 
-      <section className="faq-seccion">
+      <section id="etica" className="faq-seccion">
         <h2 className="faq-titulo-seccion">Políticas de la empresa</h2>
         <p className="faq-actualizacion">Última actualización: octubre de 2026</p>
 
