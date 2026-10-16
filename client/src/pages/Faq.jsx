@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Reveal from "../components/Reveal";
@@ -13,7 +14,7 @@ const PREGUNTAS = [
       },
       {
         p: "¿Cómo puedo ver el estado de mi pedido?",
-        r: "Iniciá sesión y entrá a la sección “Mis pedidos”. Ahí vas a ver el estado (Pendiente, Pagado, Enviado o Entregado), la fecha, la hora y la dirección de envío.",
+        r: "Iniciá sesión y entrá a la sección Mis pedidos. Ahí vas a ver el estado (Pendiente, Pagado, Enviado o Entregado), la fecha, la hora y la dirección de envío.",
       },
       {
         p: "¿Puedo cambiar la dirección de entrega después de comprar?",
@@ -38,7 +39,7 @@ const PREGUNTAS = [
       },
       {
         p: "¿Recibo un comprobante de mi compra?",
-        r: "Sí. Al finalizar la compra se muestra un recibo con fecha, hora, productos y dirección de envío, y el pedido queda guardado en “Mis pedidos”.",
+        r: "Sí. Al finalizar la compra se muestra un recibo con fecha, hora, productos y dirección de envío, y el pedido queda guardado en Mis pedidos.",
       },
     ],
   },
@@ -62,7 +63,6 @@ const PREGUNTAS = [
   {
     categoria: "Cuenta y productos",
     items: [
-    
       {
         p: "¿Necesito una cuenta para comprar?",
         r: "Sí. Con tu cuenta podés usar el carrito, guardar favoritos y consultar tus pedidos. Registrarte es gratis y toma menos de un minuto.",
@@ -76,14 +76,12 @@ const PREGUNTAS = [
         r: "Cada producto indica sus características en la página de detalle. Si tenés dudas, escribinos desde Contacto y te asesoramos.",
       },
       {
-        p: "¿Qué significa “Pocas unidades”?",
-        r: "Que quedan muy pocas prendas en stock de ese producto. Cuando se agota, aparece como “Sin stock”.",
+        p: "¿Qué significa Pocas unidades?",
+        r: "Que quedan muy pocas prendas en stock de ese producto. Cuando se agota, aparece como Sin stock.",
       },
     ],
   },
-  
-    ],
-  
+];
 
 const POLITICAS = [
   {
@@ -134,62 +132,111 @@ const ENLACES_RAPIDOS = [
 
 function Faq() {
   const [abierto, setAbierto] = useState(null);
-  const { hash } = useLocation();
+  const { hash, pathname } = useLocation();
 
-  // Scroll a la sección cuando la URL trae un #ancla (ej: /faq#devoluciones)
   useEffect(() => {
     if (!hash) {
-      window.scrollTo({ top: 0 });
       return;
     }
-    const el = document.getElementById(hash.slice(1));
-    if (el) {
-      setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
-    }
-  }, [hash]);
+
+    let intentos = 0;
+    let temporizador;
+
+    const desplazarseAlAncla = () => {
+      const id = decodeURIComponent(hash.slice(1));
+      const elemento = document.getElementById(id);
+
+      if (elemento) {
+        elemento.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+        return;
+      }
+
+      // Permite esperar a que se renderice la sección.
+      if (intentos < 10) {
+        intentos += 1;
+        temporizador = window.setTimeout(desplazarseAlAncla, 100);
+      }
+    };
+
+    temporizador = window.setTimeout(desplazarseAlAncla, 50);
+
+    return () => {
+      window.clearTimeout(temporizador);
+    };
+  }, [hash, pathname]);
 
   function toggle(clave) {
-    setAbierto(abierto === clave ? null : clave);
+    setAbierto((actual) => (actual === clave ? null : clave));
   }
 
   return (
     <div className="faq-container">
+      {/* Encabezado */}
       <Reveal>
         <header className="faq-header">
           <span className="faq-kicker">Centro de ayuda</span>
+
           <h1>Preguntas frecuentes y políticas</h1>
-          <p>Todo lo que necesitás saber sobre tus compras, envíos y cambios.</p>
+
+          <p>
+            Todo lo que necesitás saber sobre tus compras, envíos y cambios.
+          </p>
         </header>
       </Reveal>
 
+      {/* Enlaces rápidos */}
       <nav className="faq-chips" aria-label="Secciones">
         {ENLACES_RAPIDOS.map((enlace) => (
-          <Link key={enlace.to} to={enlace.to} className="faq-chip">
+          <Link
+            key={enlace.to}
+            to={`/faq${enlace.to}`}
+            className="faq-chip"
+          >
             {enlace.label}
           </Link>
         ))}
       </nav>
 
+      {/* Preguntas frecuentes */}
       <section id="preguntas" className="faq-seccion">
         <h2 className="faq-titulo-seccion">Preguntas frecuentes</h2>
 
         {PREGUNTAS.map((grupo, gi) => (
           <div key={grupo.categoria} className="faq-grupo">
             <h3 className="faq-categoria">{grupo.categoria}</h3>
+
             {grupo.items.map((item, ii) => {
               const clave = `${gi}-${ii}`;
               const estaAbierto = abierto === clave;
+              const respuestaId = `faq-respuesta-${gi}-${ii}`;
+
               return (
-                <div key={clave} className={`faq-item ${estaAbierto ? "abierto" : ""}`}>
+                <div
+                  key={clave}
+                  className={`faq-item ${estaAbierto ? "abierto" : ""}`}
+                >
                   <button
+                    type="button"
                     className="faq-pregunta"
                     onClick={() => toggle(clave)}
                     aria-expanded={estaAbierto}
+                    aria-controls={respuestaId}
                   >
                     <span>{item.p}</span>
-                    <span className="faq-icono" aria-hidden="true">+</span>
+
+                    <span className="faq-icono" aria-hidden="true">
+                      {estaAbierto ? "−" : "+"}
+                    </span>
                   </button>
-                  <div className="faq-respuesta-wrap">
+
+                  <div
+                    id={respuestaId}
+                    className="faq-respuesta-wrap"
+                    hidden={!estaAbierto}
+                  >
                     <div className="faq-respuesta">
                       <p>{item.r}</p>
                     </div>
@@ -201,24 +248,38 @@ function Faq() {
         ))}
       </section>
 
+      {/* Políticas de la empresa */}
       <section id="etica" className="faq-seccion">
         <h2 className="faq-titulo-seccion">Políticas de la empresa</h2>
-        <p className="faq-actualizacion">Última actualización: octubre de 2026</p>
 
-        {POLITICAS.map((pol) => (
-          <article key={pol.id} id={pol.id} className="faq-politica">
-            <h3>{pol.titulo}</h3>
-            {pol.parrafos.map((texto, i) => (
-              <p key={i}>{texto}</p>
+        <p className="faq-actualizacion">
+          Última actualización: octubre de 2026
+        </p>
+
+        {POLITICAS.map((politica) => (
+          <article
+            key={politica.id}
+            id={politica.id}
+            className="faq-politica"
+          >
+            <h3>{politica.titulo}</h3>
+
+            {politica.parrafos.map((texto, index) => (
+              <p key={index}>{texto}</p>
             ))}
           </article>
         ))}
       </section>
 
+      {/* Contacto */}
       <div className="faq-contacto">
         <h2>¿No encontraste lo que buscabas?</h2>
+
         <p>Escribinos y te respondemos a la brevedad.</p>
-        <Link to="/contacto" className="faq-contacto-boton">Ir a contacto</Link>
+
+        <Link to="/contacto" className="faq-contacto-boton">
+          Ir a contacto
+        </Link>
       </div>
     </div>
   );
