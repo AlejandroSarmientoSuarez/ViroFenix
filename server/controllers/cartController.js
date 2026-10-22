@@ -1,16 +1,19 @@
-const sequelize = require("../config/db");
-const { QueryTypes } = require("sequelize");
+
 const Carrito = require("../models/Carrito");
 const CarritoDetalle = require("../models/CarritoDetalle");
 const Producto = require("../models/Producto");
+const sequelize = require("../config/db");
+const { QueryTypes } = require("sequelize");
 
 async function obtenerOCrearCarritoActivo(usuarioId) {
   let carrito = await Carrito.findOne({
-    where: { UsuarioID: usuarioId, Estado: "Activo" },
+    where: { UsuarioID: usuarioId, Estado: "Activo" }
   });
+
   if (!carrito) {
     carrito = await Carrito.create({ UsuarioID: usuarioId });
   }
+
   return carrito;
 }
 
@@ -19,109 +22,131 @@ async function obtenerCarrito(req, res) {
     const carrito = await obtenerOCrearCarritoActivo(req.usuario.id);
 
     const items = await sequelize.query(
-      `SELECT cd.CarritoDetalleID, cd.ProductoID, cd.Cantidad,
-              p.Nombre, p.Precio, p.Imagen, p.StockActual
-       FROM carrito_detalle cd
-       INNER JOIN productos p ON p.ProductoID = cd.ProductoID
-       WHERE cd.CarritoID = :carritoId
-       ORDER BY cd.CarritoDetalleID ASC`,
-      { replacements: { carritoId: carrito.CarritoID }, type: QueryTypes.SELECT }
+      `SELECT cd.ProductoID, cd.Cantidad, p.Nombre, p.Precio,
+      p.Imagen, p.StockActual
+      FROM carrito_detalle cd
+      JOIN productos p ON p.ProductoID = cd.ProductoID
+      WHERE cd.CarritoID = :id`,
+      {
+        replacements: { id: carrito.CarritoID },
+        type: QueryTypes.SELECT
+      }
     );
 
-    const total = items.reduce((acc, item) => acc + item.Cantidad * Number(item.Precio), 0);
+    let total = 0;
 
-    return res.status(200).json({
+    for (let i = 0; i < items.length; i++) {
+      total += items[i].Cantidad * Number(items[i].Precio);
+    }
+
+    return res.json({
       status: "ok",
-      data: { carritoId: carrito.CarritoID, items, total },
+      data: { carritoId: carrito.CarritoID, items, total }
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ status: "error", message: "Error al obtener el carrito" });
+    return res.status(500).json({ mensaje: "Error al obtener carrito" });
   }
 }
 
 async function agregarProducto(req, res) {
   try {
-    const { productoId } = req.params;
-    const cantidad = Number(req.body.cantidad) || 1;
+    const producto = await Producto.findByPk(req.params.productoId);
 
-    const producto = await Producto.findByPk(productoId);
-    if (!producto) {
-      return res.status(404).json({ status: "error", message: "Producto no encontrado" });
-    }
-    if (producto.StockActual < 1) {
-      return res.status(409).json({ status: "error", message: "Producto sin stock" });
+    if (!producto || producto.StockActual < 1) {
+      return res.status(400).json({ mensaje: "Producto no disponible" });
     }
 
     const carrito = await obtenerOCrearCarritoActivo(req.usuario.id);
+    const cantidad = Number(req.body.cantidad) || 1;
 
     let detalle = await CarritoDetalle.findOne({
-      where: { CarritoID: carrito.CarritoID, ProductoID: productoId },
+      where: {
+        CarritoID: carrito.CarritoID,
+        ProductoID: producto.ProductoID
+      }
     });
 
     if (detalle) {
-      const nuevaCantidad = Math.min(detalle.Cantidad + cantidad, producto.StockActual);
-      detalle.Cantidad = nuevaCantidad;
+      detalle.Cantidad += cantidad;
+
+      if (detalle.Cantidad > producto.StockActual) {
+        detalle.Cantidad = producto.StockActual;
+      }
+
       await detalle.save();
     } else {
-      detalle = await CarritoDetalle.create({
+      await CarritoDetalle.create({
         CarritoID: carrito.CarritoID,
-        ProductoID: productoId,
-        Cantidad: Math.min(cantidad, producto.StockActual),
+        ProductoID: producto.ProductoID,
+        Cantidad: Math.min(cantidad, producto.StockActual)
       });
     }
 
-    return res.status(200).json({ status: "ok", message: "Agregado al carrito" });
+    return res.json({ mensaje: "Producto agregado al carrito" });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ status: "error", message: "Error al agregar al carrito" });
+    return res.status(500).json({ mensaje: "Error al agregar producto" });
   }
 }
 
 async function actualizarCantidad(req, res) {
   try {
-    const { productoId } = req.params;
-    const cantidad = Number(req.body.cantidad);
-
     const carrito = await obtenerOCrearCarritoActivo(req.usuario.id);
+
     const detalle = await CarritoDetalle.findOne({
-      where: { CarritoID: carrito.CarritoID, ProductoID: productoId },
+      where: {
+        CarritoID: carrito.CarritoID,
+        ProductoID: req.params.productoId
+      }
     });
 
     if (!detalle) {
-      return res.status(404).json({ status: "error", message: "Producto no está en el carrito" });
+      return res.status(404).json({ mensaje: "Producto no encontrado" });
     }
+
+    const cantidad = Number(req.body.cantidad);
 
     if (cantidad <= 0) {
       await detalle.destroy();
-      return res.status(200).json({ status: "ok", message: "Producto eliminado del carrito" });
+      return res.json({ mensaje: "Producto eliminado" });
     }
 
-    const producto = await Producto.findByPk(productoId);
-    detalle.Cantidad = Math.min(cantidad, producto.StockActual);
+    const producto = await Producto.findByPk(req.params.productoId);
+
+    if (!producto || producto.StockActual < 1) {
+      await detalle.destroy();
+      return res.json({ mensaje: "Producto sin stock" });
+    }
+
+    detalle.Cantidad = Math.min(Math.floor(cantidad), producto.StockActual);
     await detalle.save();
 
-    return res.status(200).json({ status: "ok", message: "Cantidad actualizada" });
+    return res.json({ mensaje: "Cantidad actualizada" });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ status: "error", message: "Error al actualizar cantidad" });
+    return res.status(500).json({ mensaje: "Error al actualizar cantidad" });
   }
 }
 
 async function eliminarProducto(req, res) {
   try {
-    const { productoId } = req.params;
     const carrito = await obtenerOCrearCarritoActivo(req.usuario.id);
 
     await CarritoDetalle.destroy({
-      where: { CarritoID: carrito.CarritoID, ProductoID: productoId },
+      where: {
+        CarritoID: carrito.CarritoID,
+        ProductoID: req.params.productoId
+      }
     });
 
-    return res.status(200).json({ status: "ok", message: "Producto eliminado" });
+    return res.json({ mensaje: "Producto eliminado" });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ status: "error", message: "Error al eliminar producto" });
+    return res.status(500).json({ mensaje: "Error al eliminar producto" });
   }
 }
 
-module.exports = { obtenerCarrito, agregarProducto, actualizarCantidad, eliminarProducto, obtenerOCrearCarritoActivo };
+module.exports = {
+  obtenerCarrito,
+  agregarProducto,
+  actualizarCantidad,
+  eliminarProducto,
+  obtenerOCrearCarritoActivo
+};

@@ -4,16 +4,35 @@ import { obtenerPerfil } from "../services/userService";
 
 const AuthContext = createContext();
 
+function normalizarUsuario(datos) {
+  if (!datos) return null;
+
+  return {
+    id: datos.id || datos.UsuarioID || datos.usuario?.UsuarioID,
+    nombre: datos.nombre || datos.Nombre || datos.usuario?.Nombre || "",
+    apellido: datos.apellido || datos.Apellido || datos.usuario?.Apellido || "",
+    email: datos.email || datos.Email || datos.usuario?.Email || "",
+    rol: datos.rol || datos.Rol || datos.usuario?.Rol || ""
+  };
+}
+
 export function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(() => {
     const guardado = localStorage.getItem("usuario");
-    return guardado ? JSON.parse(guardado) : null;
+
+    try {
+      return guardado ? normalizarUsuario(JSON.parse(guardado)) : null;
+    } catch {
+      return null;
+    }
   });
 
   function login(token, datosUsuario) {
+    const datos = normalizarUsuario(datosUsuario);
+
     localStorage.setItem("token", token);
-    localStorage.setItem("usuario", JSON.stringify(datosUsuario));
-    setUsuario(datosUsuario);
+    localStorage.setItem("usuario", JSON.stringify(datos));
+    setUsuario(datos);
   }
 
   function logout() {
@@ -23,40 +42,41 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    registerSessionExpiredHandler(() => {
-      logout();
-    });
+    registerSessionExpiredHandler(logout);
   }, []);
 
-  // Al cargar la app, trae los datos reales del servidor (por ejemplo el rol)
-  // para que un cambio hecho en la base se refleje sin tener que volver a loguearse
   useEffect(() => {
     const token = localStorage.getItem("token");
+
     if (!token) return;
 
     let cancelado = false;
 
-    obtenerPerfil()
-      .then((respuesta) => {
-        if (cancelado) return;
-        const p = respuesta.data;
-        const actualizado = {
-          id: p.UsuarioID,
-          nombre: p.Nombre,
-          apellido: p.Apellido,
-          email: p.Email,
-          rol: p.Rol,
-        };
+    async function actualizarUsuario() {
+      try {
+        const respuesta = await obtenerPerfil();
 
-        const guardado = localStorage.getItem("usuario");
-        if (guardado !== JSON.stringify(actualizado)) {
-          localStorage.setItem("usuario", JSON.stringify(actualizado));
-          setUsuario(actualizado);
+        if (cancelado) return;
+
+        const datos = normalizarUsuario(
+          respuesta.data?.usuario || respuesta.data
+        );
+
+        if (datos) {
+          localStorage.setItem("usuario", JSON.stringify(datos));
+          setUsuario(datos);
         }
-      })
-      .catch(() => {
-        // Si falla, se sigue con los datos guardados
-      });
+      } catch (error) {
+        if (
+          error.response?.status === 401 ||
+          error.response?.status === 403
+        ) {
+          logout();
+        }
+      }
+    }
+
+    actualizarUsuario();
 
     return () => {
       cancelado = true;

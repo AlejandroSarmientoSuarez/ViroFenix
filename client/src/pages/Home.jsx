@@ -1,14 +1,8 @@
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
 import { obtenerProductos, IMG_BASE_URL } from "../services/productService";
-
 import Carousel from "../components/Carousel";
-import Reveal from "../components/Reveal";
-import PlaceholderImage from "../components/PlaceholderImage";
-import NewsletterForm from "../components/NewsletterForm";
-
 import "../assets/css/home.css";
 import "../assets/css/faq.css";
 
@@ -89,14 +83,15 @@ function Home() {
         setErrorProductos(false);
 
         const respuesta = await obtenerProductos();
-
-        if (!activo) return;
-
-        const listaProductos = Array.isArray(respuesta?.data)
+        const lista = Array.isArray(respuesta?.data)
           ? respuesta.data
-          : [];
+          : Array.isArray(respuesta)
+            ? respuesta
+            : [];
 
-        setProductos(listaProductos.slice(0, 8));
+        if (activo) {
+          setProductos(lista.slice(0, 8));
+        }
       } catch (error) {
         console.error("Error al cargar los productos:", error);
 
@@ -118,7 +113,7 @@ function Home() {
     };
   }, []);
 
-  const obtenerImagenProducto = (imagen) => {
+  function obtenerImagenProducto(imagen) {
     if (!imagen) return "";
 
     if (/^https?:\/\//i.test(imagen)) {
@@ -126,15 +121,14 @@ function Home() {
     }
 
     return `${IMG_BASE_URL}${imagen}`;
-  };
+  }
 
-  const obtenerImagenHover = (imagen) => {
+  function obtenerImagenHover(imagen) {
     if (!imagen) return "";
-
     return imagen.replace(/(\.[a-zA-Z0-9]+)$/, "-hover$1");
-  };
+  }
 
-  const formatearPrecio = (precio) => {
+  function formatearPrecio(precio) {
     const numero = Number(precio);
 
     if (!Number.isFinite(numero)) {
@@ -146,79 +140,61 @@ function Home() {
       currency: "ARS",
       maximumFractionDigits: 2,
     });
-  };
+  }
 
-  const alternarPregunta = (categoriaIndex, preguntaIndex) => {
+  function alternarPregunta(categoriaIndex, preguntaIndex) {
     const identificador = `${categoriaIndex}-${preguntaIndex}`;
 
     setPreguntaAbierta((actual) =>
       actual === identificador ? null : identificador
     );
-  };
+  }
 
   return (
     <div className="home-container">
-      {/* Carrusel principal */}
       <Carousel slides={slides} />
 
-      {/* Beneficios de la tienda */}
       <section className="home-valores">
-        {valores.map((valor, index) => (
-          <Reveal
-            key={valor.titulo}
-            delay={index * 60}
-            className="home-valor"
-          >
+        {valores.map((valor) => (
+          <div className="home-valor" key={valor.titulo}>
             <h4>{valor.titulo}</h4>
             <p>{valor.detalle}</p>
-          </Reveal>
+          </div>
         ))}
       </section>
 
-      {/* Categorías */}
       <section className="home-categorias">
-        <Reveal>
-          <h2>Comprá por categoría</h2>
-        </Reveal>
+        <h2>Comprá por categoría</h2>
 
         <div className="home-categorias-grid">
-          <Reveal delay={60}>
-            <Link
-              to="/coleccion?categoria=Hombre"
-              className="home-categoria-tile"
-            >
-              <PlaceholderImage
-                src="/img/categoria-hombre.jpg"
-                ratio="4 / 5"
-                label="Categoría — Hombre"
-              />
+          <Link
+            to="/coleccion?categoria=Hombre"
+            className="home-categoria-tile"
+          >
+            <img
+              src="/img/categoria-hombre.jpg"
+              alt="Categoría Hombre"
+              loading="lazy"
+            />
+            <span>Hombre</span>
+          </Link>
 
-              <span>Hombre</span>
-            </Link>
-          </Reveal>
-
-          <Reveal delay={120}>
-            <Link
-              to="/coleccion?categoria=Mujer"
-              className="home-categoria-tile"
-            >
-              <PlaceholderImage
-                src="/img/categoria-mujer.jpg"
-                ratio="4 / 5"
-                label="Categoría — Mujer"
-              />
-
-              <span>Mujer</span>
-            </Link>
-          </Reveal>
+          <Link
+            to="/coleccion?categoria=Mujer"
+            className="home-categoria-tile"
+          >
+            <img
+              src="/img/categoria-mujer.jpg"
+              alt="Categoría Mujer"
+              loading="lazy"
+            />
+            <span>Mujer</span>
+          </Link>
         </div>
       </section>
 
-      {/* Productos destacados */}
       <section className="home-productos">
-        <Reveal>
-          <h2>Destacados</h2>
-        </Reveal>
+        <h2>Destacados</h2>
 
         {cargando ? (
           <p className="home-loading" role="status">
@@ -234,81 +210,71 @@ function Home() {
           </p>
         ) : (
           <div className="home-grid">
-            {productos.map((producto, index) => {
+            {productos.map((producto) => {
               const imagenBase = obtenerImagenProducto(producto.Imagen);
               const imagenHover = obtenerImagenHover(imagenBase);
 
               return (
-                <Reveal
+                <Link
                   key={producto.ProductoID}
-                  delay={(index % 4) * 60}
+                  to={`/producto/${producto.ProductoID}`}
+                  className="home-item"
                 >
-                  <Link
-                    to={`/producto/${producto.ProductoID}`}
-                    className="home-item"
-                  >
-                    <div className="home-item-imagen-wrap">
-                      {imagenBase ? (
-                        <img
-                          src={imagenBase}
-                          alt={producto.Nombre || "Producto"}
-                          className="home-item-imagen home-item-imagen-base"
-                          loading="lazy"
-                          onError={(event) => {
-                            event.currentTarget.style.visibility = "hidden";
-                          }}
-                        />
-                      ) : (
-                        <PlaceholderImage
-                          ratio="4 / 5"
-                          label="Imagen no disponible"
-                        />
-                      )}
+                  <div className="home-item-imagen-wrap">
+                    {imagenBase ? (
+                      <img
+                        src={imagenBase}
+                        alt={producto.Nombre || "Producto"}
+                        className="home-item-imagen home-item-imagen-base"
+                        loading="lazy"
+                        onError={(event) => {
+                          event.currentTarget.style.visibility = "hidden";
+                        }}
+                      />
+                    ) : (
+                      <div className="home-item-imagen home-item-imagen-base" />
+                    )}
 
-                      {imagenHover && imagenHover !== imagenBase && (
-                        <img
-                          src={imagenHover}
-                          alt=""
-                          aria-hidden="true"
-                          className="home-item-imagen home-item-imagen-hover"
-                          loading="lazy"
-                          onError={(event) => {
-                            event.currentTarget.style.display = "none";
-                          }}
-                        />
-                      )}
-                    </div>
+                    {imagenHover && imagenHover !== imagenBase && (
+                      <img
+                        src={imagenHover}
+                        alt=""
+                        aria-hidden="true"
+                        className="home-item-imagen home-item-imagen-hover"
+                        loading="lazy"
+                        onError={(event) => {
+                          event.currentTarget.style.display = "none";
+                        }}
+                      />
+                    )}
+                  </div>
 
-                    <h3>{producto.Nombre || "Producto sin nombre"}</h3>
+                  <h3>{producto.Nombre || "Producto sin nombre"}</h3>
 
-                    <p className="home-item-precio">
-                      {formatearPrecio(producto.Precio)}
-                    </p>
-                  </Link>
-                </Reveal>
+                  <p className="home-item-precio">
+                    {formatearPrecio(producto.Precio)}
+                  </p>
+                </Link>
               );
             })}
           </div>
         )}
 
-        <Reveal>
-          <Link to="/coleccion" className="home-ver-todo">
-            Ver toda la colección
-          </Link>
-        </Reveal>
+        <Link to="/coleccion" className="home-ver-todo">
+          Ver toda la colección
+        </Link>
       </section>
 
-      {/* Historia de la marca */}
       <section className="home-editorial">
-        <Reveal className="home-editorial-imagen">
-          <PlaceholderImage
+        <div className="home-editorial-imagen">
+          <img
             src="/img/historia-marca.jpg"
-            ratio="1 / 1"
-            label="Imagen — Nuestra historia"
+            alt="Nuestra historia"
+            loading="lazy"
           />
-        </Reveal>
+        </div>
 
-        <Reveal className="home-editorial-texto" delay={100}>
+        <div className="home-editorial-texto">
           <h2>Nuestra historia</h2>
 
           <p>
@@ -325,64 +291,40 @@ function Home() {
           <Link to="/coleccion" className="home-editorial-link">
             Ver colección
           </Link>
-        </Reveal>
+        </div>
       </section>
 
-      {/* Filosofía de la marca */}
       <section className="home-filosofia">
-        <Reveal>
-          <h2>Nuestra filosofía</h2>
+        <h2>Nuestra filosofía</h2>
 
-          <p>
-            Creemos en la autenticidad y la calidad. Cada prenda está diseñada
-            para ofrecer comodidad y estilo, reflejando una personalidad fuerte
-            y libre.
-          </p>
-        </Reveal>
-
-        {/* Video de marca */}
-        <Reveal delay={100} className="home-filosofia-video">
-          <iframe
-            src="https://www.youtube.com/embed/HRAG9lHW2XQ"
-            title="Video de marca"
-            frameBorder="0"
-            loading="lazy"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-          />
-        </Reveal>
+        <p>
+          Creemos en la autenticidad y la calidad. Cada prenda está diseñada
+          para ofrecer comodidad y estilo, reflejando una personalidad fuerte
+          y libre.
+        </p>
       </section>
 
-      {/* Ética y sostenibilidad */}
       <section className="faq-section" id="etica-sostenibilidad">
-        <Reveal>
-          <h2>Ética y sostenibilidad</h2>
+        <h2>Ética y sostenibilidad</h2>
 
-          <p>
-            Conocé los principios que guían nuestras decisiones y nuestro
-            compromiso con los clientes.
-          </p>
-        </Reveal>
+        <p>
+          Conocé los principios que guían nuestras decisiones y nuestro
+          compromiso con los clientes.
+        </p>
 
         {PREGUNTAS.map((categoria, categoriaIndex) => (
           <div className="faq-categoria" key={categoria.categoria}>
-            <Reveal>
-              <h3>{categoria.categoria}</h3>
-            </Reveal>
+            <h3>{categoria.categoria}</h3>
 
             <div className="faq-lista">
               {categoria.items.map((pregunta, preguntaIndex) => {
                 const identificador = `${categoriaIndex}-${preguntaIndex}`;
                 const abierta = preguntaAbierta === identificador;
-                const respuestaId = `faq-respuesta-${categoriaIndex}-${preguntaIndex}`;
+                const respuestaId =
+                  `faq-respuesta-${categoriaIndex}-${preguntaIndex}`;
 
                 return (
-                  <Reveal
-                    key={pregunta.p}
-                    delay={preguntaIndex * 50}
-                    className="faq-item"
-                  >
+                  <div className="faq-item" key={pregunta.p}>
                     <button
                       type="button"
                       className="faq-pregunta"
@@ -393,30 +335,23 @@ function Home() {
                       aria-controls={respuestaId}
                     >
                       <span>{pregunta.p}</span>
-
                       <span className="faq-icono" aria-hidden="true">
                         {abierta ? "−" : "+"}
                       </span>
                     </button>
 
                     {abierta && (
-                      <div
-                        className="faq-respuesta"
-                        id={respuestaId}
-                      >
+                      <div className="faq-respuesta" id={respuestaId}>
                         <p>{pregunta.r}</p>
                       </div>
                     )}
-                  </Reveal>
+                  </div>
                 );
               })}
             </div>
           </div>
         ))}
       </section>
-
-      {/* Suscripción al boletín */}
-      <NewsletterForm />
     </div>
   );
 }

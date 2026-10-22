@@ -8,7 +8,9 @@ function Navbar() {
   const { usuario, logout } = useAuth();
   const { cantidadItems, refrescarCarrito } = useCart();
   const [menuAbierto, setMenuAbierto] = useState(false);
-  const esAdmin = usuario?.rol === "Admin";
+
+  const esAdmin =
+    String(usuario?.rol || usuario?.Rol || "").toLowerCase() === "admin";
 
   useEffect(() => {
     refrescarCarrito();
@@ -16,7 +18,16 @@ function Navbar() {
 
   useEffect(() => {
     document.body.style.overflow = menuAbierto ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [menuAbierto]);
+
+  function cerrarSesion() {
+    setMenuAbierto(false);
+    logout();
+  }
 
   return (
     <>
@@ -35,17 +46,37 @@ function Navbar() {
           {usuario ? (
             <>
               <Link to="/carrito" className="navbar-cart">
-                Carrito {cantidadItems > 0 && <span className="navbar-cart-badge">{cantidadItems}</span>}
+                Carrito
+                {cantidadItems > 0 && (
+                  <span className="navbar-cart-badge">{cantidadItems}</span>
+                )}
               </Link>
-              <Link to="/perfil" className="navbar-links-desktop">Mi cuenta</Link>
-              <Link to="/pedidos" className="navbar-links-desktop">Mis pedidos</Link>
+
+              <Link to="/perfil" className="navbar-links-desktop">
+                Mi cuenta
+              </Link>
+
+              <Link to="/pedidos" className="navbar-links-desktop">
+                Mis pedidos
+              </Link>
+
               {esAdmin && (
-                <Link to="/admin/usuarios" className="navbar-links-desktop">Admin</Link>
+                <Link to="/admin/usuarios" className="navbar-links-desktop">
+                  Admin
+                </Link>
               )}
-              <button onClick={logout} className="navbar-logout navbar-links-desktop">Salir</button>
+
+              <button
+                onClick={cerrarSesion}
+                className="navbar-logout navbar-links-desktop"
+              >
+                Salir
+              </button>
             </>
           ) : (
-            <Link to="/login" className="navbar-links-desktop">Iniciar sesión</Link>
+            <Link to="/login" className="navbar-links-desktop">
+              Iniciar sesión
+            </Link>
           )}
 
           <button
@@ -61,7 +92,10 @@ function Navbar() {
       </header>
 
       <div className={`navbar-drawer ${menuAbierto ? "navbar-drawer-abierto" : ""}`}>
-        <button className="navbar-drawer-cerrar" onClick={() => setMenuAbierto(false)}>
+        <button
+          className="navbar-drawer-cerrar"
+          onClick={() => setMenuAbierto(false)}
+        >
           ✕
         </button>
 
@@ -71,18 +105,28 @@ function Navbar() {
           <Link to="/nosotros" onClick={() => setMenuAbierto(false)}>Nosotros</Link>
           <Link to="/contacto" onClick={() => setMenuAbierto(false)}>Contacto</Link>
           <Link to="/faq" onClick={() => setMenuAbierto(false)}>FAQ</Link>
+
           {usuario ? (
             <>
               <Link to="/carrito" onClick={() => setMenuAbierto(false)}>Carrito</Link>
               <Link to="/pedidos" onClick={() => setMenuAbierto(false)}>Mis pedidos</Link>
               <Link to="/perfil" onClick={() => setMenuAbierto(false)}>Mi cuenta</Link>
+
               {esAdmin && (
-                <Link to="/admin/usuarios" onClick={() => setMenuAbierto(false)}>Panel admin</Link>
+                <Link
+                  to="/admin/usuarios"
+                  onClick={() => setMenuAbierto(false)}
+                >
+                  Panel admin
+                </Link>
               )}
-              <button onClick={() => { logout(); setMenuAbierto(false); }}>Salir</button>
+
+              <button onClick={cerrarSesion}>Salir</button>
             </>
           ) : (
-            <Link to="/login" onClick={() => setMenuAbierto(false)}>Iniciar sesión</Link>
+            <Link to="/login" onClick={() => setMenuAbierto(false)}>
+              Iniciar sesión
+            </Link>
           )}
         </nav>
 
@@ -93,7 +137,10 @@ function Navbar() {
       </div>
 
       {menuAbierto && (
-        <div className="navbar-overlay" onClick={() => setMenuAbierto(false)}></div>
+        <div
+          className="navbar-overlay"
+          onClick={() => setMenuAbierto(false)}
+        />
       )}
     </>
   );

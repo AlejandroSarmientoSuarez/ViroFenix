@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import Reveal from "../components/Reveal";
+
 import "../assets/css/contacto.css";
 
 function Contacto() {
@@ -35,7 +35,7 @@ function Contacto() {
       {/* =====================================================
           HERO
       ====================================================== */}
-      <Reveal>
+      
         <header className="contacto-header">
           <span className="contacto-eyebrow">
             VIROFENIX · ESTAMOS PARA VOS
@@ -55,13 +55,13 @@ function Contacto() {
             vos.
           </p>
         </header>
-      </Reveal>
+      
 
       {/* =====================================================
           INFORMACIÓN + MAPA
       ====================================================== */}
       <section className="contacto-info">
-        <Reveal>
+        
           <div className="contacto-datos">
             <span className="contacto-section-number">01</span>
 
@@ -118,9 +118,9 @@ function Contacto() {
               </div>
             </div>
           </div>
-        </Reveal>
+        
 
-        <Reveal delay={120}>
+       
           <div className="contacto-mapa">
             <div className="contacto-mapa-overlay">
               <span>VIROFENIX</span>
@@ -136,14 +136,14 @@ function Contacto() {
               referrerPolicy="strict-origin-when-cross-origin"
             />
           </div>
-        </Reveal>
+        
       </section>
 
       {/* =====================================================
           FORMULARIO
       ====================================================== */}
       <section className="contacto-form-section">
-        <Reveal>
+        
           <div className="contacto-form-header">
             <span className="contacto-section-number">02</span>
 
@@ -158,9 +158,9 @@ function Contacto() {
               Te responderemos a la brevedad.
             </p>
           </div>
-        </Reveal>
+        
 
-        <Reveal delay={100}>
+  
           <form className="contacto-form" onSubmit={handleSubmit}>
             <div className="contacto-form-top">
               <span>FORMULARIO DE CONTACTO</span>
@@ -251,13 +251,13 @@ function Contacto() {
               </button>
             </div>
           </form>
-        </Reveal>
+        
       </section>
 
       {/* =====================================================
           CIERRE
       ====================================================== */}
-      <Reveal>
+      
         <section className="contacto-cierre">
           <span className="contacto-eyebrow">VIROFENIX</span>
 
@@ -272,7 +272,7 @@ function Contacto() {
             Gracias por formar parte de ViroFenix.
           </p>
         </section>
-      </Reveal>
+      
     </main>
   );
 }

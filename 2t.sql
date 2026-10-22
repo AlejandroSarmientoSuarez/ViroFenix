@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 09-10-2026 a las 17:20:10
+-- Tiempo de generación: 22-10-2026 a las 19:47:16
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -76,22 +76,6 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `auditoria`
---
-
-CREATE TABLE `auditoria` (
-  `AuditoriaID` bigint(20) UNSIGNED NOT NULL,
-  `UsuarioID` int(10) UNSIGNED DEFAULT NULL,
-  `Accion` varchar(100) NOT NULL,
-  `TablaAfectada` varchar(100) DEFAULT NULL,
-  `RegistroID` bigint(20) UNSIGNED DEFAULT NULL,
-  `Descripcion` varchar(500) DEFAULT NULL,
-  `Fecha` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `carrito`
 --
 
@@ -138,7 +122,7 @@ CREATE TABLE `carrito_detalle` (
   `Cantidad` smallint(5) UNSIGNED NOT NULL,
   `FechaAgregado` timestamp NOT NULL DEFAULT current_timestamp(),
   `FechaActualizacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `carrito_detalle`
@@ -161,7 +145,7 @@ CREATE TABLE `detalle_pedido` (
   `Cantidad` smallint(5) UNSIGNED NOT NULL,
   `PrecioUnitario` decimal(12,2) NOT NULL,
   `Subtotal` decimal(12,2) GENERATED ALWAYS AS (`Cantidad` * `PrecioUnitario`) STORED
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `detalle_pedido`
@@ -187,19 +171,6 @@ INSERT INTO `detalle_pedido` (`DetallePedidoID`, `PedidoID`, `ProductoID`, `Cant
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `favoritos`
---
-
-CREATE TABLE `favoritos` (
-  `FavoritoID` int(10) UNSIGNED NOT NULL,
-  `UsuarioID` int(10) UNSIGNED NOT NULL,
-  `ProductoID` int(10) UNSIGNED NOT NULL,
-  `FechaAgregado` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `movimientos_stock`
 --
 
@@ -212,7 +183,7 @@ CREATE TABLE `movimientos_stock` (
   `StockNuevo` int(10) UNSIGNED NOT NULL,
   `Motivo` varchar(255) DEFAULT NULL,
   `Fecha` timestamp NOT NULL DEFAULT current_timestamp()
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `movimientos_stock`
@@ -238,29 +209,6 @@ INSERT INTO `movimientos_stock` (`MovimientoID`, `ProductoID`, `Tipo`, `Cantidad
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `newsletter`
---
-
-CREATE TABLE `newsletter` (
-  `NewsletterID` int(10) UNSIGNED NOT NULL,
-  `Email` varchar(254) NOT NULL,
-  `Edad` tinyint(3) UNSIGNED NOT NULL,
-  `Estado` enum('Suscrito','Cancelado') NOT NULL DEFAULT 'Suscrito',
-  `FechaRegistro` timestamp NOT NULL DEFAULT current_timestamp(),
-  `FechaActualizacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ;
-
---
--- Volcado de datos para la tabla `newsletter`
---
-
-INSERT INTO `newsletter` (`NewsletterID`, `Email`, `Edad`, `Estado`, `FechaRegistro`, `FechaActualizacion`) VALUES
-(1, 'alejandrosarmientosuarez@gmail.com', 18, 'Suscrito', '2026-09-12 15:01:25', '2026-09-12 15:01:25'),
-(2, 'alsdmlsa@gmail.com', 16, 'Suscrito', '2026-10-09 12:46:35', '2026-10-09 12:46:35');
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `pedidos`
 --
 
@@ -276,7 +224,7 @@ CREATE TABLE `pedidos` (
   `FechaEntrega` timestamp NULL DEFAULT NULL,
   `DireccionEnvio` varchar(255) DEFAULT NULL,
   `EmailContacto` varchar(150) DEFAULT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `pedidos`
@@ -313,7 +261,7 @@ CREATE TABLE `productos` (
   `Destacado` tinyint(1) NOT NULL DEFAULT 0,
   `FechaCreacion` timestamp NOT NULL DEFAULT current_timestamp(),
   `FechaActualizacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `productos`
@@ -433,7 +381,7 @@ CREATE TABLE `usuarios` (
   `FechaActualizacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `TokenRecuperacion` varchar(255) DEFAULT NULL,
   `TokenExpiracion` timestamp NULL DEFAULT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuarios`
@@ -446,7 +394,7 @@ INSERT INTO `usuarios` (`UsuarioID`, `Nombre`, `Apellido`, `Email`, `PasswordHas
 (4, 'Alejandro', 'Sarmietno', 'alejandrosarmiento@gmail.com', '$2b$10$h8cqAr6VfKmoHdHAY.eGouRN6kD78MoFTfZP2bME6njC7X8QUatpi', 'Cliente', 'Activo', 0, NULL, NULL, '2026-10-09 01:10:07', '2026-09-12 13:51:01', '2026-10-09 01:10:07', NULL, NULL),
 (5, 'pedro', 'wanglin', 'pedrito123@gmail.com', '$2b$10$6zujA3DpjC4HrJ2LVqpge.kQeo8JTetyg9qLWt/4aI/rJ0tp8psC.', 'Cliente', 'Activo', 0, NULL, NULL, '2026-09-18 14:00:42', '2026-09-18 14:00:25', '2026-09-18 14:00:42', NULL, NULL),
 (6, 'thomas', 'perez', 'thomas123@gmail.com', '$2b$10$eP.Et8VKs8eDYAS4jDfFSe96lzJ3OIyHsIMfeVasevy9VNarv5/rq', 'Cliente', 'Activo', 3, '2026-09-25 09:10:33', NULL, NULL, '2026-09-25 09:10:09', '2026-09-25 09:10:44', 'd05754bfc922581ab09da2a866f22e856982f394d93efb08a24954e842278032', '2026-09-25 09:40:44'),
-(7, 'Alejandro', 'Sarmietno', 'alejandro@gmail.com', '$2b$10$PyoXsLlRkCfWn4oYVxRxQeB.mKgnCDlggxOYOwom201FbWm/VZEs.', 'Admin', 'Activo', 0, NULL, NULL, '2026-10-09 13:07:45', '2026-10-08 10:11:16', '2026-10-09 13:07:45', NULL, NULL),
+(7, 'Alejandro', 'Sarmietno', 'alejandro@gmail.com', '$2b$10$PyoXsLlRkCfWn4oYVxRxQeB.mKgnCDlggxOYOwom201FbWm/VZEs.', 'Admin', 'Activo', 0, NULL, NULL, '2026-10-16 14:08:00', '2026-10-08 10:11:16', '2026-10-16 14:08:00', NULL, NULL),
 (8, 'ale', 'suarex', 'ale1234@gmai.com', '$2b$10$bqRuhnTozRzDVmqVbSAkz.tRRd6p0jmYolfX4vfnbGJVkFwPLejdG', 'Cliente', 'Activo', 0, NULL, NULL, NULL, '2026-10-09 01:15:03', '2026-10-09 01:15:03', NULL, NULL),
 (9, 'ale', 'suarez', 'ale123@gmail.com', '$2b$10$EbvKbvRmy.Way6.E0txN4ezaiUVwIx7mSfySr/gpE36sStf1N0uYu', 'Cliente', 'Activo', 0, NULL, NULL, '2026-10-09 01:15:48', '2026-10-09 01:15:45', '2026-10-09 01:15:48', NULL, NULL);
 
@@ -512,16 +460,6 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 
 --
--- Indices de la tabla `auditoria`
---
-ALTER TABLE `auditoria`
-  ADD PRIMARY KEY (`AuditoriaID`),
-  ADD KEY `idx_auditoria_usuario` (`UsuarioID`),
-  ADD KEY `idx_auditoria_fecha` (`Fecha`),
-  ADD KEY `idx_auditoria_tabla` (`TablaAfectada`),
-  ADD KEY `idx_auditoria_accion` (`Accion`);
-
---
 -- Indices de la tabla `carrito`
 --
 ALTER TABLE `carrito`
@@ -547,14 +485,6 @@ ALTER TABLE `detalle_pedido`
   ADD KEY `idx_detalle_producto` (`ProductoID`);
 
 --
--- Indices de la tabla `favoritos`
---
-ALTER TABLE `favoritos`
-  ADD PRIMARY KEY (`FavoritoID`),
-  ADD UNIQUE KEY `uq_usuario_producto_favorito` (`UsuarioID`,`ProductoID`),
-  ADD KEY `idx_favoritos_producto` (`ProductoID`);
-
---
 -- Indices de la tabla `movimientos_stock`
 --
 ALTER TABLE `movimientos_stock`
@@ -562,14 +492,6 @@ ALTER TABLE `movimientos_stock`
   ADD KEY `idx_stock_producto` (`ProductoID`),
   ADD KEY `idx_stock_fecha` (`Fecha`),
   ADD KEY `idx_stock_producto_fecha` (`ProductoID`,`Fecha`);
-
---
--- Indices de la tabla `newsletter`
---
-ALTER TABLE `newsletter`
-  ADD PRIMARY KEY (`NewsletterID`),
-  ADD UNIQUE KEY `uq_newsletter_email` (`Email`),
-  ADD KEY `idx_newsletter_estado` (`Estado`);
 
 --
 -- Indices de la tabla `pedidos`
@@ -610,12 +532,6 @@ ALTER TABLE `usuarios`
 --
 
 --
--- AUTO_INCREMENT de la tabla `auditoria`
---
-ALTER TABLE `auditoria`
-  MODIFY `AuditoriaID` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `carrito`
 --
 ALTER TABLE `carrito`
@@ -625,59 +541,41 @@ ALTER TABLE `carrito`
 -- AUTO_INCREMENT de la tabla `carrito_detalle`
 --
 ALTER TABLE `carrito_detalle`
-  MODIFY `CarritoDetalleID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `CarritoDetalleID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_pedido`
 --
 ALTER TABLE `detalle_pedido`
-  MODIFY `DetallePedidoID` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `favoritos`
---
-ALTER TABLE `favoritos`
-  MODIFY `FavoritoID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `DetallePedidoID` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT de la tabla `movimientos_stock`
 --
 ALTER TABLE `movimientos_stock`
-  MODIFY `MovimientoID` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `newsletter`
---
-ALTER TABLE `newsletter`
-  MODIFY `NewsletterID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `MovimientoID` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `pedidos`
 --
 ALTER TABLE `pedidos`
-  MODIFY `PedidoID` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `PedidoID` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `ProductoID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `ProductoID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `UsuarioID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `UsuarioID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Restricciones para tablas volcadas
 --
-
---
--- Filtros para la tabla `auditoria`
---
-ALTER TABLE `auditoria`
-  ADD CONSTRAINT `fk_auditoria_usuario` FOREIGN KEY (`UsuarioID`) REFERENCES `usuarios` (`UsuarioID`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `carrito`
@@ -698,13 +596,6 @@ ALTER TABLE `carrito_detalle`
 ALTER TABLE `detalle_pedido`
   ADD CONSTRAINT `fk_detalle_pedido_pedido` FOREIGN KEY (`PedidoID`) REFERENCES `pedidos` (`PedidoID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_detalle_pedido_producto` FOREIGN KEY (`ProductoID`) REFERENCES `productos` (`ProductoID`) ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `favoritos`
---
-ALTER TABLE `favoritos`
-  ADD CONSTRAINT `fk_favoritos_producto` FOREIGN KEY (`ProductoID`) REFERENCES `productos` (`ProductoID`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_favoritos_usuario` FOREIGN KEY (`UsuarioID`) REFERENCES `usuarios` (`UsuarioID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `movimientos_stock`

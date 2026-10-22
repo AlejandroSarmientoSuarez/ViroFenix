@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
-import { listarUsuarios, actualizarUsuario, eliminarUsuario } from "../services/adminService";
+import {
+  listarUsuarios,
+  actualizarUsuario,
+  eliminarUsuario,
+} from "../services/adminService";
 import { useAuth } from "../context/AuthContext";
-import { useToast } from "../context/ToastContext";
+
 import ConfirmModal from "../components/ConfirmModal";
 import "../assets/css/admin.css";
 
@@ -10,6 +14,7 @@ const FILTROS_ESTADO = ["Activo", "Bloqueado", "Pendiente", "Eliminado"];
 
 function formatearFecha(valor) {
   if (!valor) return "Nunca ingresó";
+
   return new Date(valor).toLocaleString("es-AR", {
     day: "2-digit",
     month: "2-digit",
@@ -28,23 +33,32 @@ function AdminUsuarios() {
   const [editando, setEditando] = useState(null);
   const [guardando, setGuardando] = useState(false);
   const [aEliminar, setAEliminar] = useState(null);
+  const [mensaje, setMensaje] = useState("");
 
   const { usuario } = useAuth();
-  const { showToast } = useToast();
 
-  // Debounce de la búsqueda
   useEffect(() => {
-    const timer = setTimeout(() => setBusqueda(busquedaInput), 400);
+    const timer = setTimeout(() => {
+      setBusqueda(busquedaInput);
+    }, 400);
+
     return () => clearTimeout(timer);
   }, [busquedaInput]);
 
   async function cargar() {
+    setCargando(true);
+
     try {
-      const respuesta = await listarUsuarios({ buscar: busqueda, estado: filtroEstado });
-      setUsuarios(respuesta.data);
-    } catch (err) {
-      console.error(err);
-      showToast("No se pudieron cargar las cuentas", "error");
+      const respuesta = await listarUsuarios({
+        buscar: busqueda,
+        estado: filtroEstado,
+      });
+
+      setUsuarios(Array.isArray(respuesta) ? respuesta : respuesta.data || []);
+      setMensaje("");
+    } catch (error) {
+      console.error(error);
+      setMensaje("No se pudieron cargar las cuentas.");
     } finally {
       setCargando(false);
     }
@@ -62,17 +76,22 @@ function AdminUsuarios() {
       email: u.Email,
       rol: u.Rol,
       estado: u.Estado,
-      esPropio: u.UsuarioID === usuario.id,
+      esPropio: u.UsuarioID === (usuario?.id || usuario?.UsuarioID),
     });
   }
 
   function cambiarCampo(campo, valor) {
-    setEditando((prev) => ({ ...prev, [campo]: valor }));
+    setEditando((anterior) => ({
+      ...anterior,
+      [campo]: valor,
+    }));
   }
 
   async function guardar(e) {
     e.preventDefault();
     setGuardando(true);
+    setMensaje("");
+
     try {
       await actualizarUsuario(editando.id, {
         nombre: editando.nombre,
@@ -81,11 +100,15 @@ function AdminUsuarios() {
         rol: editando.rol,
         estado: editando.estado,
       });
-      showToast("Cuenta actualizada", "success");
+
+      setMensaje("Cuenta actualizada correctamente.");
       setEditando(null);
       await cargar();
-    } catch (err) {
-      showToast(err.response?.data?.message || "No se pudo actualizar la cuenta", "error");
+    } catch (error) {
+      setMensaje(
+        error.response?.data?.message ||
+        "No se pudo actualizar la cuenta."
+      );
     } finally {
       setGuardando(false);
     }
@@ -94,23 +117,31 @@ function AdminUsuarios() {
   async function confirmarEliminar() {
     try {
       await eliminarUsuario(aEliminar.UsuarioID);
-      showToast("Cuenta eliminada", "success");
+      setMensaje("Cuenta eliminada correctamente.");
+      setAEliminar(null);
       await cargar();
-    } catch (err) {
-      showToast(err.response?.data?.message || "No se pudo eliminar la cuenta", "error");
-    } finally {
+    } catch (error) {
+      setMensaje(
+        error.response?.data?.message ||
+        "No se pudo eliminar la cuenta."
+      );
       setAEliminar(null);
     }
   }
 
-  if (cargando) return <p className="admin-loading">Cargando cuentas...</p>;
+  if (cargando) {
+    return <p className="admin-loading">Cargando cuentas...</p>;
+  }
 
   return (
     <div className="admin-container">
       <div className="admin-header">
         <div>
           <h1>Gestión de cuentas</h1>
-          <p>{usuarios.length} {usuarios.length === 1 ? "cuenta" : "cuentas"}</p>
+          <p>
+            {usuarios.length}{" "}
+            {usuarios.length === 1 ? "cuenta" : "cuentas"}
+          </p>
         </div>
 
         <div className="admin-filtros">
@@ -121,18 +152,27 @@ function AdminUsuarios() {
             value={busquedaInput}
             onChange={(e) => setBusquedaInput(e.target.value)}
           />
+
           <select
             className="admin-select"
             value={filtroEstado}
             onChange={(e) => setFiltroEstado(e.target.value)}
           >
             <option value="">Todas (sin eliminadas)</option>
-            {FILTROS_ESTADO.map((est) => (
-              <option key={est} value={est}>{est}</option>
+            {FILTROS_ESTADO.map((estado) => (
+              <option key={estado} value={estado}>
+                {estado}
+              </option>
             ))}
           </select>
         </div>
       </div>
+
+      {mensaje && (
+        <p role="status" className="admin-mensaje">
+          {mensaje}
+        </p>
+      )}
 
       {usuarios.length === 0 ? (
         <p className="admin-vacio">No se encontraron cuentas.</p>
@@ -149,24 +189,46 @@ function AdminUsuarios() {
                 <th>Acciones</th>
               </tr>
             </thead>
+
             <tbody>
               {usuarios.map((u) => {
-                const esPropio = u.UsuarioID === usuario.id;
+                const esPropio =
+                  u.UsuarioID === (usuario?.id || usuario?.UsuarioID);
                 const eliminada = u.Estado === "Eliminado";
+
                 return (
                   <tr key={u.UsuarioID}>
                     <td>
                       {u.Nombre} {u.Apellido}
-                      {esPropio && <span className="admin-tu"> (vos)</span>}
+                      {esPropio && (
+                        <span className="admin-tu"> (vos)</span>
+                      )}
                     </td>
+
                     <td>{u.Email}</td>
+
                     <td>
-                      <span className={`admin-badge admin-badge--${u.Rol.toLowerCase()}`}>{u.Rol}</span>
+                      <span
+                        className={`admin-badge admin-badge--${String(
+                          u.Rol || ""
+                        ).toLowerCase()}`}
+                      >
+                        {u.Rol}
+                      </span>
                     </td>
+
                     <td>
-                      <span className={`admin-badge admin-badge--${u.Estado.toLowerCase()}`}>{u.Estado}</span>
+                      <span
+                        className={`admin-badge admin-badge--${String(
+                          u.Estado || ""
+                        ).toLowerCase()}`}
+                      >
+                        {u.Estado}
+                      </span>
                     </td>
+
                     <td>{formatearFecha(u.UltimoAcceso)}</td>
+
                     <td>
                       <div className="admin-acciones">
                         <button
@@ -176,6 +238,7 @@ function AdminUsuarios() {
                         >
                           Gestionar
                         </button>
+
                         <button
                           className="admin-btn admin-btn--peligro"
                           onClick={() => setAEliminar(u)}
@@ -194,8 +257,15 @@ function AdminUsuarios() {
       )}
 
       {editando && (
-        <div className="admin-modal-overlay" onClick={() => setEditando(null)}>
-          <form className="admin-modal" onClick={(e) => e.stopPropagation()} onSubmit={guardar}>
+        <div
+          className="admin-modal-overlay"
+          onClick={() => setEditando(null)}
+        >
+          <form
+            className="admin-modal"
+            onClick={(e) => e.stopPropagation()}
+            onSubmit={guardar}
+          >
             <h2>Gestionar cuenta</h2>
 
             <div className="admin-campo-fila">
@@ -204,16 +274,21 @@ function AdminUsuarios() {
                 <input
                   id="adm-nombre"
                   value={editando.nombre}
-                  onChange={(e) => cambiarCampo("nombre", e.target.value)}
+                  onChange={(e) =>
+                    cambiarCampo("nombre", e.target.value)
+                  }
                   required
                 />
               </div>
+
               <div className="admin-campo">
                 <label htmlFor="adm-apellido">Apellido</label>
                 <input
                   id="adm-apellido"
                   value={editando.apellido}
-                  onChange={(e) => cambiarCampo("apellido", e.target.value)}
+                  onChange={(e) =>
+                    cambiarCampo("apellido", e.target.value)
+                  }
                   required
                 />
               </div>
@@ -225,7 +300,9 @@ function AdminUsuarios() {
                 id="adm-email"
                 type="email"
                 value={editando.email}
-                onChange={(e) => cambiarCampo("email", e.target.value)}
+                onChange={(e) =>
+                  cambiarCampo("email", e.target.value)
+                }
                 required
               />
             </div>
@@ -236,40 +313,62 @@ function AdminUsuarios() {
                 <select
                   id="adm-rol"
                   value={editando.rol}
-                  onChange={(e) => cambiarCampo("rol", e.target.value)}
+                  onChange={(e) =>
+                    cambiarCampo("rol", e.target.value)
+                  }
                   disabled={editando.esPropio}
                 >
                   <option value="Cliente">Cliente</option>
                   <option value="Admin">Admin</option>
                 </select>
               </div>
+
               <div className="admin-campo">
                 <label htmlFor="adm-estado">Estado</label>
                 <select
                   id="adm-estado"
                   value={editando.estado}
-                  onChange={(e) => cambiarCampo("estado", e.target.value)}
+                  onChange={(e) =>
+                    cambiarCampo("estado", e.target.value)
+                  }
                   disabled={editando.esPropio}
                 >
-                  {ESTADOS.map((est) => (
-                    <option key={est} value={est}>{est}</option>
+                  {ESTADOS.map((estado) => (
+                    <option key={estado} value={estado}>
+                      {estado}
+                    </option>
                   ))}
                 </select>
               </div>
             </div>
 
             {editando.esPropio && (
-              <p className="admin-nota">Es tu cuenta: no podés cambiar tu propio rol ni tu estado.</p>
+              <p className="admin-nota">
+                Es tu cuenta: no podés cambiar tu propio rol ni tu estado.
+              </p>
             )}
+
             {editando.estado === "Bloqueado" && !editando.esPropio && (
-              <p className="admin-nota">Una cuenta bloqueada no puede iniciar sesión hasta que la pases a Activo.</p>
+              <p className="admin-nota">
+                Una cuenta bloqueada no puede iniciar sesión hasta que
+                la pases a Activo.
+              </p>
             )}
 
             <div className="admin-modal-acciones">
-              <button type="button" className="admin-btn" onClick={() => setEditando(null)}>
+              <button
+                type="button"
+                className="admin-btn"
+                onClick={() => setEditando(null)}
+              >
                 Cancelar
               </button>
-              <button type="submit" className="admin-btn admin-btn--primario" disabled={guardando}>
+
+              <button
+                type="submit"
+                className="admin-btn admin-btn--primario"
+                disabled={guardando}
+              >
                 {guardando ? "Guardando..." : "Guardar cambios"}
               </button>
             </div>

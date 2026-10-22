@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { obtenerCarrito, crearPedido } from "../services/cartService";
 import { IMG_BASE_URL } from "../services/productService";
 import { useCart } from "../context/CartContext";
-import { useToast } from "../context/ToastContext";
+
 import "../assets/css/checkout.css";
 
 const FORM_INICIAL = {

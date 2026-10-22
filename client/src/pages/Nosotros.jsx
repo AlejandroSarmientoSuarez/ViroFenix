@@ -1,6 +1,4 @@
 
-import PlaceholderImage from "../components/PlaceholderImage";
-import Reveal from "../components/Reveal";
 import "../assets/css/Nosotros.css";
 
 const valores = [
@@ -54,185 +52,171 @@ const equipo = [
 function Nosotros() {
   return (
     <main className="nosotros-container">
-      {/* INTRODUCCIÓN */}
-      <Reveal>
-        <header className="nosotros-header">
-          <span className="nosotros-eyebrow">VIROFENIX · DESDE EL ORIGEN</span>
+      <header className="nosotros-header">
+        <span className="nosotros-eyebrow">
+          VIROFENIX · DESDE EL ORIGEN
+        </span>
 
-          <h1>
-            Diseñamos prendas
-            <br />
-            <em>con identidad.</em>
-          </h1>
+        <h1>
+          Diseñamos prendas
+          <br />
+          <em>con identidad.</em>
+        </h1>
 
-          <div className="nosotros-header-line" />
+        <div className="nosotros-header-line" />
 
-          <p>
-            ViroFenix nace de una idea sencilla: crear prendas que no dependan
-            de una temporada para tener sentido. Diseñamos desde la
-            autenticidad, buscando combinar estética, calidad y personalidad
-            en cada pieza.
-          </p>
-        </header>
-      </Reveal>
+        <p>
+          ViroFenix nace de una idea sencilla: crear prendas que no dependan
+          de una temporada para tener sentido. Diseñamos desde la
+          autenticidad, buscando combinar estética, calidad y personalidad
+          en cada pieza.
+        </p>
+      </header>
 
-      {/* HISTORIA */}
       <section className="nosotros-historia">
-        <Reveal>
-          <div className="nosotros-historia-contenido">
-            <span className="nosotros-eyebrow">01 · NUESTRA HISTORIA</span>
-
-            <h2>
-              Una marca construida
-              <br />
-              <em>con propósito.</em>
-            </h2>
-
-            <p>
-              Desde nuestros comienzos, ViroFenix se construye alrededor de
-              una búsqueda constante: encontrar el equilibrio entre diseño,
-              calidad y una identidad que pueda sentirse propia.
-            </p>
-
-            <p>
-              Cada colección parte de una mirada contemporánea, pero evita
-              seguir tendencias de manera pasajera. Preferimos crear piezas
-              que puedan incorporarse naturalmente al estilo de cada persona
-              y acompañarla durante mucho tiempo.
-            </p>
-
-            <div className="nosotros-historia-dato">
-              <strong>ViroFenix</strong>
-              <span>Diseño · Calidad · Identidad</span>
-            </div>
-          </div>
-        </Reveal>
-
-        <Reveal delay={120}>
-          <div className="nosotros-historia-visual">
-            <div className="nosotros-historia-marco">
-              <span>VF</span>
-            </div>
-          </div>
-        </Reveal>
-      </section>
-
-      {/* VALORES */}
-      <section className="nosotros-seccion nosotros-valores">
-        <Reveal>
-          <div className="nosotros-seccion-header">
-            <span className="nosotros-eyebrow">02 · LO QUE NOS DEFINE</span>
-
-            <h2 className="nosotros-subtitulo">
-              Nuestros <em>valores</em>
-            </h2>
-
-            <p>
-              Los principios que guían nuestras decisiones y forman parte de
-              cada etapa del proceso.
-            </p>
-          </div>
-        </Reveal>
-
-        <div className="nosotros-valores-grid">
-          {valores.map((valor, i) => (
-            <Reveal key={valor.id} delay={i * 80}>
-              <article className="nosotros-valor-card">
-                <span className="nosotros-valor-numero">
-                  {valor.numero}
-                </span>
-
-                <div className="nosotros-valor-contenido">
-                  <h3>{valor.titulo}</h3>
-                  <p>{valor.descripcion}</p>
-                </div>
-
-                <span className="nosotros-valor-arrow">↗</span>
-              </article>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* FILOSOFÍA */}
-      <Reveal>
-        <section className="nosotros-filosofia">
-          <span className="nosotros-filosofia-marca">VIROFENIX</span>
-
-          <blockquote>
-            “No buscamos crear prendas para una temporada.
-            <br />
-            Buscamos crear piezas que formen parte de tu historia.”
-          </blockquote>
-
-          <span className="nosotros-filosofia-linea" />
-        </section>
-      </Reveal>
-
-      {/* EQUIPO */}
-      <section className="nosotros-seccion nosotros-equipo">
-        <Reveal>
-          <div className="nosotros-seccion-header">
-            <span className="nosotros-eyebrow">03 · DETRÁS DE LA MARCA</span>
-
-            <h2 className="nosotros-subtitulo">
-              Nuestro <em>equipo</em>
-            </h2>
-
-            <p>
-              Personas, ideas y diferentes miradas que trabajan detrás de
-              cada colección de ViroFenix.
-            </p>
-          </div>
-        </Reveal>
-
-        <div className="nosotros-equipo-grid">
-          {equipo.map((persona, i) => (
-            <Reveal key={persona.id} delay={i * 80}>
-              <article className="nosotros-equipo-card">
-                <div className="nosotros-equipo-imagen">
-                  <PlaceholderImage
-                    src={persona.imagen}
-                    ratio="1 / 1"
-                    label={`${persona.nombre} — 400×400`}
-                  />
-
-                  <span className="nosotros-equipo-numero">
-                    0{i + 1}
-                  </span>
-                </div>
-
-                <div className="nosotros-equipo-info">
-                  <h3>{persona.nombre}</h3>
-                  <p>{persona.cargo}</p>
-                </div>
-              </article>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* CIERRE */}
-      <Reveal>
-        <section className="nosotros-cierre">
-          <span className="nosotros-eyebrow">EL FUTURO</span>
+        <div className="nosotros-historia-contenido">
+          <span className="nosotros-eyebrow">
+            01 · NUESTRA HISTORIA
+          </span>
 
           <h2>
-            Seguimos creando.
+            Una marca construida
             <br />
-            <em>Seguimos evolucionando.</em>
+            <em>con propósito.</em>
           </h2>
 
           <p>
-            ViroFenix continúa creciendo con una visión clara: desarrollar
-            una identidad de moda reconocible, cuidada y fiel a quienes la
-            eligen.
+            Desde nuestros comienzos, ViroFenix se construye alrededor de
+            una búsqueda constante: encontrar el equilibrio entre diseño,
+            calidad y una identidad que pueda sentirse propia.
           </p>
-        </section>
-      </Reveal>
+
+          <p>
+            Cada colección parte de una mirada contemporánea, pero evita
+            seguir tendencias de manera pasajera. Preferimos crear piezas
+            que puedan incorporarse naturalmente al estilo de cada persona
+            y acompañarla durante mucho tiempo.
+          </p>
+
+          <div className="nosotros-historia-dato">
+            <strong>ViroFenix</strong>
+            <span>Diseño · Calidad · Identidad</span>
+          </div>
+        </div>
+
+        <div className="nosotros-historia-visual">
+          <div className="nosotros-historia-marco">
+            <span>VF</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="nosotros-seccion nosotros-valores">
+        <div className="nosotros-seccion-header">
+          <span className="nosotros-eyebrow">
+            02 · LO QUE NOS DEFINE
+          </span>
+
+          <h2 className="nosotros-subtitulo">
+            Nuestros <em>valores</em>
+          </h2>
+
+          <p>
+            Los principios que guían nuestras decisiones y forman parte de
+            cada etapa del proceso.
+          </p>
+        </div>
+
+        <div className="nosotros-valores-grid">
+          {valores.map((valor) => (
+            <article className="nosotros-valor-card" key={valor.id}>
+              <span className="nosotros-valor-numero">
+                {valor.numero}
+              </span>
+
+              <div className="nosotros-valor-contenido">
+                <h3>{valor.titulo}</h3>
+                <p>{valor.descripcion}</p>
+              </div>
+
+              <span className="nosotros-valor-arrow">↗</span>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="nosotros-filosofia">
+        <span className="nosotros-filosofia-marca">VIROFENIX</span>
+
+        <blockquote>
+          “No buscamos crear prendas para una temporada.
+          <br />
+          Buscamos crear piezas que formen parte de tu historia.”
+        </blockquote>
+
+        <span className="nosotros-filosofia-linea" />
+      </section>
+
+      <section className="nosotros-seccion nosotros-equipo">
+        <div className="nosotros-seccion-header">
+          <span className="nosotros-eyebrow">
+            03 · DETRÁS DE LA MARCA
+          </span>
+
+          <h2 className="nosotros-subtitulo">
+            Nuestro <em>equipo</em>
+          </h2>
+
+          <p>
+            Personas, ideas y diferentes miradas que trabajan detrás de
+            cada colección de ViroFenix.
+          </p>
+        </div>
+
+        <div className="nosotros-equipo-grid">
+          {equipo.map((persona, index) => (
+            <article className="nosotros-equipo-card" key={persona.id}>
+              <div className="nosotros-equipo-imagen">
+                <img
+                  src={persona.imagen}
+                  alt={persona.nombre}
+                  loading="lazy"
+                  onError={(event) => {
+                    event.currentTarget.style.visibility = "hidden";
+                  }}
+                />
+
+                <span className="nosotros-equipo-numero">
+                  0{index + 1}
+                </span>
+              </div>
+
+              <div className="nosotros-equipo-info">
+                <h3>{persona.nombre}</h3>
+                <p>{persona.cargo}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="nosotros-cierre">
+        <span className="nosotros-eyebrow">EL FUTURO</span>
+
+        <h2>
+          Seguimos creando.
+          <br />
+          <em>Seguimos evolucionando.</em>
+        </h2>
+
+        <p>
+          ViroFenix continúa creciendo con una visión clara: desarrollar
+          una identidad de moda reconocible, cuidada y fiel a quienes la
+          eligen.
+        </p>
+      </section>
     </main>
   );
 }
 
 export default Nosotros;
-

@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import Reveal from "../components/Reveal";
+
 import "../assets/css/faq.css";
 
 const PREGUNTAS = [
@@ -175,7 +175,7 @@ function Faq() {
   return (
     <div className="faq-container">
       {/* Encabezado */}
-      <Reveal>
+     
         <header className="faq-header">
           <span className="faq-kicker">Centro de ayuda</span>
 
@@ -185,7 +185,7 @@ function Faq() {
             Todo lo que necesitás saber sobre tus compras, envíos y cambios.
           </p>
         </header>
-      </Reveal>
+      
 
       {/* Enlaces rápidos */}
       <nav className="faq-chips" aria-label="Secciones">
