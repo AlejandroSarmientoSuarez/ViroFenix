@@ -5,7 +5,12 @@ const PEDIDOS_URL = "http://localhost:4000/api/pedidos";
 
 function getAuthHeader() {
   const token = localStorage.getItem("token");
-  return { headers: { Authorization: `Bearer ${token}` } };
+
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
 }
 
 export async function obtenerCarrito() {
@@ -14,22 +19,41 @@ export async function obtenerCarrito() {
 }
 
 export async function agregarAlCarrito(productoId, cantidad = 1) {
-  const respuesta = await axios.post(`${CART_URL}/${productoId}`, { cantidad }, getAuthHeader());
+  const respuesta = await axios.post(
+    `${CART_URL}/${productoId}`,
+    { cantidad },
+    getAuthHeader()
+  );
+
   return respuesta.data;
 }
 
 export async function actualizarCantidadCarrito(productoId, cantidad) {
-  const respuesta = await axios.put(`${CART_URL}/${productoId}`, { cantidad }, getAuthHeader());
+  const respuesta = await axios.put(
+    `${CART_URL}/${productoId}`,
+    { cantidad },
+    getAuthHeader()
+  );
+
   return respuesta.data;
 }
 
 export async function eliminarDelCarrito(productoId) {
-  const respuesta = await axios.delete(`${CART_URL}/${productoId}`, getAuthHeader());
+  const respuesta = await axios.delete(
+    `${CART_URL}/${productoId}`,
+    getAuthHeader()
+  );
+
   return respuesta.data;
 }
 
 export async function crearPedido(datosEnvio) {
-  const respuesta = await axios.post(PEDIDOS_URL, datosEnvio, getAuthHeader());
+  const respuesta = await axios.post(
+    PEDIDOS_URL,
+    datosEnvio,
+    getAuthHeader()
+  );
+
   return respuesta.data;
 }
 

@@ -5,6 +5,7 @@ import { obtenerProductos, IMG_BASE_URL } from "../services/productService";
 import Carousel from "../components/Carousel";
 import "../assets/css/home.css";
 import "../assets/css/faq.css";
+import "../assets/css/variables.css";
 
 const slides = [
   {
@@ -25,24 +26,7 @@ const slides = [
   },
 ];
 
-const valores = [
-  {
-    titulo: "Envío gratis",
-    detalle: "En compras superiores a $50.000",
-  },
-  {
-    titulo: "Cambios sin costo",
-    detalle: "Hasta 30 días desde la compra",
-  },
-  {
-    titulo: "Pago seguro",
-    detalle: "Tus datos siempre protegidos",
-  },
-  {
-    titulo: "Atención personalizada",
-    detalle: "Te ayudamos a elegir tu talle",
-  },
-];
+
 
 const PREGUNTAS = [
   {
@@ -154,15 +138,7 @@ function Home() {
     <div className="home-container">
       <Carousel slides={slides} />
 
-      <section className="home-valores">
-        {valores.map((valor) => (
-          <div className="home-valor" key={valor.titulo}>
-            <h4>{valor.titulo}</h4>
-            <p>{valor.detalle}</p>
-          </div>
-        ))}
-      </section>
-
+      
       <section className="home-categorias">
         <h2>Comprá por categoría</h2>
 
@@ -260,9 +236,6 @@ function Home() {
           </div>
         )}
 
-        <Link to="/coleccion" className="home-ver-todo">
-          Ver toda la colección
-        </Link>
       </section>
 
       <section className="home-editorial">
@@ -294,23 +267,7 @@ function Home() {
         </div>
       </section>
 
-      <section className="home-filosofia">
-        <h2>Nuestra filosofía</h2>
-
-        <p>
-          Creemos en la autenticidad y la calidad. Cada prenda está diseñada
-          para ofrecer comodidad y estilo, reflejando una personalidad fuerte
-          y libre.
-        </p>
-      </section>
-
-      <section className="faq-section" id="etica-sostenibilidad">
-        <h2>Ética y sostenibilidad</h2>
-
-        <p>
-          Conocé los principios que guían nuestras decisiones y nuestro
-          compromiso con los clientes.
-        </p>
+      
 
         {PREGUNTAS.map((categoria, categoriaIndex) => (
           <div className="faq-categoria" key={categoria.categoria}>
@@ -351,7 +308,7 @@ function Home() {
             </div>
           </div>
         ))}
-      </section>
+      
     </div>
   );
 }
