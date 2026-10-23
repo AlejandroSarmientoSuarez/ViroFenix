@@ -41,14 +41,16 @@ async function actualizarUsuario(req, res) {
       return res.status(400).json({ status: "error", message: "Nombre y apellido son obligatorios" });
 
     // Comprueba que el email tenga un formato válido y no esté registrado.
-    if (email !== undefined && email.trim() !== usuario.Email) {
+    if (email && email.trim() !== usuario.Email) {
       const nuevoEmail = email.trim();
 
-      if (!/^\S+@\S+\.\S+$/.test(nuevoEmail))
-        return res.status(400).json({ status: "error", message: "Email inválido" });
+      if (!nuevoEmail.includes("@") || !nuevoEmail.includes("."))
+        return res.status(400).json({ message: "Email inválido" });
 
-      if (await Usuario.findOne({ where: { Email: nuevoEmail, UsuarioID: { [Op.ne]: usuario.UsuarioID } } }))
-        return res.status(409).json({ status: "error", message: "Email en uso" });
+      const existe = await Usuario.findOne({ where: { Email: nuevoEmail } });
+
+      if (existe && existe.UsuarioID !== usuario.UsuarioID)
+        return res.status(409).json({ message: "Email en uso" });
 
       usuario.Email = nuevoEmail;
     }
@@ -62,22 +64,12 @@ async function actualizarUsuario(req, res) {
     }
 
     // Actualiza el estado y reinicia los intentos fallidos si la cuenta se activa.
-    if (estado !== undefined) {
-      if (!["Activo", "Bloqueado", "Pendiente"].includes(estado))
-        return res.status(400).json({ status: "error", message: "Estado inválido" });
+   if (estado) {
+      if (!["Activo", "Pendiente"].includes(estado))
+        return res.status(400).json({ message: "Estado inválido" });
 
       usuario.Estado = estado;
-
-      if (estado === "Activo") {
-        usuario.IntentosFallidos = 0;
-        usuario.UltimoIntento = null;
-        usuario.BloqueadoHasta = null;
-      }
-
-      if (estado === "Bloqueado")
-        usuario.BloqueadoHasta = new Date("2999-12-31T23:59:59Z");
     }
-
     await usuario.save();
     res.json({ status: "ok", message: "Cuenta actualizada correctamente" });
   } catch (error) {
@@ -89,36 +81,31 @@ async function actualizarUsuario(req, res) {
 // Elimina una cuenta de forma lógica, reemplazando sus datos personales y anulando su contraseña.
 async function eliminarUsuario(req, res) {
   try {
-    const id = Number(req.params.id);
+    const id = req.params.id;
 
-    if (id === Number(req.usuario.id))
-      return res.status(400).json({ status: "error", message: "No podés eliminar tu propia cuenta" });
+    if (id == req.usuario.id)
+      return res.status(400).json({ message: "No podés eliminar tu cuenta" });
 
     const usuario = await Usuario.findByPk(id);
 
     if (!usuario || usuario.Estado === "Eliminado")
-      return res.status(404).json({ status: "error", message: "Cuenta no encontrada" });
+      return res.status(404).json({ message: "Usuario no encontrado" });
 
     if (usuario.Rol === "Admin")
-      return res.status(400).json({ status: "error", message: "No se puede eliminar una cuenta administradora" });
+      return res.status(400).json({ message: "No se puede eliminar un administrador" });
 
-    // Reemplaza los datos de la cuenta para evitar conservar los datos personales originales.
-    Object.assign(usuario, {
-      Nombre: "Usuario",
-      Apellido: "Eliminado",
-      Email: `eliminado_${id}_${Date.now()}@baja.local`,
-      PasswordHash: await bcrypt.hash(crypto.randomBytes(16).toString("hex"), 10),
-      Estado: "Eliminado",
-      TokenRecuperacion: null,
-      TokenExpiracion: null
-    });
+    usuario.Nombre = "Usuario";
+    usuario.Apellido = "Eliminado";
+    usuario.Email = "eliminado@gmail.com";
+    usuario.Estado = "Eliminado";
+    usuario.TokenRecuperacion = null;
+    usuario.TokenExpiracion = null;
 
     await usuario.save();
-    res.json({ status: "ok", message: "Cuenta eliminada correctamente" });
+
+    res.json({ message: "Usuario eliminado correctamente" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ status: "error", message: "Error al eliminar la cuenta" });
+    res.status(500).json({ message: "Error al eliminar usuario" });
   }
 }
-
 module.exports = { listarUsuarios, actualizarUsuario, eliminarUsuario };

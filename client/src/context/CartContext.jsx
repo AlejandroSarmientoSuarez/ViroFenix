@@ -13,12 +13,26 @@ export function CartProvider({ children }) {
       setCantidadItems(0);
       return;
     }
+
     try {
       const respuesta = await obtenerCarrito();
-      const total = respuesta.data.items.reduce((acc, item) => acc + item.Cantidad, 0);
+      const datos = respuesta?.data ?? respuesta;
+      const carrito = datos?.carrito ?? datos?.data ?? datos;
+
+      const items = Array.isArray(carrito)
+        ? carrito
+        : carrito?.items ?? carrito?.detalles ?? carrito?.productos ?? [];
+
+      const total = Array.isArray(items)
+        ? items.reduce(
+            (suma, item) => suma + Number(item.Cantidad ?? item.cantidad ?? 0),
+            0
+          )
+        : 0;
+
       setCantidadItems(total);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Error al actualizar el carrito:", error);
     }
   }, [usuario]);
 

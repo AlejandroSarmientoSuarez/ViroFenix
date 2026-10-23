@@ -1,155 +1,145 @@
-
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const Usuario = require("../models/Usuario");
-const sequelize = require("../config/db");
 
-// Registra un usuario nuevo validando sus datos y protegiendo su contraseña.
+// REGISTRAR USUARIO
 async function register(req, res) {
   try {
     const { nombre, apellido, email, password } = req.body;
 
     if (!nombre || !apellido || !email || !password)
-      return res.status(400).json({ status: "error", message: "Faltan datos obligatorios" });
+      return res.status(400).json({ message: "Faltan datos" });
 
     if (password.length < 8)
-      return res.status(400).json({ status: "error", message: "La contraseña debe tener al menos 8 caracteres" });
+      return res.status(400).json({ message: "La contraseña debe tener 8 caracteres" });
 
-    if (!/^\S+@\S+\.\S+$/.test(email))
-      return res.status(400).json({ status: "error", message: "El email no es válido" });
+    if (!email.includes("@") || !email.includes("."))
+      return res.status(400).json({ message: "Email inválido" });
 
-    if (await Usuario.findOne({ where: { Email: email } }))
-      return res.status(409).json({ status: "error", message: "El email ya está registrado" });
+    const existe = await Usuario.findOne({ where: { Email: email.trim() } });
 
-    // Guarda los datos del usuario y genera un hash para no almacenar la contraseña original.
+    if (existe)
+      return res.status(409).json({ message: "Email ya registrado" });
+
     const usuario = await Usuario.create({
-      Nombre: nombre.trim(), Apellido: apellido.trim(), Email: email.trim(),
-      PasswordHash: await bcrypt.hash(password, 10),
+      Nombre: nombre.trim(),
+      Apellido: apellido.trim(),
+      Email: email.trim(),
+      PasswordHash: await bcrypt.hash(password, 10)
     });
 
-    return res.status(201).json({
-      status: "ok",
-      message: "Usuario registrado correctamente",
-      data: {
-        id: usuario.UsuarioID, nombre: usuario.Nombre, email: usuario.Email,
-      }
+    res.status(201).json({
+      message: "Usuario registrado",
+      id: usuario.UsuarioID
     });
+
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ status: "error", message: "Error al registrar el usuario" });
+    res.status(500).json({ message: "Error al registrar usuario" });
   }
 }
 
-// Verifica las credenciales, controla los bloqueos y crea el token para iniciar sesión.
+// INICIAR SESION
 async function login(req, res) {
   try {
     const { email, password } = req.body;
 
     if (!email || !password)
-      return res.status(400).json({ status: "error", message: "Faltan datos obligatorios" });
+      return res.status(400).json({ message: "Faltan datos" });
 
-    const usuario = await Usuario.findOne({ where: { Email: email } });
-
-    if (!usuario || usuario.Estado === "Eliminado")
-      return res.status(401).json({ status: "error", message: "Credenciales inválidas" });
-
-    // Impide el acceso si la cuenta sigue dentro de su período de bloqueo.
-    if (usuario.Estado === "Bloqueado" && usuario.BloqueadoHasta && new Date() < new Date(usuario.BloqueadoHasta)) {
-      return res.status(423).json({ status: "error", message: "Cuenta bloqueada. Intentá más tarde" });
-    }
-
-    // Si la contraseña es incorrecta, registra el intento fallido en la base de datos.
-    if (!(await bcrypt.compare(password, usuario.PasswordHash))) {
-      await sequelize.query("CALL sp_registrar_intento_fallido(:usuarioId)", {
-        replacements: { usuarioId: usuario.UsuarioID }
-      });
-
-      return res.status(401).json({ status: "error", message: "Credenciales inválidas" });
-    }
-
-    // Registra el inicio de sesión exitoso y genera un token válido durante dos horas.
-    await sequelize.query("CALL sp_login_exitoso(:usuarioId)", {
-      replacements: { usuarioId: usuario.UsuarioID }
+    const usuario = await Usuario.findOne({
+      where: { Email: email.trim() }
     });
 
+    if (!usuario || usuario.Estado === "Eliminado")
+      return res.status(401).json({ message: "Datos incorrectos" });
+
+    if (usuario.Estado === "Bloqueado")
+      return res.status(403).json({ message: "Cuenta bloqueada" });
+
+    const coincide = await bcrypt.compare(password, usuario.PasswordHash);
+
+    if (!coincide)
+      return res.status(401).json({ message: "Datos incorrectos" });
+
     const token = jwt.sign(
-      { id: usuario.UsuarioID, email: usuario.Email, rol: usuario.Rol },
+      {
+        id: usuario.UsuarioID,
+        rol: usuario.Rol
+      },
       process.env.JWT_SECRET,
       { expiresIn: "2h" }
     );
 
-    return res.json({
-      status: "ok",
-      message: "Login correcto",
-      data: {
-        token,
-        usuario: {
-          id: usuario.UsuarioID, nombre: usuario.Nombre, apellido: usuario.Apellido,
-          email: usuario.Email, rol: usuario.Rol,
-        }
+    res.json({
+      message: "Inicio de sesión correcto",
+      token: token,
+      usuario: {
+        id: usuario.UsuarioID,
+        nombre: usuario.Nombre,
+        apellido: usuario.Apellido,
+        email: usuario.Email,
+        rol: usuario.Rol
       }
     });
+
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ status: "error", message: "Error al iniciar sesión" });
+    res.status(500).json({ message: "Error al iniciar sesión" });
   }
 }
 
-// Genera un enlace temporal para que el usuario pueda recuperar su contraseña.
+// RECUPERAR CONTRASEÑA
 async function solicitarRecuperacion(req, res) {
   try {
-    const { email } = req.body;
+    const email = req.body.email;
 
     if (!email)
-      return res.status(400).json({ status: "error", message: "El email es obligatorio" });
+      return res.status(400).json({ message: "Ingresá tu email" });
 
-    const usuario = await Usuario.findOne({ where: { Email: email } });
+    const usuario = await Usuario.findOne({
+      where: { Email: email }
+    });
 
-    // Devuelve el mismo mensaje para no revelar si una cuenta está registrada.
     if (!usuario)
-      return res.json({ status: "ok", message: "Si el email existe, vas a recibir un enlace de recuperación" });
+      return res.status(404).json({ message: "Usuario no encontrado" });
 
-    // Crea un token aleatorio que vence a los 30 minutos.
-    const token = crypto.randomBytes(32).toString("hex");
+    const token = Date.now().toString();
+
     usuario.TokenRecuperacion = token;
-    usuario.TokenExpiracion = new Date(Date.now() + 30 * 60 * 1000);
+
+    const fecha = new Date();
+    fecha.setMinutes(fecha.getMinutes() + 30);
+    usuario.TokenExpiracion = fecha;
 
     await usuario.save();
 
-    const resetLink = `http://localhost:5173/restablecer?token=${token}`;
-
-    // Muestra el enlace en la consola durante el desarrollo.
-    console.log("Enlace temporal de recuperación:", resetLink);
-
-    return res.json({
-      status: "ok",
-      message: "Si el email existe, vas a recibir un enlace de recuperación",
-      resetLinkDev: resetLink
+    res.json({
+      message: "Enlace creado",
+      enlace: "http://localhost:5173/restablecer?token=" + token
     });
+
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ status: "error", message: "Error al solicitar recuperación" });
+    res.status(500).json({ message: "Error al recuperar contraseña" });
   }
 }
 
-// Comprueba el token, actualiza la contraseña y elimina los datos de recuperación.
+// CAMBIAR CONTRASEÑA
 async function restablecerPassword(req, res) {
   try {
     const { token, passwordNueva } = req.body;
 
     if (!token || !passwordNueva)
-      return res.status(400).json({ status: "error", message: "Faltan datos obligatorios" });
+      return res.status(400).json({ message: "Faltan datos" });
 
     if (passwordNueva.length < 8)
-      return res.status(400).json({ status: "error", message: "La contraseña debe tener al menos 8 caracteres" });
+      return res.status(400).json({ message: "La contraseña debe tener 8 caracteres" });
 
-    const usuario = await Usuario.findOne({ where: { TokenRecuperacion: token } });
+    const usuario = await Usuario.findOne({
+      where: { TokenRecuperacion: token }
+    });
 
-    // Rechaza el enlace si no existe, no tiene vencimiento o ya expiró.
-    if (!usuario || !usuario.TokenExpiracion || new Date() > new Date(usuario.TokenExpiracion)) {
-      return res.status(400).json({ status: "error", message: "El enlace es inválido o expiró. Solicitá uno nuevo" });
-    }
+    if (!usuario || !usuario.TokenExpiracion || new Date() > new Date(usuario.TokenExpiracion))
+      return res.status(400).json({ message: "Enlace inválido o vencido" });
 
     usuario.PasswordHash = await bcrypt.hash(passwordNueva, 10);
     usuario.TokenRecuperacion = null;
@@ -157,16 +147,21 @@ async function restablecerPassword(req, res) {
     usuario.IntentosFallidos = 0;
     usuario.BloqueadoHasta = null;
 
-    // Reactiva la cuenta si estaba bloqueada.
-    if (usuario.Estado === "Bloqueado") usuario.Estado = "Activo";
+    if (usuario.Estado === "Bloqueado")
+      usuario.Estado = "Activo";
 
     await usuario.save();
 
-    return res.json({ status: "ok", message: "Contraseña actualizada correctamente" });
+    res.json({ message: "Contraseña cambiada correctamente" });
+
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ status: "error", message: "Error al restablecer la contraseña" });
+    res.status(500).json({ message: "Error al cambiar contraseña" });
   }
 }
 
-module.exports = { register, login, solicitarRecuperacion, restablecerPassword };
+module.exports = {
+  register,
+  login,
+  solicitarRecuperacion,
+  restablecerPassword
+};

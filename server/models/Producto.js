@@ -1,58 +1,47 @@
+
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
 const Producto = sequelize.define("Producto", {
   ProductoID: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
+    type: DataTypes.INTEGER,
     primaryKey: true,
+    autoIncrement: true
   },
   Nombre: {
     type: DataTypes.STRING(150),
-    allowNull: false,
+    allowNull: false
   },
-  Descripcion: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  Imagen: {
-    type: DataTypes.STRING(255),
-    allowNull: true,
-  },
+  Descripcion: DataTypes.TEXT,
+  Imagen: DataTypes.STRING(255),
   Precio: {
     type: DataTypes.DECIMAL(12, 2),
-    allowNull: false,
+    allowNull: false
   },
   StockActual: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: false,
-    defaultValue: 0,
+    type: DataTypes.INTEGER,
+    defaultValue: 0
   },
   StockMaximo: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: false,
-    defaultValue: 50,
+    type: DataTypes.INTEGER,
+    defaultValue: 50
   },
   Estado: {
     type: DataTypes.ENUM("Disponible", "PocasUnidades", "Agotado", "Inactivo"),
-    allowNull: false,
-    defaultValue: "Disponible",
+    defaultValue: "Disponible"
   },
   Destacado: {
     type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: false,
+    defaultValue: false
   },
   Categoria: {
     type: DataTypes.ENUM("Hombre", "Mujer", "Unisex"),
-    allowNull: false,
-    defaultValue: "Unisex",
-  },
+    defaultValue: "Unisex"
+  }
 }, {
   tableName: "productos",
-  timestamps: true,
   createdAt: "FechaCreacion",
-  updatedAt: "FechaActualizacion",
+  updatedAt: "FechaActualizacion"
 });
 
 module.exports = Producto;

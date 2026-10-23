@@ -4,11 +4,9 @@ const CART_URL = "http://localhost:4000/api/carrito";
 const PEDIDOS_URL = "http://localhost:4000/api/pedidos";
 
 function getAuthHeader() {
-  const token = localStorage.getItem("token");
-
   return {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   };
 }
