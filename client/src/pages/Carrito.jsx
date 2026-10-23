@@ -13,15 +13,28 @@ import "../assets/css/carrito.css";
 function normalizarRespuesta(respuesta) {
   let datos = respuesta?.data ?? respuesta;
 
-  // Admite respuestas anidadas del backend.
-  if (datos?.data && !Array.isArray(datos.items)) {
-    datos = datos.data;
-  }
+  if (datos?.carrito) datos = datos.carrito;
+  else if (datos?.data && !Array.isArray(datos.items)) datos = datos.data;
 
-  return {
-    items: Array.isArray(datos?.items) ? datos.items : [],
-    total: Number(datos?.total ?? 0),
-  };
+  const items = Array.isArray(datos)
+    ? datos
+    : datos?.items ?? datos?.detalles ?? datos?.productos ?? [];
+
+  const lista = Array.isArray(items) ? items : [];
+
+  const total = Number(
+    datos?.total ??
+    datos?.Total ??
+    lista.reduce(
+      (suma, item) =>
+        suma +
+        Number(item.Cantidad ?? item.cantidad ?? 0) *
+          Number(item.Precio ?? item.precio ?? item.PrecioUnitario ?? 0),
+      0
+    )
+  );
+
+  return { items: lista, total };
 }
 
 function Carrito() {
@@ -46,7 +59,11 @@ function Carrito() {
       setTotal(carrito.total);
     } catch (error) {
       console.error("Error al cargar el carrito:", error);
-      setMensajeError("No se pudo cargar el carrito. Intentá nuevamente.");
+      setMensajeError(
+        error.response?.data?.mensaje ||
+          error.response?.data?.message ||
+          "No se pudo cargar el carrito. Intentá nuevamente."
+      );
     } finally {
       setCargando(false);
     }
@@ -56,23 +73,17 @@ function Carrito() {
     cargarCarrito();
   }, [cargarCarrito]);
 
-  async function cambiarCantidad(productoId, nuevaCantidad) {
-    if (!productoId || nuevaCantidad < 1 || procesando) return;
+  async function cambiarCantidad(productoId, cantidad) {
+    if (!productoId || cantidad < 1 || procesando) return;
 
     try {
       setProcesando(true);
-      setMensajeError("");
-
-      await actualizarCantidadCarrito(productoId, nuevaCantidad);
+      await actualizarCantidadCarrito(productoId, cantidad);
       await cargarCarrito();
       await refrescarCarrito();
     } catch (error) {
       console.error("Error al actualizar la cantidad:", error);
-      setMensajeError(
-        error.response?.data?.mensaje ||
-          error.response?.data?.message ||
-          "No se pudo actualizar la cantidad."
-      );
+      setMensajeError("No se pudo actualizar la cantidad.");
     } finally {
       setProcesando(false);
     }
@@ -83,20 +94,13 @@ function Carrito() {
 
     try {
       setProcesando(true);
-      setMensajeError("");
-
       await eliminarDelCarrito(productoAEliminar);
       setProductoAEliminar(null);
-
       await cargarCarrito();
       await refrescarCarrito();
     } catch (error) {
       console.error("Error al eliminar el producto:", error);
-      setMensajeError(
-        error.response?.data?.mensaje ||
-          error.response?.data?.message ||
-          "No se pudo eliminar el producto."
-      );
+      setMensajeError("No se pudo eliminar el producto.");
     } finally {
       setProcesando(false);
     }
@@ -115,6 +119,9 @@ function Carrito() {
           <Link to="/coleccion" className="carrito-seguir">
             Ver colección
           </Link>
+          <button type="button" onClick={cargarCarrito}>
+            Volver a intentar
+          </button>
         </div>
       </div>
     );
@@ -125,30 +132,38 @@ function Carrito() {
       <h1>Tu carrito</h1>
 
       {mensajeError && (
-        <p className="carrito-error" role="alert">
-          {mensajeError}
-        </p>
+        <p className="carrito-error" role="alert">{mensajeError}</p>
       )}
 
       <div className="carrito-items">
         {items.map((item, indice) => {
           const productoId = item.ProductoID ?? item.productoId ?? item.id;
           const cantidad = Number(item.Cantidad ?? item.cantidad ?? 1);
-          const precio = Number(item.Precio ?? item.precio ?? 0);
+          const precio = Number(
+            item.Precio ?? item.precio ?? item.PrecioUnitario ?? 0
+          );
           const stock = Number(item.StockActual ?? item.stock ?? 0);
           const nombre = item.Nombre ?? item.nombre ?? "Producto";
-          const imagen = item.Imagen ?? item.imagen ?? "";
+          const archivoImagen = item.Imagen ?? item.imagen ?? "";
+
+          const imagen = archivoImagen
+            ? /^https?:\/\//i.test(archivoImagen)
+              ? archivoImagen
+              : `${IMG_BASE_URL}${archivoImagen}`
+            : "";
 
           return (
             <div
               key={productoId ?? item.CarritoDetalleID ?? indice}
               className="carrito-item"
             >
-              <img
-                src={imagen ? `${IMG_BASE_URL}${imagen}` : ""}
-                alt={nombre}
-                className="carrito-item-imagen"
-              />
+              {imagen && (
+                <img
+                  src={imagen}
+                  alt={nombre}
+                  className="carrito-item-imagen"
+                />
+              )}
 
               <div className="carrito-item-info">
                 <h3>{nombre}</h3>
@@ -162,7 +177,6 @@ function Carrito() {
                   type="button"
                   onClick={() => cambiarCantidad(productoId, cantidad - 1)}
                   disabled={procesando || cantidad <= 1 || !productoId}
-                  aria-label={`Disminuir cantidad de ${nombre}`}
                 >
                   −
                 </button>
@@ -177,7 +191,6 @@ function Carrito() {
                     (stock > 0 && cantidad >= stock) ||
                     !productoId
                   }
-                  aria-label={`Aumentar cantidad de ${nombre}`}
                 >
                   +
                 </button>
