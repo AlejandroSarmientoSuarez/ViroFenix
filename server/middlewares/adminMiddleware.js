@@ -1,5 +1,7 @@
+
 const Usuario = require("../models/Usuario");
 
+// Comprueba que el usuario esté activo y tenga permisos de administrador.
 async function soloAdmin(req, res, next) {
   try {
     const usuario = await Usuario.findByPk(req.usuario.id, {
@@ -13,6 +15,7 @@ async function soloAdmin(req, res, next) {
       });
     }
 
+    // Permite continuar con la solicitud si el usuario tiene los permisos necesarios.
     next();
   } catch (error) {
     console.error(error);

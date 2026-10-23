@@ -1,22 +1,7 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Servidor: 127.0.0.1
--- Tiempo de generación: 22-10-2026 a las 19:47:16
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
 --
 -- Base de datos: `2t`
 --
@@ -73,9 +58,6 @@ END$$
 
 DELIMITER ;
 
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `carrito`
 --
 
@@ -359,11 +341,8 @@ END
 $$
 DELIMITER ;
 
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `usuarios`
---
+
 
 CREATE TABLE `usuarios` (
   `UsuarioID` int(10) UNSIGNED NOT NULL,
@@ -383,9 +362,9 @@ CREATE TABLE `usuarios` (
   `TokenExpiracion` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
+
 -- Volcado de datos para la tabla `usuarios`
---
+
 
 INSERT INTO `usuarios` (`UsuarioID`, `Nombre`, `Apellido`, `Email`, `PasswordHash`, `Rol`, `Estado`, `IntentosFallidos`, `UltimoIntento`, `BloqueadoHasta`, `UltimoAcceso`, `FechaRegistro`, `FechaActualizacion`, `TokenRecuperacion`, `TokenExpiracion`) VALUES
 (1, 'Juan', 'Pérez', 'juan@test.com', '$2b$10$/5TZ4MBC/OSmZBGoxr4yYOZ5L9UP.00.7nk0igblcyU2PK8NU7R/.', 'Cliente', 'Activo', 0, NULL, NULL, '2026-09-05 04:04:04', '2026-09-05 04:03:15', '2026-09-05 04:04:04', NULL, NULL),
@@ -609,7 +588,3 @@ ALTER TABLE `movimientos_stock`
 ALTER TABLE `pedidos`
   ADD CONSTRAINT `fk_pedidos_usuario` FOREIGN KEY (`UsuarioID`) REFERENCES `usuarios` (`UsuarioID`) ON UPDATE CASCADE;
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

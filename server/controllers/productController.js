@@ -2,6 +2,7 @@
 const Producto = require("../models/Producto");
 const { Op } = require("sequelize");
 
+// Lista los productos activos y permite filtrarlos por categoría o texto.
 async function listarProductos(req, res) {
   try {
     const where = { Estado: { [Op.ne]: "Inactivo" } };
@@ -10,6 +11,7 @@ async function listarProductos(req, res) {
       where.Categoria = req.query.categoria;
     }
 
+    // Busca coincidencias en el nombre o la descripción del producto.
     if (req.query.search) {
       where[Op.or] = [
         { Nombre: { [Op.like]: "%" + req.query.search + "%" } },
@@ -28,6 +30,7 @@ async function listarProductos(req, res) {
   }
 }
 
+// Busca un producto por su ID y devuelve sus datos si está activo.
 async function obtenerProductoPorId(req, res) {
   try {
     const producto = await Producto.findByPk(req.params.id);

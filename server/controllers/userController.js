@@ -1,6 +1,8 @@
+
 const Usuario = require("../models/Usuario");
 const bcrypt = require("bcrypt");
 
+// Obtiene los datos del usuario sin mostrar información sensible.
 async function obtenerPerfil(req, res) {
   try {
     const usuario = await Usuario.findByPk(req.usuario.id, {
@@ -28,6 +30,7 @@ async function obtenerPerfil(req, res) {
   }
 }
 
+// Permite modificar el nombre, apellido y email del usuario que inició sesión.
 async function actualizarPerfil(req, res) {
   try {
     const usuario = await Usuario.findByPk(req.usuario.id);
@@ -54,6 +57,7 @@ async function actualizarPerfil(req, res) {
   }
 }
 
+// Elimina la cuenta de forma lógica, reemplazando sus datos personales.
 async function eliminarCuenta(req, res) {
   try {
     const usuario = await Usuario.findByPk(req.usuario.id);
@@ -68,6 +72,8 @@ async function eliminarCuenta(req, res) {
     usuario.Apellido = "Eliminado";
     usuario.Email = "eliminado" + usuario.UsuarioID + "@baja.local";
     usuario.Estado = "Eliminado";
+
+    // Reemplaza la contraseña por un hash para impedir el uso de la anterior.
     usuario.PasswordHash = await bcrypt.hash("cuenta-eliminada", 10);
 
     await usuario.save();

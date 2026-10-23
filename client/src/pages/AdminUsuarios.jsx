@@ -1,114 +1,43 @@
-import { useState, useEffect } from "react";
-import {
-  listarUsuarios,
-  actualizarUsuario,
-  eliminarUsuario,
-} from "../services/adminService";
-import { useAuth } from "../context/AuthContext";
 
+import { useState, useEffect } from "react";
+import { listarUsuarios, actualizarUsuario, eliminarUsuario } from "../services/adminService";
+import { useAuth } from "../context/AuthContext";
 import ConfirmModal from "../components/ConfirmModal";
 import "../assets/css/admin.css";
 
 const ESTADOS = ["Activo", "Bloqueado", "Pendiente"];
-const FILTROS_ESTADO = ["Activo", "Bloqueado", "Pendiente", "Eliminado"];
 
-function formatearFecha(valor) {
-  if (!valor) return "Nunca ingresó";
-
-  return new Date(valor).toLocaleString("es-AR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-function AdminUsuarios() {
+export default function AdminUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
-  const [cargando, setCargando] = useState(true);
-  const [busquedaInput, setBusquedaInput] = useState("");
-  const [busqueda, setBusqueda] = useState("");
-  const [filtroEstado, setFiltroEstado] = useState("");
   const [editando, setEditando] = useState(null);
-  const [guardando, setGuardando] = useState(false);
-  const [aEliminar, setAEliminar] = useState(null);
+  const [eliminar, setEliminar] = useState(null);
   const [mensaje, setMensaje] = useState("");
-
+  const [guardando, setGuardando] = useState(false);
   const { usuario } = useAuth();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setBusqueda(busquedaInput);
-    }, 400);
-
-    return () => clearTimeout(timer);
-  }, [busquedaInput]);
+  const propio = (id) => id === (usuario?.id || usuario?.UsuarioID);
 
   async function cargar() {
-    setCargando(true);
-
     try {
-      const respuesta = await listarUsuarios({
-        buscar: busqueda,
-        estado: filtroEstado,
-      });
-
-      setUsuarios(Array.isArray(respuesta) ? respuesta : respuesta.data || []);
-      setMensaje("");
-    } catch (error) {
-      console.error(error);
-      setMensaje("No se pudieron cargar las cuentas.");
-    } finally {
-      setCargando(false);
+      const r = await listarUsuarios();
+      setUsuarios(Array.isArray(r) ? r : r.data || []);
+    } catch {
+      setMensaje("Error al cargar las cuentas.");
     }
   }
 
-  useEffect(() => {
-    cargar();
-  }, [busqueda, filtroEstado]);
-
-  function abrirGestion(u) {
-    setEditando({
-      id: u.UsuarioID,
-      nombre: u.Nombre,
-      apellido: u.Apellido,
-      email: u.Email,
-      rol: u.Rol,
-      estado: u.Estado,
-      esPropio: u.UsuarioID === (usuario?.id || usuario?.UsuarioID),
-    });
-  }
-
-  function cambiarCampo(campo, valor) {
-    setEditando((anterior) => ({
-      ...anterior,
-      [campo]: valor,
-    }));
-  }
+  useEffect(() => { cargar(); }, []);
 
   async function guardar(e) {
     e.preventDefault();
     setGuardando(true);
-    setMensaje("");
-
     try {
-      await actualizarUsuario(editando.id, {
-        nombre: editando.nombre,
-        apellido: editando.apellido,
-        email: editando.email,
-        rol: editando.rol,
-        estado: editando.estado,
-      });
-
-      setMensaje("Cuenta actualizada correctamente.");
+      const { id, esPropio, ...datos } = editando;
+      await actualizarUsuario(id, datos);
       setEditando(null);
+      setMensaje("Cuenta actualizada.");
       await cargar();
-    } catch (error) {
-      setMensaje(
-        error.response?.data?.message ||
-        "No se pudo actualizar la cuenta."
-      );
+    } catch (e) {
+      setMensaje(e.response?.data?.message || "Error al actualizar.");
     } finally {
       setGuardando(false);
     }
@@ -116,260 +45,94 @@ function AdminUsuarios() {
 
   async function confirmarEliminar() {
     try {
-      await eliminarUsuario(aEliminar.UsuarioID);
-      setMensaje("Cuenta eliminada correctamente.");
-      setAEliminar(null);
+      await eliminarUsuario(eliminar.UsuarioID);
+      setMensaje("Cuenta eliminada.");
+      setEliminar(null);
       await cargar();
-    } catch (error) {
-      setMensaje(
-        error.response?.data?.message ||
-        "No se pudo eliminar la cuenta."
-      );
-      setAEliminar(null);
+    } catch (e) {
+      setMensaje(e.response?.data?.message || "Error al eliminar.");
+      setEliminar(null);
     }
   }
 
-  if (cargando) {
+  if (!usuarios.length && !mensaje) {
     return <p className="admin-loading">Cargando cuentas...</p>;
   }
 
   return (
     <div className="admin-container">
-      <div className="admin-header">
+      <header className="admin-header">
         <div>
           <h1>Gestión de cuentas</h1>
-          <p>
-            {usuarios.length}{" "}
-            {usuarios.length === 1 ? "cuenta" : "cuentas"}
-          </p>
+          <p>{usuarios.length} cuentas</p>
         </div>
+      </header>
 
-        <div className="admin-filtros">
-          <input
-            type="search"
-            className="admin-buscador"
-            placeholder="Buscar por nombre o email..."
-            value={busquedaInput}
-            onChange={(e) => setBusquedaInput(e.target.value)}
-          />
+      {mensaje && <p role="status" className="admin-mensaje">{mensaje}</p>}
 
-          <select
-            className="admin-select"
-            value={filtroEstado}
-            onChange={(e) => setFiltroEstado(e.target.value)}
-          >
-            <option value="">Todas (sin eliminadas)</option>
-            {FILTROS_ESTADO.map((estado) => (
-              <option key={estado} value={estado}>
-                {estado}
-              </option>
+      <div className="admin-tabla-wrap">
+        <table className="admin-tabla">
+          <thead>
+            <tr>
+              <th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {usuarios.map((u) => (
+              <tr key={u.UsuarioID}>
+                <td>{u.Nombre} {u.Apellido}{propio(u.UsuarioID) && " (vos)"}</td>
+                <td>{u.Email}</td>
+                <td><span className={`admin-badge admin-badge--${u.Rol.toLowerCase()}`}>{u.Rol}</span></td>
+                <td><span className={`admin-badge admin-badge--${u.Estado.toLowerCase()}`}>{u.Estado}</span></td>
+                <td>
+                  <div className="admin-acciones">
+                    <button className="admin-btn" onClick={() => setEditando({
+                      id: u.UsuarioID, nombre: u.Nombre, apellido: u.Apellido,
+                      email: u.Email, rol: u.Rol, estado: u.Estado,
+                      esPropio: propio(u.UsuarioID)
+                    })}>Editar</button>
+                    <button className="admin-btn admin-btn--peligro"
+                      disabled={propio(u.UsuarioID)}
+                      onClick={() => setEliminar(u)}>Eliminar</button>
+                  </div>
+                </td>
+              </tr>
             ))}
-          </select>
-        </div>
+          </tbody>
+        </table>
       </div>
 
-      {mensaje && (
-        <p role="status" className="admin-mensaje">
-          {mensaje}
-        </p>
-      )}
-
-      {usuarios.length === 0 ? (
-        <p className="admin-vacio">No se encontraron cuentas.</p>
-      ) : (
-        <div className="admin-tabla-wrap">
-          <table className="admin-tabla">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Rol</th>
-                <th>Estado</th>
-                <th>Última sesión</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {usuarios.map((u) => {
-                const esPropio =
-                  u.UsuarioID === (usuario?.id || usuario?.UsuarioID);
-                const eliminada = u.Estado === "Eliminado";
-
-                return (
-                  <tr key={u.UsuarioID}>
-                    <td>
-                      {u.Nombre} {u.Apellido}
-                      {esPropio && (
-                        <span className="admin-tu"> (vos)</span>
-                      )}
-                    </td>
-
-                    <td>{u.Email}</td>
-
-                    <td>
-                      <span
-                        className={`admin-badge admin-badge--${String(
-                          u.Rol || ""
-                        ).toLowerCase()}`}
-                      >
-                        {u.Rol}
-                      </span>
-                    </td>
-
-                    <td>
-                      <span
-                        className={`admin-badge admin-badge--${String(
-                          u.Estado || ""
-                        ).toLowerCase()}`}
-                      >
-                        {u.Estado}
-                      </span>
-                    </td>
-
-                    <td>{formatearFecha(u.UltimoAcceso)}</td>
-
-                    <td>
-                      <div className="admin-acciones">
-                        <button
-                          className="admin-btn"
-                          onClick={() => abrirGestion(u)}
-                          disabled={eliminada}
-                        >
-                          Gestionar
-                        </button>
-
-                        <button
-                          className="admin-btn admin-btn--peligro"
-                          onClick={() => setAEliminar(u)}
-                          disabled={eliminada || esPropio}
-                        >
-                          Eliminar
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
-
       {editando && (
-        <div
-          className="admin-modal-overlay"
-          onClick={() => setEditando(null)}
-        >
-          <form
-            className="admin-modal"
-            onClick={(e) => e.stopPropagation()}
-            onSubmit={guardar}
-          >
-            <h2>Gestionar cuenta</h2>
+        <div className="admin-modal-overlay" onClick={() => setEditando(null)}>
+          <form className="admin-modal" onClick={e => e.stopPropagation()} onSubmit={guardar}>
+            <h2>Editar cuenta</h2>
 
-            <div className="admin-campo-fila">
-              <div className="admin-campo">
-                <label htmlFor="adm-nombre">Nombre</label>
-                <input
-                  id="adm-nombre"
-                  value={editando.nombre}
-                  onChange={(e) =>
-                    cambiarCampo("nombre", e.target.value)
-                  }
-                  required
-                />
+            {["nombre", "apellido", "email"].map(campo => (
+              <div className="admin-campo" key={campo}>
+                <label htmlFor={`adm-${campo}`}>{campo[0].toUpperCase() + campo.slice(1)}</label>
+                <input id={`adm-${campo}`} type={campo === "email" ? "email" : "text"}
+                  value={editando[campo]}
+                  onChange={e => setEditando({ ...editando, [campo]: e.target.value })}
+                  required />
               </div>
+            ))}
 
-              <div className="admin-campo">
-                <label htmlFor="adm-apellido">Apellido</label>
-                <input
-                  id="adm-apellido"
-                  value={editando.apellido}
-                  onChange={(e) =>
-                    cambiarCampo("apellido", e.target.value)
-                  }
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="admin-campo">
-              <label htmlFor="adm-email">Email</label>
-              <input
-                id="adm-email"
-                type="email"
-                value={editando.email}
-                onChange={(e) =>
-                  cambiarCampo("email", e.target.value)
-                }
-                required
-              />
-            </div>
-
-            <div className="admin-campo-fila">
-              <div className="admin-campo">
-                <label htmlFor="adm-rol">Rol</label>
-                <select
-                  id="adm-rol"
-                  value={editando.rol}
-                  onChange={(e) =>
-                    cambiarCampo("rol", e.target.value)
-                  }
-                  disabled={editando.esPropio}
-                >
-                  <option value="Cliente">Cliente</option>
-                  <option value="Admin">Admin</option>
+            {["rol", "estado"].map(campo => (
+              <div className="admin-campo" key={campo}>
+                <label>{campo === "rol" ? "Rol" : "Estado"}</label>
+                <select value={editando[campo]} disabled={editando.esPropio}
+                  onChange={e => setEditando({ ...editando, [campo]: e.target.value })}>
+                  {(campo === "rol" ? ["Cliente", "Admin"] : ESTADOS).map(opcion =>
+                    <option key={opcion} value={opcion}>{opcion}</option>
+                  )}
                 </select>
               </div>
-
-              <div className="admin-campo">
-                <label htmlFor="adm-estado">Estado</label>
-                <select
-                  id="adm-estado"
-                  value={editando.estado}
-                  onChange={(e) =>
-                    cambiarCampo("estado", e.target.value)
-                  }
-                  disabled={editando.esPropio}
-                >
-                  {ESTADOS.map((estado) => (
-                    <option key={estado} value={estado}>
-                      {estado}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {editando.esPropio && (
-              <p className="admin-nota">
-                Es tu cuenta: no podés cambiar tu propio rol ni tu estado.
-              </p>
-            )}
-
-            {editando.estado === "Bloqueado" && !editando.esPropio && (
-              <p className="admin-nota">
-                Una cuenta bloqueada no puede iniciar sesión hasta que
-                la pases a Activo.
-              </p>
-            )}
+            ))}
 
             <div className="admin-modal-acciones">
-              <button
-                type="button"
-                className="admin-btn"
-                onClick={() => setEditando(null)}
-              >
-                Cancelar
-              </button>
-
-              <button
-                type="submit"
-                className="admin-btn admin-btn--primario"
-                disabled={guardando}
-              >
-                {guardando ? "Guardando..." : "Guardar cambios"}
+              <button type="button" className="admin-btn" onClick={() => setEditando(null)}>Cancelar</button>
+              <button className="admin-btn admin-btn--primario" disabled={guardando}>
+                {guardando ? "Guardando..." : "Guardar"}
               </button>
             </div>
           </form>
@@ -377,20 +140,14 @@ function AdminUsuarios() {
       )}
 
       <ConfirmModal
-        open={!!aEliminar}
+        open={!!eliminar}
         title="Eliminar cuenta"
-        message={
-          aEliminar
-            ? `Vas a eliminar la cuenta de ${aEliminar.Nombre} ${aEliminar.Apellido} (${aEliminar.Email}). Se borran sus datos personales, pero se conserva el historial de pedidos. Esta acción no se puede deshacer.`
-            : ""
-        }
+        message={eliminar ? `¿Eliminar la cuenta de ${eliminar.Nombre} ${eliminar.Apellido}?` : ""}
         confirmLabel="Eliminar"
         danger
         onConfirm={confirmarEliminar}
-        onCancel={() => setAEliminar(null)}
+        onCancel={() => setEliminar(null)}
       />
     </div>
   );
 }
-
-export default AdminUsuarios;

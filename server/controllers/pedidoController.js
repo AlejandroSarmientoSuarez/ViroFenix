@@ -7,6 +7,7 @@ const DetallePedido = require("../models/DetallePedido");
 const Producto = require("../models/Producto");
 const { obtenerOCrearCarritoActivo } = require("./cartController");
 
+// Crea un pedido con los productos del carrito y actualiza el stock disponible.
 async function crearPedido(req, res) {
   const { direccion, email } = req.body;
 
@@ -14,6 +15,7 @@ async function crearPedido(req, res) {
     return res.status(400).json({ mensaje: "Completa los datos" });
   }
 
+  // Agrupa las operaciones para que los cambios se guarden todos juntos.
   const transaccion = await sequelize.transaction();
 
   try {
@@ -37,6 +39,7 @@ async function crearPedido(req, res) {
       return res.status(400).json({ mensaje: "El carrito está vacío" });
     }
 
+    // Comprueba que haya stock suficiente y calcula el total del pedido.
     let total = 0;
 
     for (let i = 0; i < items.length; i++) {
@@ -58,6 +61,7 @@ async function crearPedido(req, res) {
       EmailContacto: email
     }, { transaction: transaccion });
 
+    // Guarda cada producto en el pedido y descuenta las unidades del stock.
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
 
@@ -76,6 +80,7 @@ async function crearPedido(req, res) {
       });
     }
 
+    // Vacía el carrito y lo marca como comprado.
     await CarritoDetalle.destroy({
       where: { CarritoID: carrito.CarritoID },
       transaction: transaccion
@@ -84,6 +89,7 @@ async function crearPedido(req, res) {
     carrito.Estado = "Comprado";
     await carrito.save({ transaction: transaccion });
 
+    // Confirma todos los cambios cuando el pedido se creó correctamente.
     await transaccion.commit();
 
     return res.status(201).json({
@@ -92,6 +98,7 @@ async function crearPedido(req, res) {
       total: total
     });
   } catch (error) {
+    // Si ocurre un error, revierte los cambios para evitar datos inconsistentes.
     if (!transaccion.finished) {
       await transaccion.rollback();
     }
@@ -100,6 +107,7 @@ async function crearPedido(req, res) {
   }
 }
 
+// Obtiene los pedidos del usuario y agrega los productos de cada uno.
 async function listarPedidos(req, res) {
   try {
     const pedidos = await Pedido.findAll({
@@ -122,6 +130,7 @@ async function listarPedidos(req, res) {
         }
       );
 
+      // Convierte el pedido en un objeto y le agrega sus productos.
       resultado.push({
         ...pedidos[i].toJSON(),
         items: items

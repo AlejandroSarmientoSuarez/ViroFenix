@@ -5,6 +5,7 @@ const Producto = require("../models/Producto");
 const sequelize = require("../config/db");
 const { QueryTypes } = require("sequelize");
 
+// Busca el carrito activo del usuario o crea uno si todavía no tiene.
 async function obtenerOCrearCarritoActivo(usuarioId) {
   let carrito = await Carrito.findOne({
     where: { UsuarioID: usuarioId, Estado: "Activo" }
@@ -17,6 +18,7 @@ async function obtenerOCrearCarritoActivo(usuarioId) {
   return carrito;
 }
 
+// Obtiene los productos del carrito y calcula el precio total.
 async function obtenerCarrito(req, res) {
   try {
     const carrito = await obtenerOCrearCarritoActivo(req.usuario.id);
@@ -33,6 +35,7 @@ async function obtenerCarrito(req, res) {
       }
     );
 
+    // Suma el precio de cada producto multiplicado por su cantidad.
     let total = 0;
 
     for (let i = 0; i < items.length; i++) {
@@ -48,6 +51,7 @@ async function obtenerCarrito(req, res) {
   }
 }
 
+// Agrega un producto al carrito y evita superar el stock disponible.
 async function agregarProducto(req, res) {
   try {
     const producto = await Producto.findByPk(req.params.productoId);
@@ -66,6 +70,7 @@ async function agregarProducto(req, res) {
       }
     });
 
+    // Si el producto ya está en el carrito, suma la cantidad solicitada.
     if (detalle) {
       detalle.Cantidad += cantidad;
 
@@ -88,6 +93,7 @@ async function agregarProducto(req, res) {
   }
 }
 
+// Cambia la cantidad de un producto o lo elimina si la cantidad es cero o negativa.
 async function actualizarCantidad(req, res) {
   try {
     const carrito = await obtenerOCrearCarritoActivo(req.usuario.id);
@@ -112,11 +118,13 @@ async function actualizarCantidad(req, res) {
 
     const producto = await Producto.findByPk(req.params.productoId);
 
+    // Elimina el producto del carrito si ya no existe o no tiene stock.
     if (!producto || producto.StockActual < 1) {
       await detalle.destroy();
       return res.json({ mensaje: "Producto sin stock" });
     }
 
+    // Limita la cantidad al stock disponible y guarda los cambios.
     detalle.Cantidad = Math.min(Math.floor(cantidad), producto.StockActual);
     await detalle.save();
 
@@ -126,6 +134,7 @@ async function actualizarCantidad(req, res) {
   }
 }
 
+// Quita un producto específico del carrito del usuario.
 async function eliminarProducto(req, res) {
   try {
     const carrito = await obtenerOCrearCarritoActivo(req.usuario.id);
