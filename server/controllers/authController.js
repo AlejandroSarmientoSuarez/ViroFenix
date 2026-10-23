@@ -83,9 +83,15 @@ async function login(req, res) {
       }
     });
 
+
   } catch (error) {
-    res.status(500).json({ message: "Error al iniciar sesión" });
+    console.error("ERROR LOGIN:", error);
+
+    res.status(500).json({
+      message: "Error al iniciar sesión"
+    });
   }
+
 }
 
 // RECUPERAR CONTRASEÑA
