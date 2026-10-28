@@ -1,0 +1,52 @@
+.admin-stock .as-tabla-wrap {
+  overflow-x: auto;
+  border: 1px solid #e8e4df;
+  border-radius: 12px;
+}
+
+.admin-stock table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  min-width: 760px;
+}
+
+.admin-stock th,
+.admin-stock td {
+  text-align: left;
+  padding: 14px;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-stock th {
+  background: #f8f7f5;
+  font-size: 13px;
+}
+
+.admin-stock td input {
+  width: 105px;
+  padding: 9px;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+}
+
+.admin-stock .as-nota {
+  color: #777;
+  font-size: 13px;
+  margin-top: 16px;
+}
+
+.as-disponible {
+  background: #dff5e6;
+  color: #216c3b;
+}
+
+.as-pocasunidades {
+  background: #fff1d2;
+  color: #895a00;
+}
+
+.as-agotado {
+  background: #ffe3e3;
+  color: #a12e2e;
+}

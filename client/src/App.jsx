@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
@@ -19,6 +18,8 @@ import Carrito from "./pages/Carrito";
 import Checkout from "./pages/Checkout";
 import Faq from "./pages/Faq";
 import AdminUsuarios from "./pages/AdminUsuarios";
+import AdminPedidos from "./pages/AdminPedidos";
+import AdminStock from "./pages/AdminStock";
 import RecuperarPassword from "./pages/RecuperarPassword";
 import RestablecerPassword from "./pages/RestablecerPassword";
 import ProductoDetalle from "./pages/ProductoDetalle";
@@ -78,6 +79,24 @@ function App() {
                 <RutaProtegida>
                   <MisPedidos />
                 </RutaProtegida>
+              }
+            />
+
+            <Route
+              path="/admin/pedidos"
+              element={
+                <RutaAdmin>
+                  <AdminPedidos />
+                </RutaAdmin>
+              }
+            />
+
+            <Route
+              path="/admin/stock"
+              element={
+                <RutaAdmin>
+                  <AdminStock />
+                </RutaAdmin>
               }
             />
 

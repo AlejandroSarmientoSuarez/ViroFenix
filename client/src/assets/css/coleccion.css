@@ -3,93 +3,143 @@
 }
 
 /* ============================================= */
-/* === BANNERS CON TEXTO SUPERPUESTO === */
+/* BANNERS PREMIUM CON PROPORCIONES NATURALES */
 /* ============================================= */
 
 .banner-hero,
 .banner-zapatos,
 .banner-secundario-wrap {
   position: relative;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
   overflow: hidden;
+  isolation: isolate;
+  background-color: #171614;
+}
+
+/* La imagen determina la altura del banner: no se estira ni se deforma. */
+.banner-hero img,
+.banner-hero :global(img),
+.banner-zapatos img,
+.banner-zapatos :global(img),
+.banner-secundario-wrap img,
+.banner-secundario-wrap :global(img) {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Los enlaces y picture conservan la proporción natural de la imagen. */
+.banner-hero > picture,
+.banner-zapatos > picture,
+.banner-secundario-wrap > picture,
+.banner-hero > a,
+.banner-zapatos > a,
+.banner-secundario-wrap > a,
+.banner-hero > .banner-imagen,
+.banner-zapatos > .banner-imagen,
+.banner-secundario-wrap > .banner-imagen,
+.banner-hero > .banner-image,
+.banner-zapatos > .banner-image,
+.banner-secundario-wrap > .banner-image {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
 }
 
 .banner-overlay {
   position: absolute;
   inset: 0;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
   text-align: left;
-  padding: 0 80px;
-  z-index: 2;
+  padding: clamp(24px, 5.5vw, 90px);
+  box-sizing: border-box;
 }
 
 .banner-overlay::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    100deg,
-    rgba(10, 10, 10, 0.62) 0%,
-    rgba(10, 10, 10, 0.32) 45%,
-    rgba(10, 10, 10, 0) 75%
-  );
   z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(12, 11, 10, 0.68) 0%,
+    rgba(12, 11, 10, 0.38) 38%,
+    rgba(12, 11, 10, 0.10) 70%,
+    rgba(12, 11, 10, 0) 100%
+  );
 }
 
 .banner-kicker {
   display: inline-block;
-  font-size: 11px;
-  letter-spacing: 2.2px;
-  text-transform: uppercase;
+  margin-bottom: 18px;
   color: var(--gold);
-  margin-bottom: 14px;
+  font-size: 10px;
+  letter-spacing: 2.8px;
+  text-transform: uppercase;
 }
 
 .banner-titulo {
-  font-family: var(--font-display);
-  font-weight: 400;
+  max-width: 650px;
+  margin: 0 0 18px;
   color: #fff;
-  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4.2vw, 64px);
+  font-weight: 400;
   line-height: 1.05;
-}
-
-.banner-hero .banner-titulo {
-  font-size: 52px;
-  max-width: 560px;
+  letter-spacing: -0.6px;
+  text-wrap: balance;
 }
 
 .banner-zapatos .banner-titulo {
-  font-size: 40px;
+  font-size: clamp(28px, 3.4vw, 46px);
 }
 
 .banner-secundario-wrap .banner-titulo {
-  font-size: 34px;
+  font-size: clamp(26px, 2.9vw, 40px);
 }
 
 .banner-subtitulo {
-  color: rgba(255, 255, 255, 0.88);
-  font-size: 14.5px;
-  line-height: 1.6;
-  max-width: 420px;
+  max-width: 430px;
   margin: 0 0 28px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: clamp(12px, 1.05vw, 15px);
+  line-height: 1.75;
 }
 
 .banner-cta {
-  height: 46px;
-  padding: 0 30px;
-  border: 1px solid #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 28px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
   background: transparent;
   color: #fff;
-  font-size: 11.5px;
-  letter-spacing: 1px;
+  font-size: 10px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
+  text-decoration: none;
   cursor: pointer;
   transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
 
 .banner-cta:hover {
+  border-color: #fff;
   background: #fff;
   color: var(--ink);
 }
@@ -100,26 +150,76 @@
 }
 
 .banner-cta--claro:hover {
+  border-color: var(--gold);
   background: var(--gold);
   color: var(--ink);
-  border-color: var(--gold);
 }
 
 @media (max-width: 900px) {
   .banner-overlay {
-    padding: 0 32px;
-    align-items: center;
-    text-align: center;
+    padding: 28px;
   }
-  .banner-hero .banner-titulo {
-    font-size: 34px;
+
+  .banner-titulo {
+    max-width: 75%;
+    font-size: clamp(28px, 5vw, 44px);
+  }
+
+  .banner-zapatos .banner-titulo,
+  .banner-secundario-wrap .banner-titulo {
+    font-size: clamp(24px, 4vw, 34px);
+  }
+
+  .banner-subtitulo {
+    max-width: 75%;
+  }
+}
+
+@media (max-width: 600px) {
+  .banner-overlay {
+    padding: 20px;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .banner-overlay::before {
+    background: linear-gradient(
+      0deg,
+      rgba(12, 11, 10, 0.78) 0%,
+      rgba(12, 11, 10, 0.40) 58%,
+      rgba(12, 11, 10, 0.08) 100%
+    );
+  }
+
+  .banner-kicker {
+    margin-bottom: 10px;
+    font-size: 8px;
+    letter-spacing: 2px;
+  }
+
+  .banner-titulo {
     max-width: 100%;
+    margin-bottom: 10px;
+    font-size: clamp(22px, 6vw, 34px);
+    line-height: 1.08;
   }
-  .banner-zapatos .banner-titulo {
-    font-size: 28px;
+
+  .banner-zapatos .banner-titulo,
+  .banner-secundario-wrap .banner-titulo {
+    font-size: clamp(20px, 5vw, 29px);
   }
+
   .banner-subtitulo {
     max-width: 100%;
+    margin-bottom: 16px;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .banner-cta {
+    min-height: 36px;
+    padding: 0 16px;
+    font-size: 9px;
   }
 }
 

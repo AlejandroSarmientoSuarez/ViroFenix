@@ -1,11 +1,9 @@
-
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { listarUsuarios, actualizarUsuario, eliminarUsuario } from "../services/adminService";
 import { useAuth } from "../context/AuthContext";
 import ConfirmModal from "../components/ConfirmModal";
 import "../assets/css/admin.css";
-
-const ESTADOS = ["Activo", "Bloqueado", "Pendiente"];
 
 export default function AdminUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
@@ -14,33 +12,41 @@ export default function AdminUsuarios() {
   const [mensaje, setMensaje] = useState("");
   const [guardando, setGuardando] = useState(false);
   const { usuario } = useAuth();
-  const propio = (id) => id === (usuario?.id || usuario?.UsuarioID);
 
-  async function cargar() {
+  async function cargarUsuarios() {
     try {
-      const r = await listarUsuarios();
-      setUsuarios(Array.isArray(r) ? r : r.data || []);
+      const respuesta = await listarUsuarios();
+      setUsuarios(Array.isArray(respuesta) ? respuesta : respuesta.data || []);
     } catch {
       setMensaje("Error al cargar las cuentas.");
     }
   }
 
-  useEffect(() => { cargar(); }, []);
+  useEffect(() => {
+    cargarUsuarios();
+  }, []);
 
   async function guardar(e) {
     e.preventDefault();
     setGuardando(true);
+
     try {
-      const { id, esPropio, ...datos } = editando;
-      await actualizarUsuario(id, datos);
+      await actualizarUsuario(editando.id, {
+        nombre: editando.nombre,
+        apellido: editando.apellido,
+        email: editando.email,
+        rol: editando.rol,
+        estado: editando.estado
+      });
+
       setEditando(null);
       setMensaje("Cuenta actualizada.");
-      await cargar();
-    } catch (e) {
-      setMensaje(e.response?.data?.message || "Error al actualizar.");
-    } finally {
-      setGuardando(false);
+      await cargarUsuarios();
+    } catch (error) {
+      setMensaje(error.response?.data?.message || "Error al actualizar.");
     }
+
+    setGuardando(false);
   }
 
   async function confirmarEliminar() {
@@ -48,9 +54,9 @@ export default function AdminUsuarios() {
       await eliminarUsuario(eliminar.UsuarioID);
       setMensaje("Cuenta eliminada.");
       setEliminar(null);
-      await cargar();
-    } catch (e) {
-      setMensaje(e.response?.data?.message || "Error al eliminar.");
+      await cargarUsuarios();
+    } catch (error) {
+      setMensaje(error.response?.data?.message || "Error al eliminar.");
       setEliminar(null);
     }
   }
@@ -61,6 +67,12 @@ export default function AdminUsuarios() {
 
   return (
     <div className="admin-container">
+      <nav className="admin-navegacion">
+        <Link to="/admin/usuarios" className="admin-nav-activo">Cuentas</Link>
+        <Link to="/admin/pedidos">Pedidos</Link>
+        <Link to="/admin/stock">Stock</Link>
+      </nav>
+
       <header className="admin-header">
         <div>
           <h1>Gestión de cuentas</h1>
@@ -74,63 +86,111 @@ export default function AdminUsuarios() {
         <table className="admin-tabla">
           <thead>
             <tr>
-              <th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {usuarios.map((u) => (
-              <tr key={u.UsuarioID}>
-                <td>{u.Nombre} {u.Apellido}{propio(u.UsuarioID) && " (vos)"}</td>
-                <td>{u.Email}</td>
-                <td><span className={`admin-badge admin-badge--${u.Rol.toLowerCase()}`}>{u.Rol}</span></td>
-                <td><span className={`admin-badge admin-badge--${u.Estado.toLowerCase()}`}>{u.Estado}</span></td>
-                <td>
-                  <div className="admin-acciones">
-                    <button className="admin-btn" onClick={() => setEditando({
-                      id: u.UsuarioID, nombre: u.Nombre, apellido: u.Apellido,
-                      email: u.Email, rol: u.Rol, estado: u.Estado,
-                      esPropio: propio(u.UsuarioID)
-                    })}>Editar</button>
-                    <button className="admin-btn admin-btn--peligro"
-                      disabled={propio(u.UsuarioID)}
-                      onClick={() => setEliminar(u)}>Eliminar</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {usuarios.map((u) => {
+              const esPropio = u.UsuarioID === (usuario?.id || usuario?.UsuarioID);
+
+              return (
+                <tr key={u.UsuarioID}>
+                  <td>{u.Nombre} {u.Apellido}{esPropio && " (vos)"}</td>
+                  <td>{u.Email}</td>
+                  <td>
+                    <span className={`admin-badge admin-badge--${u.Rol.toLowerCase()}`}>
+                      {u.Rol}
+                    </span>
+                  </td>
+                  <td>
+                    <span className={`admin-badge admin-badge--${u.Estado.toLowerCase()}`}>
+                      {u.Estado}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="admin-acciones">
+                      <button
+                        className="admin-btn"
+                        onClick={() => setEditando({
+                          id: u.UsuarioID,
+                          nombre: u.Nombre,
+                          apellido: u.Apellido,
+                          email: u.Email,
+                          rol: u.Rol,
+                          estado: u.Estado
+                        })}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="admin-btn admin-btn--peligro"
+                        disabled={esPropio}
+                        onClick={() => setEliminar(u)}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
 
       {editando && (
         <div className="admin-modal-overlay" onClick={() => setEditando(null)}>
-          <form className="admin-modal" onClick={e => e.stopPropagation()} onSubmit={guardar}>
+          <form className="admin-modal" onClick={(e) => e.stopPropagation()} onSubmit={guardar}>
             <h2>Editar cuenta</h2>
 
-            {["nombre", "apellido", "email"].map(campo => (
-              <div className="admin-campo" key={campo}>
-                <label htmlFor={`adm-${campo}`}>{campo[0].toUpperCase() + campo.slice(1)}</label>
-                <input id={`adm-${campo}`} type={campo === "email" ? "email" : "text"}
-                  value={editando[campo]}
-                  onChange={e => setEditando({ ...editando, [campo]: e.target.value })}
-                  required />
-              </div>
-            ))}
+            <div className="admin-campo">
+              <label>Nombre</label>
+              <input value={editando.nombre} onChange={(e) => setEditando({ ...editando, nombre: e.target.value })} required />
+            </div>
 
-            {["rol", "estado"].map(campo => (
-              <div className="admin-campo" key={campo}>
-                <label>{campo === "rol" ? "Rol" : "Estado"}</label>
-                <select value={editando[campo]} disabled={editando.esPropio}
-                  onChange={e => setEditando({ ...editando, [campo]: e.target.value })}>
-                  {(campo === "rol" ? ["Cliente", "Admin"] : ESTADOS).map(opcion =>
-                    <option key={opcion} value={opcion}>{opcion}</option>
-                  )}
-                </select>
-              </div>
-            ))}
+            <div className="admin-campo">
+              <label>Apellido</label>
+              <input value={editando.apellido} onChange={(e) => setEditando({ ...editando, apellido: e.target.value })} required />
+            </div>
+
+            <div className="admin-campo">
+              <label>Email</label>
+              <input type="email" value={editando.email} onChange={(e) => setEditando({ ...editando, email: e.target.value })} required />
+            </div>
+
+            <div className="admin-campo">
+              <label>Rol</label>
+              <select
+                value={editando.rol}
+                disabled={editando.id === (usuario?.id || usuario?.UsuarioID)}
+                onChange={(e) => setEditando({ ...editando, rol: e.target.value })}
+              >
+                <option value="Cliente">Cliente</option>
+                <option value="Admin">Admin</option>
+              </select>
+            </div>
+
+            <div className="admin-campo">
+              <label>Estado</label>
+              <select
+                value={editando.estado}
+                disabled={editando.id === (usuario?.id || usuario?.UsuarioID)}
+                onChange={(e) => setEditando({ ...editando, estado: e.target.value })}
+              >
+                <option value="Activo">Activo</option>
+                <option value="Bloqueado">Bloqueado</option>
+                <option value="Pendiente">Pendiente</option>
+              </select>
+            </div>
 
             <div className="admin-modal-acciones">
-              <button type="button" className="admin-btn" onClick={() => setEditando(null)}>Cancelar</button>
+              <button type="button" className="admin-btn" onClick={() => setEditando(null)}>
+                Cancelar
+              </button>
               <button className="admin-btn admin-btn--primario" disabled={guardando}>
                 {guardando ? "Guardando..." : "Guardar"}
               </button>

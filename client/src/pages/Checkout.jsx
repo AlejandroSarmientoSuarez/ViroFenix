@@ -1,278 +1,184 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { obtenerCarrito, crearPedido } from "../services/cartService";
 import { IMG_BASE_URL } from "../services/productService";
 import { useCart } from "../context/CartContext";
-
 import "../assets/css/checkout.css";
-
-const FORM_INICIAL = {
-  email: "",
-  direccion: "",
-  ciudad: "",
-  codigoPostal: "",
-  titular: "",
-  numero: "",
-  vencimiento: "",
-  cvv: "",
-};
-
-// Admite respuestas del backend con o sin una propiedad "data".
-function normalizarRespuesta(respuesta) {
-  let datos = respuesta?.data ?? respuesta;
-
-  if (
-    datos?.data &&
-    !Array.isArray(datos.items) &&
-    !Array.isArray(datos.productos)
-  ) {
-    datos = datos.data;
-  }
-
-  return datos ?? {};
-}
-
-function obtenerItems(datos) {
-  if (Array.isArray(datos?.items)) return datos.items;
-  if (Array.isArray(datos?.productos)) return datos.productos;
-  if (Array.isArray(datos?.detalles)) return datos.detalles;
-  return [];
-}
-
-function obtenerClave(item, indice) {
-  return (
-    item?.ProductoID ??
-    item?.productoId ??
-    item?.producto_id ??
-    item?.id ??
-    item?.CarritoDetalleID ??
-    `producto-${indice}`
-  );
-}
-
-function validar(f) {
-  const e = {};
-
-  if (!/^\S+@\S+\.\S+$/.test(f.email.trim())) {
-    e.email = "Ingresá un email válido";
-  }
-
-  if (f.direccion.trim().length < 5) {
-    e.direccion = "Ingresá tu dirección";
-  }
-
-  if (f.ciudad.trim().length < 2) {
-    e.ciudad = "Ingresá tu ciudad";
-  }
-
-  if (f.codigoPostal.trim().length < 3) {
-    e.codigoPostal = "Código postal inválido";
-  }
-
-  if (f.titular.trim().length < 3) {
-    e.titular = "Ingresá el nombre del titular";
-  }
-
-  const digitos = f.numero.replace(/\D/g, "");
-
-  if (digitos.length < 13 || digitos.length > 19) {
-    e.numero = "Número de tarjeta inválido";
-  }
-
-  const m = f.vencimiento.match(/^(\d{2})\/(\d{2})$/);
-
-  if (!m) {
-    e.vencimiento = "Usá el formato MM/AA";
-  } else {
-    const mes = Number(m[1]);
-    const anio = 2000 + Number(m[2]);
-    const hoy = new Date();
-
-    const vencida =
-      anio < hoy.getFullYear() ||
-      (anio === hoy.getFullYear() && mes < hoy.getMonth() + 1);
-
-    if (mes < 1 || mes > 12) {
-      e.vencimiento = "Mes inválido";
-    } else if (vencida) {
-      e.vencimiento = "Tarjeta vencida";
-    }
-  }
-
-  if (!/^\d{3,4}$/.test(f.cvv)) {
-    e.cvv = "CVV inválido";
-  }
-
-  return e;
-}
 
 function Checkout() {
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [cargando, setCargando] = useState(true);
   const [procesando, setProcesando] = useState(false);
-  const [form, setForm] = useState(FORM_INICIAL);
-  const [errores, setErrores] = useState({});
-  const [mensajeError, setMensajeError] = useState("");
+  const [mensaje, setMensaje] = useState("");
   const [recibo, setRecibo] = useState(null);
+
+  const [form, setForm] = useState({
+    email: "",
+    direccion: "",
+    ciudad: "",
+    codigoPostal: "",
+    titular: "",
+    numero: "",
+    vencimiento: "",
+    cvv: ""
+  });
 
   const { refrescarCarrito } = useCart();
 
   useEffect(() => {
-    let activo = true;
-
-    async function cargar() {
+    async function cargarCarrito() {
       try {
         const respuesta = await obtenerCarrito();
-        const datos = normalizarRespuesta(respuesta);
-        const productos = obtenerItems(datos);
+        let datos = respuesta.data || respuesta;
 
-        if (!activo) return;
+        if (datos.data && !datos.items) datos = datos.data;
+        if (datos.carrito) datos = datos.carrito;
+
+        const productos = Array.isArray(datos)
+          ? datos
+          : datos.items || datos.productos || datos.detalles || [];
 
         setItems(productos);
 
-        const totalCalculado = productos.reduce((suma, item) => {
+        let suma = 0;
+
+        productos.forEach((item) => {
           const cantidad = Number(item.Cantidad ?? item.cantidad ?? 1);
           const precio = Number(item.Precio ?? item.precio ?? 0);
+          suma += cantidad * precio;
+        });
 
-          return suma + cantidad * precio;
-        }, 0);
-
-        setTotal(
-          Number(datos.total ?? datos.Total ?? totalCalculado)
-        );
-      } catch (err) {
-        console.error("Error al cargar el carrito:", err);
-
-        if (activo) {
-          setMensajeError(
-            err.response?.data?.message ||
-              err.response?.data?.mensaje ||
-              "No se pudo cargar el carrito. Intentá nuevamente."
-          );
-        }
-      } finally {
-        if (activo) setCargando(false);
+        setTotal(Number(datos.total ?? datos.Total ?? suma));
+      } catch {
+        setMensaje("No se pudo cargar el carrito.");
       }
+
+      setCargando(false);
     }
 
-    cargar();
-
-    return () => {
-      activo = false;
-    };
+    cargarCarrito();
   }, []);
 
-  function handleChange(campo, valor) {
-    setForm((prev) => ({ ...prev, [campo]: valor }));
+  function cambiarCampo(e) {
+    const nombre = e.target.name;
+    const valor = e.target.value;
 
-    if (errores[campo]) {
-      setErrores((prev) => ({ ...prev, [campo]: undefined }));
+    setForm({ ...form, [nombre]: valor });
+    setMensaje("");
+  }
+
+  function validar() {
+    if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+      return "Ingresá un email válido.";
     }
 
-    setMensajeError("");
+    if (form.direccion.trim().length < 5) {
+      return "Ingresá una dirección válida.";
+    }
+
+    if (form.ciudad.trim().length < 2) {
+      return "Ingresá una ciudad válida.";
+    }
+
+    if (form.codigoPostal.trim().length < 3) {
+      return "Ingresá un código postal válido.";
+    }
+
+    if (form.titular.trim().length < 3) {
+      return "Ingresá el nombre del titular.";
+    }
+
+    const numero = form.numero.replace(/\D/g, "");
+
+    if (numero.length < 13 || numero.length > 19) {
+      return "El número de tarjeta no es válido.";
+    }
+
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(form.vencimiento)) {
+      return "Usá el formato MM/AA para el vencimiento.";
+    }
+
+    const partes = form.vencimiento.split("/");
+    const mes = Number(partes[0]);
+    const anio = 2000 + Number(partes[1]);
+    const hoy = new Date();
+
+    if (
+      anio < hoy.getFullYear() ||
+      (anio === hoy.getFullYear() && mes < hoy.getMonth() + 1)
+    ) {
+      return "La tarjeta está vencida.";
+    }
+
+    if (!/^\d{3,4}$/.test(form.cvv)) {
+      return "El CVV no es válido.";
+    }
+
+    return "";
   }
 
-  function onNumero(e) {
-    const limpio = e.target.value.replace(/\D/g, "").slice(0, 16);
-
-    handleChange(
-      "numero",
-      limpio.replace(/(.{4})/g, "$1 ").trim()
-    );
-  }
-
-  function onVencimiento(e) {
-    const limpio = e.target.value.replace(/\D/g, "").slice(0, 4);
-
-    handleChange(
-      "vencimiento",
-      limpio.length > 2
-        ? `${limpio.slice(0, 2)}/${limpio.slice(2)}`
-        : limpio
-    );
-  }
-
-  function onCvv(e) {
-    handleChange(
-      "cvv",
-      e.target.value.replace(/\D/g, "").slice(0, 4)
-    );
-  }
-
-  async function handleSubmit(e) {
+  async function finalizarCompra(e) {
     e.preventDefault();
 
     if (procesando) return;
 
-    const errs = validar(form);
-    setErrores(errs);
-    setMensajeError("");
+    const error = validar();
 
-    if (Object.keys(errs).length > 0) return;
+    if (error) {
+      setMensaje(error);
+      return;
+    }
 
     if (items.length === 0) {
-      setMensajeError("Tu carrito está vacío.");
+      setMensaje("Tu carrito está vacío.");
       return;
     }
 
     setProcesando(true);
+    setMensaje("");
 
     try {
-      // Se conserva la simulación de pago original.
-      await new Promise((r) => setTimeout(r, 1500));
-
       const datosEnvio = {
         email: form.email.trim(),
-        direccion: `${form.direccion.trim()}, ${form.ciudad.trim()} (CP ${form.codigoPostal.trim()})`,
+        direccion: `${form.direccion.trim()}, ${form.ciudad.trim()} (CP ${form.codigoPostal.trim()})`
       };
 
-      // cartService.js ya devuelve respuesta.data de Axios.
       const respuesta = await crearPedido(datosEnvio);
-      const pedido = normalizarRespuesta(respuesta);
-
-      // Algunos backends devuelven el pedido sin incluir sus productos.
-      // En ese caso, conservamos los productos cargados antes de comprar.
-      const itemsPedido = obtenerItems(pedido);
-      const productosRecibo =
-        itemsPedido.length > 0 ? itemsPedido : items;
-
-      const fechaPedido =
-        pedido.fecha ??
-        pedido.Fecha ??
-        pedido.createdAt ??
-        new Date().toISOString();
+      const pedido = respuesta.data || respuesta;
 
       setRecibo({
-        ...pedido,
-        items: productosRecibo,
-        fecha: fechaPedido,
-        pedidoId:
-          pedido.pedidoId ??
-          pedido.PedidoID ??
-          pedido.id ??
-          pedido.ID ??
-          null,
-        email: pedido.email ?? datosEnvio.email,
-        direccion: pedido.direccion ?? datosEnvio.direccion,
+        items: items,
         total: Number(pedido.total ?? pedido.Total ?? total),
-        ultimos4: form.numero.replace(/\D/g, "").slice(-4),
+        email: datosEnvio.email,
+        direccion: datosEnvio.direccion,
+        numeroPedido: pedido.PedidoID ?? pedido.pedidoId ?? pedido.id ?? null,
+        fecha: pedido.Fecha ?? pedido.fecha ?? new Date().toISOString(),
+        ultimos4: form.numero.replace(/\D/g, "").slice(-4)
       });
 
-      setForm(FORM_INICIAL);
+      setForm({
+        email: "",
+        direccion: "",
+        ciudad: "",
+        codigoPostal: "",
+        titular: "",
+        numero: "",
+        vencimiento: "",
+        cvv: ""
+      });
 
       await refrescarCarrito();
-    } catch (err) {
-      console.error("Error al procesar el pedido:", err);
-
-      setMensajeError(
-        err.response?.data?.message ||
-          err.response?.data?.mensaje ||
-          "No se pudo procesar el pedido. Intentá nuevamente."
+    } catch (error) {
+      setMensaje(
+        error.response?.data?.message ||
+        error.response?.data?.mensaje ||
+        "No se pudo crear el pedido."
       );
-    } finally {
-      setProcesando(false);
     }
+
+    setProcesando(false);
   }
 
   if (cargando) {
@@ -281,7 +187,6 @@ function Checkout() {
 
   if (recibo) {
     const fecha = new Date(recibo.fecha);
-    const itemsRecibo = obtenerItems(recibo);
 
     return (
       <div className="checkout-recibo">
@@ -289,30 +194,18 @@ function Checkout() {
         <h1>¡Gracias por tu compra!</h1>
 
         <p className="checkout-recibo-sub">
-          Pedido #{recibo.pedidoId ?? "Registrado"}
+          Pedido #{recibo.numeroPedido ?? "Registrado"}
         </p>
 
         <div className="recibo-datos">
           <div>
             <span>Fecha</span>
-            <strong>
-              {fecha.toLocaleDateString("es-AR", {
-                day: "2-digit",
-                month: "long",
-                year: "numeric",
-              })}
-            </strong>
+            <strong>{fecha.toLocaleDateString("es-AR")}</strong>
           </div>
 
           <div>
             <span>Hora</span>
-            <strong>
-              {fecha.toLocaleTimeString("es-AR", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}{" "}
-              hs
-            </strong>
+            <strong>{fecha.toLocaleTimeString("es-AR")} hs</strong>
           </div>
 
           <div>
@@ -327,53 +220,40 @@ function Checkout() {
 
           <div>
             <span>Pago</span>
-            <strong>
-              Tarjeta terminada en {recibo.ultimos4}
-            </strong>
+            <strong>Tarjeta terminada en {recibo.ultimos4}</strong>
           </div>
         </div>
 
         <div className="recibo-items">
-          {itemsRecibo.map((item, indice) => {
+          {recibo.items.map((item, indice) => {
             const nombre = item.Nombre ?? item.nombre ?? "Producto";
-            const imagen = item.Imagen ?? item.imagen;
-            const cantidad = Number(
-              item.Cantidad ?? item.cantidad ?? 1
-            );
-            const precio = Number(
-              item.Precio ?? item.precio ?? 0
-            );
+            const cantidad = Number(item.Cantidad ?? item.cantidad ?? 1);
+            const precio = Number(item.Precio ?? item.precio ?? 0);
+            const imagen = item.Imagen ?? item.imagen ?? "";
+            const id = item.ProductoID ?? item.productoId ?? indice;
 
             return (
-              <div
-                key={obtenerClave(item, indice)}
-                className="recibo-item"
-              >
+              <div key={id} className="recibo-item">
                 {imagen && (
                   <img
-                    src={`${IMG_BASE_URL}${imagen}`}
+                    src={imagen.startsWith("http") ? imagen : IMG_BASE_URL + imagen}
                     alt={nombre}
                   />
                 )}
 
                 <div>
                   <p>{nombre}</p>
-                  <span>
-                    {cantidad} × ${precio.toFixed(2)}
-                  </span>
+                  <span>{cantidad} × ${precio.toFixed(2)}</span>
                 </div>
 
-                <strong>
-                  ${(cantidad * precio).toFixed(2)}
-                </strong>
+                <strong>${(cantidad * precio).toFixed(2)}</strong>
               </div>
             );
           })}
         </div>
 
         <p className="recibo-total">
-          Total:{" "}
-          <span>${Number(recibo.total ?? 0).toFixed(2)}</span>
+          Total: <span>${recibo.total.toFixed(2)}</span>
         </p>
 
         <div className="recibo-acciones">
@@ -397,40 +277,13 @@ function Checkout() {
     return (
       <div className="carrito-vacio">
         <h1>No hay nada para pagar</h1>
-
-        {mensajeError && (
-          <p className="checkout-error" role="alert">
-            {mensajeError}
-          </p>
-        )}
-
+        {mensaje && <p className="checkout-error">{mensaje}</p>}
         <Link to="/coleccion" className="carrito-seguir">
           Ver colección
         </Link>
       </div>
     );
   }
-
-  const campo = (nombre, label, props = {}) => (
-    <div
-      className={`checkout-campo ${
-        errores[nombre] ? "con-error" : ""
-      }`}
-    >
-      <label htmlFor={nombre}>{label}</label>
-
-      <input
-        id={nombre}
-        name={nombre}
-        value={form[nombre]}
-        onChange={(e) => handleChange(nombre, e.target.value)}
-        aria-invalid={Boolean(errores[nombre])}
-        {...props}
-      />
-
-      {errores[nombre] && <small>{errores[nombre]}</small>}
-    </div>
-  );
 
   return (
     <div className="checkout-container">
@@ -440,127 +293,124 @@ function Checkout() {
         Simulación: no se realiza ningún cobro real. Usá datos de prueba.
       </p>
 
-      {mensajeError && (
-        <p className="checkout-error" role="alert">
-          {mensajeError}
-        </p>
-      )}
+      {mensaje && <p className="checkout-error" role="alert">{mensaje}</p>}
 
       <div className="checkout-layout">
-        <form
-          className="checkout-form"
-          onSubmit={handleSubmit}
-          noValidate
-        >
+        <form className="checkout-form" onSubmit={finalizarCompra}>
           <fieldset>
             <legend>Contacto</legend>
 
-            {campo("email", "Email", {
-              type: "email",
-              placeholder: "tucorreo@ejemplo.com",
-              autoComplete: "email",
-            })}
+            <div className="checkout-campo">
+              <label>Email</label>
+              <input
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={cambiarCampo}
+                placeholder="tucorreo@ejemplo.com"
+                required
+              />
+            </div>
           </fieldset>
 
           <fieldset>
             <legend>Dirección de envío</legend>
 
-            {campo("direccion", "Dirección", {
-              placeholder: "Calle y número, piso/depto",
-              autoComplete: "street-address",
-            })}
+            <div className="checkout-campo">
+              <label>Dirección</label>
+              <input
+                name="direccion"
+                value={form.direccion}
+                onChange={cambiarCampo}
+                placeholder="Calle y número"
+                required
+              />
+            </div>
 
             <div className="checkout-fila">
-              {campo("ciudad", "Ciudad", {
-                placeholder: "Buenos Aires",
-                autoComplete: "address-level2",
-              })}
+              <div className="checkout-campo">
+                <label>Ciudad</label>
+                <input
+                  name="ciudad"
+                  value={form.ciudad}
+                  onChange={cambiarCampo}
+                  required
+                />
+              </div>
 
-              {campo("codigoPostal", "Código postal", {
-                placeholder: "1425",
-                inputMode: "numeric",
-                autoComplete: "postal-code",
-              })}
+              <div className="checkout-campo">
+                <label>Código postal</label>
+                <input
+                  name="codigoPostal"
+                  value={form.codigoPostal}
+                  onChange={cambiarCampo}
+                  required
+                />
+              </div>
             </div>
           </fieldset>
 
           <fieldset>
-            <legend>Pago con tarjeta de crédito o débito</legend>
+            <legend>Pago con tarjeta</legend>
 
-            {campo("titular", "Titular de la tarjeta", {
-              placeholder: "Como figura en la tarjeta",
-              autoComplete: "cc-name",
-            })}
+            <div className="checkout-campo">
+              <label>Titular de la tarjeta</label>
+              <input
+                name="titular"
+                value={form.titular}
+                onChange={cambiarCampo}
+                required
+              />
+            </div>
 
-            <div className="checkout-campo-wrap">
-              <div
-                className={`checkout-campo ${
-                  errores.numero ? "con-error" : ""
-                }`}
-              >
-                <label htmlFor="numero">Número de tarjeta</label>
-
-                <input
-                  id="numero"
-                  name="numero"
-                  value={form.numero}
-                  onChange={onNumero}
-                  placeholder="1234 5678 9012 3456"
-                  inputMode="numeric"
-                  autoComplete="cc-number"
-                  aria-invalid={Boolean(errores.numero)}
-                />
-
-                {errores.numero && (
-                  <small>{errores.numero}</small>
-                )}
-              </div>
+            <div className="checkout-campo">
+              <label>Número de tarjeta</label>
+              <input
+                name="numero"
+                value={form.numero}
+                onChange={(e) => {
+                  const numero = e.target.value.replace(/\D/g, "").slice(0, 19);
+                  setForm({ ...form, numero });
+                }}
+                inputMode="numeric"
+                required
+              />
             </div>
 
             <div className="checkout-fila">
-              <div
-                className={`checkout-campo ${
-                  errores.vencimiento ? "con-error" : ""
-                }`}
-              >
-                <label htmlFor="vencimiento">Vencimiento</label>
-
+              <div className="checkout-campo">
+                <label>Vencimiento (MM/AA)</label>
                 <input
-                  id="vencimiento"
                   name="vencimiento"
                   value={form.vencimiento}
-                  onChange={onVencimiento}
-                  placeholder="MM/AA"
-                  inputMode="numeric"
-                  autoComplete="cc-exp"
-                  aria-invalid={Boolean(errores.vencimiento)}
-                />
+                  onChange={(e) => {
+                    let valor = e.target.value.replace(/\D/g, "").slice(0, 4);
 
-                {errores.vencimiento && (
-                  <small>{errores.vencimiento}</small>
-                )}
+                    if (valor.length > 2) {
+                      valor = valor.slice(0, 2) + "/" + valor.slice(2);
+                    }
+
+                    setForm({ ...form, vencimiento: valor });
+                  }}
+                  placeholder="MM/AA"
+                  required
+                />
               </div>
 
-              <div
-                className={`checkout-campo ${
-                  errores.cvv ? "con-error" : ""
-                }`}
-              >
-                <label htmlFor="cvv">CVV</label>
-
+              <div className="checkout-campo">
+                <label>CVV</label>
                 <input
-                  id="cvv"
                   name="cvv"
-                  value={form.cvv}
-                  onChange={onCvv}
-                  placeholder="123"
-                  inputMode="numeric"
                   type="password"
-                  autoComplete="cc-csc"
-                  aria-invalid={Boolean(errores.cvv)}
+                  value={form.cvv}
+                  onChange={(e) => {
+                    setForm({
+                      ...form,
+                      cvv: e.target.value.replace(/\D/g, "").slice(0, 4)
+                    });
+                  }}
+                  required
                 />
-
-                {errores.cvv && <small>{errores.cvv}</small>}
               </div>
             </div>
           </fieldset>
@@ -570,9 +420,7 @@ function Checkout() {
             className="checkout-boton"
             disabled={procesando}
           >
-            {procesando
-              ? "Procesando pago..."
-              : `Pagar $${Number(total).toFixed(2)}`}
+            {procesando ? "Procesando..." : `Pagar $${total.toFixed(2)}`}
           </button>
         </form>
 
@@ -581,42 +429,32 @@ function Checkout() {
 
           {items.map((item, indice) => {
             const nombre = item.Nombre ?? item.nombre ?? "Producto";
-            const imagen = item.Imagen ?? item.imagen;
-            const cantidad = Number(
-              item.Cantidad ?? item.cantidad ?? 1
-            );
-            const precio = Number(
-              item.Precio ?? item.precio ?? 0
-            );
+            const cantidad = Number(item.Cantidad ?? item.cantidad ?? 1);
+            const precio = Number(item.Precio ?? item.precio ?? 0);
+            const imagen = item.Imagen ?? item.imagen ?? "";
+            const id = item.ProductoID ?? item.productoId ?? indice;
 
             return (
-              <div
-                key={obtenerClave(item, indice)}
-                className="checkout-resumen-item"
-              >
+              <div key={id} className="checkout-resumen-item">
                 {imagen && (
                   <img
-                    src={`${IMG_BASE_URL}${imagen}`}
+                    src={imagen.startsWith("http") ? imagen : IMG_BASE_URL + imagen}
                     alt={nombre}
                   />
                 )}
 
                 <div>
                   <p>{nombre}</p>
-                  <span>
-                    {cantidad} × ${precio.toFixed(2)}
-                  </span>
+                  <span>{cantidad} × ${precio.toFixed(2)}</span>
                 </div>
 
-                <strong>
-                  ${(cantidad * precio).toFixed(2)}
-                </strong>
+                <strong>${(cantidad * precio).toFixed(2)}</strong>
               </div>
             );
           })}
 
           <p className="checkout-resumen-total">
-            Total <span>${Number(total).toFixed(2)}</span>
+            Total <span>${total.toFixed(2)}</span>
           </p>
 
           <Link to="/carrito" className="carrito-seguir">

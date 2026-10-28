@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { obtenerProductos, IMG_BASE_URL } from "../services/productService";
 import Carousel from "../components/Carousel";
@@ -11,184 +11,103 @@ const slides = [
   {
     src: "/img/banner-3.jpg",
     titulo: "Elegancia y estilo para tu día a día",
-    subtitulo:
-      "Una colección inspirada en la libertad y la fuerza de quien la lleva puesta.",
+    subtitulo: "Una colección inspirada en la libertad y la fuerza de quien la lleva puesta.",
     cta: "Explorar colección",
-    ctaLink: "/coleccion",
+    ctaLink: "/coleccion"
   },
   {
     src: "/img/banner-secundario.jpg",
     titulo: "Nueva temporada",
-    subtitulo:
-      "Prendas pensadas para combinar estilo y comodidad en cada ocasión.",
+    subtitulo: "Prendas pensadas para combinar estilo y comodidad en cada ocasión.",
     cta: "Ver novedades",
-    ctaLink: "/coleccion",
-  },
+    ctaLink: "/coleccion"
+  }
 ];
 
-
-
-const PREGUNTAS = [
+const preguntas = [
   {
-    categoria: "Ética y sostenibilidad",
-    items: [
-      {
-        p: "Transparencia",
-        r: "Nos comprometemos a brindar información clara sobre nuestros procesos de producción, los materiales utilizados y las prácticas laborales. Creemos que la transparencia es clave para generar confianza con nuestros clientes.",
-      },
-      {
-        p: "Confianza",
-        r: "Valoramos la confianza que nuestros clientes depositan en nosotros. Nos esforzamos por ofrecer productos de calidad, cumplir con los plazos de entrega y brindar un excelente servicio al cliente.",
-      },
-      {
-        p: "Productos",
-        r: "Nuestros productos están diseñados para ofrecer calidad, durabilidad y comodidad. Procuramos que cada prenda cumpla con nuestros estándares antes de ser enviada a nuestros clientes.",
-      },
-      {
-        p: "Sostenibilidad",
-        r: "Buscamos reducir nuestro impacto ambiental y promover prácticas responsables en la selección de materiales, la producción y la cadena de suministro.",
-      },
-    ],
+    pregunta: "Transparencia",
+    respuesta: "Nos comprometemos a brindar información clara sobre nuestros procesos de producción, los materiales utilizados y las prácticas laborales."
   },
+  {
+    pregunta: "Confianza",
+    respuesta: "Valoramos la confianza de nuestros clientes y nos esforzamos por ofrecer productos de calidad y un buen servicio."
+  },
+  {
+    pregunta: "Productos",
+    respuesta: "Nuestros productos están diseñados para ofrecer calidad, durabilidad y comodidad."
+  },
+  {
+    pregunta: "Sostenibilidad",
+    respuesta: "Buscamos reducir nuestro impacto ambiental y promover prácticas responsables."
+  }
 ];
 
 function Home() {
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [errorProductos, setErrorProductos] = useState(false);
   const [preguntaAbierta, setPreguntaAbierta] = useState(null);
 
   useEffect(() => {
-    let activo = true;
-
     async function cargarProductos() {
       try {
-        setCargando(true);
-        setErrorProductos(false);
-
         const respuesta = await obtenerProductos();
-        const lista = Array.isArray(respuesta?.data)
+        const lista = Array.isArray(respuesta.data)
           ? respuesta.data
           : Array.isArray(respuesta)
             ? respuesta
             : [];
 
-        if (activo) {
-          setProductos(lista.slice(0, 8));
-        }
-      } catch (error) {
-        console.error("Error al cargar los productos:", error);
-
-        if (activo) {
-          setProductos([]);
-          setErrorProductos(true);
-        }
-      } finally {
-        if (activo) {
-          setCargando(false);
-        }
+        setProductos(lista.slice(0, 8));
+      } catch {
+        setProductos([]);
       }
+
+      setCargando(false);
     }
 
     cargarProductos();
-
-    return () => {
-      activo = false;
-    };
   }, []);
-
-  function obtenerImagenProducto(imagen) {
-    if (!imagen) return "";
-
-    if (/^https?:\/\//i.test(imagen)) {
-      return imagen;
-    }
-
-    return `${IMG_BASE_URL}${imagen}`;
-  }
-
-  function obtenerImagenHover(imagen) {
-    if (!imagen) return "";
-    return imagen.replace(/(\.[a-zA-Z0-9]+)$/, "-hover$1");
-  }
-
-  function formatearPrecio(precio) {
-    const numero = Number(precio);
-
-    if (!Number.isFinite(numero)) {
-      return "Consultar precio";
-    }
-
-    return numero.toLocaleString("es-AR", {
-      style: "currency",
-      currency: "ARS",
-      maximumFractionDigits: 2,
-    });
-  }
-
-  function alternarPregunta(categoriaIndex, preguntaIndex) {
-    const identificador = `${categoriaIndex}-${preguntaIndex}`;
-
-    setPreguntaAbierta((actual) =>
-      actual === identificador ? null : identificador
-    );
-  }
 
   return (
     <div className="home-container">
       <Carousel slides={slides} />
 
-      
       <section className="home-categorias">
         <h2>Comprá por categoría</h2>
 
         <div className="home-categorias-grid">
-          <Link
-            to="/coleccion?categoria=Hombre"
-            className="home-categoria-tile"
-          >
-            <img
-              src="/img/categoria-hombre.jpg"
-              alt="Categoría Hombre"
-              loading="lazy"
-            />
+          <Link to="/coleccion?categoria=Hombre" className="home-categoria-tile">
+            <img src="/img/categoria-hombre.jpg" alt="Categoría Hombre" loading="lazy" />
             <span>Hombre</span>
           </Link>
 
-          <Link
-            to="/coleccion?categoria=Mujer"
-            className="home-categoria-tile"
-          >
-            <img
-              src="/img/categoria-mujer.jpg"
-              alt="Categoría Mujer"
-              loading="lazy"
-            />
+          <Link to="/coleccion?categoria=Mujer" className="home-categoria-tile">
+            <img src="/img/categoria-mujer.jpg" alt="Categoría Mujer" loading="lazy" />
             <span>Mujer</span>
           </Link>
         </div>
       </section>
 
       <section className="home-productos">
-        <h2>Destacados</h2>
-
         {cargando ? (
-          <p className="home-loading" role="status">
-            Cargando productos...
-          </p>
-        ) : errorProductos ? (
-          <p className="home-loading" role="alert">
-            No pudimos cargar los productos. Intentá nuevamente más tarde.
-          </p>
+          <p className="home-loading">Cargando productos...</p>
         ) : productos.length === 0 ? (
-          <p className="home-loading">
-            Por el momento no hay productos disponibles.
-          </p>
+          <p className="home-loading">No hay productos disponibles.</p>
         ) : (
           <div className="home-grid">
             {productos.map((producto) => {
-              const imagenBase = obtenerImagenProducto(producto.Imagen);
-              const imagenHover = obtenerImagenHover(imagenBase);
+              let imagen = producto.Imagen || "";
+
+              if (imagen && !imagen.startsWith("http")) {
+                imagen = IMG_BASE_URL + imagen;
+              }
+
+              const hover = imagen
+                ? imagen.replace(/(\.[a-zA-Z0-9]+)$/, "-hover$1")
+                : "";
+
+              const precio = Number(producto.Precio);
 
               return (
                 <Link
@@ -197,30 +116,22 @@ function Home() {
                   className="home-item"
                 >
                   <div className="home-item-imagen-wrap">
-                    {imagenBase ? (
+                    {imagen && (
                       <img
-                        src={imagenBase}
+                        src={imagen}
                         alt={producto.Nombre || "Producto"}
                         className="home-item-imagen home-item-imagen-base"
                         loading="lazy"
-                        onError={(event) => {
-                          event.currentTarget.style.visibility = "hidden";
-                        }}
                       />
-                    ) : (
-                      <div className="home-item-imagen home-item-imagen-base" />
                     )}
 
-                    {imagenHover && imagenHover !== imagenBase && (
+                    {hover && hover !== imagen && (
                       <img
-                        src={imagenHover}
+                        src={hover}
                         alt=""
-                        aria-hidden="true"
                         className="home-item-imagen home-item-imagen-hover"
                         loading="lazy"
-                        onError={(event) => {
-                          event.currentTarget.style.display = "none";
-                        }}
+                        onError={(e) => e.currentTarget.style.display = "none"}
                       />
                     )}
                   </div>
@@ -228,23 +139,23 @@ function Home() {
                   <h3>{producto.Nombre || "Producto sin nombre"}</h3>
 
                   <p className="home-item-precio">
-                    {formatearPrecio(producto.Precio)}
+                    {producto.Precio != null && producto.Precio !== "" && Number.isFinite(precio)
+                      ? precio.toLocaleString("es-AR", {
+                          style: "currency",
+                          currency: "ARS"
+                        })
+                      : "Consultar precio"}
                   </p>
                 </Link>
               );
             })}
           </div>
         )}
-
       </section>
 
       <section className="home-editorial">
         <div className="home-editorial-imagen">
-          <img
-            src="/img/historia-marca.jpg"
-            alt="Nuestra historia"
-            loading="lazy"
-          />
+          <img src="/img/historia-marca.jpg" alt="Nuestra historia" loading="lazy" />
         </div>
 
         <div className="home-editorial-texto">
@@ -267,48 +178,35 @@ function Home() {
         </div>
       </section>
 
-      
+      <section className="faq-categoria">
+        <h3>Ética y sostenibilidad</h3>
 
-        {PREGUNTAS.map((categoria, categoriaIndex) => (
-          <div className="faq-categoria" key={categoria.categoria}>
-            <h3>{categoria.categoria}</h3>
+        <div className="faq-lista">
+          {preguntas.map((item, indice) => (
+            <div className="faq-item" key={item.pregunta}>
+              <button
+                type="button"
+                className="faq-pregunta"
+                onClick={() =>
+                  setPreguntaAbierta(preguntaAbierta === indice ? null : indice)
+                }
+                aria-expanded={preguntaAbierta === indice}
+              >
+                <span>{item.pregunta}</span>
+                <span className="faq-icono">
+                  {preguntaAbierta === indice ? "−" : "+"}
+                </span>
+              </button>
 
-            <div className="faq-lista">
-              {categoria.items.map((pregunta, preguntaIndex) => {
-                const identificador = `${categoriaIndex}-${preguntaIndex}`;
-                const abierta = preguntaAbierta === identificador;
-                const respuestaId =
-                  `faq-respuesta-${categoriaIndex}-${preguntaIndex}`;
-
-                return (
-                  <div className="faq-item" key={pregunta.p}>
-                    <button
-                      type="button"
-                      className="faq-pregunta"
-                      onClick={() =>
-                        alternarPregunta(categoriaIndex, preguntaIndex)
-                      }
-                      aria-expanded={abierta}
-                      aria-controls={respuestaId}
-                    >
-                      <span>{pregunta.p}</span>
-                      <span className="faq-icono" aria-hidden="true">
-                        {abierta ? "−" : "+"}
-                      </span>
-                    </button>
-
-                    {abierta && (
-                      <div className="faq-respuesta" id={respuestaId}>
-                        <p>{pregunta.r}</p>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+              {preguntaAbierta === indice && (
+                <div className="faq-respuesta">
+                  <p>{item.respuesta}</p>
+                </div>
+              )}
             </div>
-          </div>
-        ))}
-      
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

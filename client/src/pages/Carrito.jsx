@@ -1,109 +1,93 @@
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate, Link } from "react-router-dom";
+
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   obtenerCarrito,
   actualizarCantidadCarrito,
-  eliminarDelCarrito,
+  eliminarDelCarrito
 } from "../services/cartService";
 import { IMG_BASE_URL } from "../services/productService";
 import { useCart } from "../context/CartContext";
 import ConfirmModal from "../components/ConfirmModal";
 import "../assets/css/carrito.css";
 
-function normalizarRespuesta(respuesta) {
-  let datos = respuesta?.data ?? respuesta;
-
-  if (datos?.carrito) datos = datos.carrito;
-  else if (datos?.data && !Array.isArray(datos.items)) datos = datos.data;
-
-  const items = Array.isArray(datos)
-    ? datos
-    : datos?.items ?? datos?.detalles ?? datos?.productos ?? [];
-
-  const lista = Array.isArray(items) ? items : [];
-
-  const total = Number(
-    datos?.total ??
-    datos?.Total ??
-    lista.reduce(
-      (suma, item) =>
-        suma +
-        Number(item.Cantidad ?? item.cantidad ?? 0) *
-          Number(item.Precio ?? item.precio ?? item.PrecioUnitario ?? 0),
-      0
-    )
-  );
-
-  return { items: lista, total };
-}
-
 function Carrito() {
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [cargando, setCargando] = useState(true);
-  const [productoAEliminar, setProductoAEliminar] = useState(null);
+  const [eliminar, setEliminar] = useState(null);
   const [procesando, setProcesando] = useState(false);
-  const [mensajeError, setMensajeError] = useState("");
+  const [mensaje, setMensaje] = useState("");
 
   const { refrescarCarrito } = useCart();
   const navigate = useNavigate();
 
-  const cargarCarrito = useCallback(async () => {
+  async function cargarCarrito() {
     try {
-      setMensajeError("");
-
       const respuesta = await obtenerCarrito();
-      const carrito = normalizarRespuesta(respuesta);
+      let datos = respuesta.data || respuesta;
 
-      setItems(carrito.items);
-      setTotal(carrito.total);
-    } catch (error) {
-      console.error("Error al cargar el carrito:", error);
-      setMensajeError(
-        error.response?.data?.mensaje ||
-          error.response?.data?.message ||
-          "No se pudo cargar el carrito. Intentá nuevamente."
-      );
-    } finally {
-      setCargando(false);
+      if (datos.carrito) datos = datos.carrito;
+      if (datos.data && !datos.items) datos = datos.data;
+
+      const productos = Array.isArray(datos)
+        ? datos
+        : datos.items || datos.detalles || datos.productos || [];
+
+      setItems(productos);
+
+      let suma = 0;
+
+      productos.forEach((item) => {
+        const cantidad = Number(item.Cantidad ?? item.cantidad ?? 1);
+        const precio = Number(item.Precio ?? item.precio ?? item.PrecioUnitario ?? 0);
+        suma += cantidad * precio;
+      });
+
+      setTotal(Number(datos.total ?? datos.Total ?? suma));
+      setMensaje("");
+    } catch {
+      setMensaje("No se pudo cargar el carrito.");
     }
-  }, []);
+
+    setCargando(false);
+  }
 
   useEffect(() => {
     cargarCarrito();
-  }, [cargarCarrito]);
+  }, []);
 
-  async function cambiarCantidad(productoId, cantidad) {
-    if (!productoId || cantidad < 1 || procesando) return;
+  async function cambiarCantidad(id, cantidad) {
+    if (!id || cantidad < 1 || procesando) return;
+
+    setProcesando(true);
 
     try {
-      setProcesando(true);
-      await actualizarCantidadCarrito(productoId, cantidad);
+      await actualizarCantidadCarrito(id, cantidad);
       await cargarCarrito();
       await refrescarCarrito();
-    } catch (error) {
-      console.error("Error al actualizar la cantidad:", error);
-      setMensajeError("No se pudo actualizar la cantidad.");
-    } finally {
-      setProcesando(false);
+    } catch {
+      setMensaje("No se pudo actualizar la cantidad.");
     }
+
+    setProcesando(false);
   }
 
   async function confirmarEliminar() {
-    if (!productoAEliminar || procesando) return;
+    if (!eliminar || procesando) return;
+
+    setProcesando(true);
 
     try {
-      setProcesando(true);
-      await eliminarDelCarrito(productoAEliminar);
-      setProductoAEliminar(null);
+      await eliminarDelCarrito(eliminar);
+      setEliminar(null);
       await cargarCarrito();
       await refrescarCarrito();
-    } catch (error) {
-      console.error("Error al eliminar el producto:", error);
-      setMensajeError("No se pudo eliminar el producto.");
-    } finally {
-      setProcesando(false);
+    } catch {
+      setMensaje("No se pudo eliminar el producto.");
     }
+
+    setProcesando(false);
   }
 
   if (cargando) {
@@ -115,13 +99,10 @@ function Carrito() {
       <div className="carrito-container">
         <div className="carrito-vacio">
           <h1>Tu carrito está vacío</h1>
-          {mensajeError && <p role="alert">{mensajeError}</p>}
+          {mensaje && <p role="alert">{mensaje}</p>}
           <Link to="/coleccion" className="carrito-seguir">
             Ver colección
           </Link>
-          <button type="button" onClick={cargarCarrito}>
-            Volver a intentar
-          </button>
         </div>
       </div>
     );
@@ -131,52 +112,39 @@ function Carrito() {
     <div className="carrito-container">
       <h1>Tu carrito</h1>
 
-      {mensajeError && (
-        <p className="carrito-error" role="alert">{mensajeError}</p>
-      )}
+      {mensaje && <p className="carrito-error" role="alert">{mensaje}</p>}
 
       <div className="carrito-items">
         {items.map((item, indice) => {
-          const productoId = item.ProductoID ?? item.productoId ?? item.id;
+          const id = item.ProductoID ?? item.productoId ?? item.id;
           const cantidad = Number(item.Cantidad ?? item.cantidad ?? 1);
-          const precio = Number(
-            item.Precio ?? item.precio ?? item.PrecioUnitario ?? 0
-          );
+          const precio = Number(item.Precio ?? item.precio ?? item.PrecioUnitario ?? 0);
           const stock = Number(item.StockActual ?? item.stock ?? 0);
           const nombre = item.Nombre ?? item.nombre ?? "Producto";
-          const archivoImagen = item.Imagen ?? item.imagen ?? "";
+          const archivo = item.Imagen ?? item.imagen ?? "";
 
-          const imagen = archivoImagen
-            ? /^https?:\/\//i.test(archivoImagen)
-              ? archivoImagen
-              : `${IMG_BASE_URL}${archivoImagen}`
-            : "";
+          let imagen = archivo;
+
+          if (archivo && !archivo.startsWith("http")) {
+            imagen = IMG_BASE_URL + archivo;
+          }
 
           return (
-            <div
-              key={productoId ?? item.CarritoDetalleID ?? indice}
-              className="carrito-item"
-            >
+            <div key={id ?? item.CarritoDetalleID ?? indice} className="carrito-item">
               {imagen && (
-                <img
-                  src={imagen}
-                  alt={nombre}
-                  className="carrito-item-imagen"
-                />
+                <img src={imagen} alt={nombre} className="carrito-item-imagen" />
               )}
 
               <div className="carrito-item-info">
                 <h3>{nombre}</h3>
-                <p className="carrito-item-precio">
-                  ${precio.toFixed(2)}
-                </p>
+                <p className="carrito-item-precio">${precio.toFixed(2)}</p>
               </div>
 
               <div className="carrito-item-cantidad">
                 <button
                   type="button"
-                  onClick={() => cambiarCantidad(productoId, cantidad - 1)}
-                  disabled={procesando || cantidad <= 1 || !productoId}
+                  disabled={procesando || cantidad <= 1 || !id}
+                  onClick={() => cambiarCantidad(id, cantidad - 1)}
                 >
                   −
                 </button>
@@ -185,12 +153,8 @@ function Carrito() {
 
                 <button
                   type="button"
-                  onClick={() => cambiarCantidad(productoId, cantidad + 1)}
-                  disabled={
-                    procesando ||
-                    (stock > 0 && cantidad >= stock) ||
-                    !productoId
-                  }
+                  disabled={procesando || (stock > 0 && cantidad >= stock) || !id}
+                  onClick={() => cambiarCantidad(id, cantidad + 1)}
                 >
                   +
                 </button>
@@ -203,8 +167,8 @@ function Carrito() {
               <button
                 type="button"
                 className="carrito-item-eliminar"
-                onClick={() => setProductoAEliminar(productoId)}
-                disabled={procesando || !productoId}
+                disabled={procesando || !id}
+                onClick={() => setEliminar(id)}
               >
                 Eliminar
               </button>
@@ -213,13 +177,13 @@ function Carrito() {
         })}
 
         <ConfirmModal
-          open={productoAEliminar !== null}
+          open={eliminar !== null}
           title="Eliminar producto"
           message="¿Seguro que querés quitar este producto del carrito?"
           confirmLabel="Eliminar"
           danger
           onConfirm={confirmarEliminar}
-          onCancel={() => setProductoAEliminar(null)}
+          onCancel={() => setEliminar(null)}
         />
       </div>
 
@@ -230,9 +194,9 @@ function Carrito() {
 
         <button
           type="button"
-          onClick={() => navigate("/checkout")}
           className="carrito-finalizar"
           disabled={procesando}
+          onClick={() => navigate("/checkout")}
         >
           Finalizar compra
         </button>
