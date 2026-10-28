@@ -1,5 +1,3 @@
-// server/controllers/adminPedidosController.js
-
 const Pedido = require("../models/Pedido");
 const DetallePedido = require("../models/DetallePedido");
 const Producto = require("../models/Producto");

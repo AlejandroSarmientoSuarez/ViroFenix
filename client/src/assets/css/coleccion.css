@@ -672,3 +672,27 @@
     padding-top: 48px;
   }
 }
+
+
+.coleccion-comprar-ahora {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid #171717;
+  background: #171717;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.coleccion-comprar-ahora:hover:not(:disabled) {
+  background: #a88752;
+  border-color: #a88752;
+}
+
+.coleccion-comprar-ahora:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

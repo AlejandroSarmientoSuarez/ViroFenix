@@ -2,7 +2,7 @@
 const Usuario = require("../models/Usuario");
 const bcrypt = require("bcrypt");
 
-// VER PERFIL
+
 async function obtenerPerfil(req, res) {
   try {
     const usuario = await Usuario.findByPk(req.usuario.id, {
@@ -19,7 +19,7 @@ async function obtenerPerfil(req, res) {
   }
 }
 
-// ACTUALIZAR PERFIL
+
 async function actualizarPerfil(req, res) {
   try {
     const usuario = await Usuario.findByPk(req.usuario.id);
@@ -40,7 +40,7 @@ async function actualizarPerfil(req, res) {
   }
 }
 
-// ELIMINAR CUENTA
+
 async function eliminarCuenta(req, res) {
   try {
     const usuario = await Usuario.findByPk(req.usuario.id);
