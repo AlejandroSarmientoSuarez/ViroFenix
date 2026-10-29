@@ -1,0 +1,149 @@
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
+import "../assets/css/navbar.css";
+
+function Navbar() {
+  const { usuario, logout } = useAuth();
+  const { cantidadItems, refrescarCarrito } = useCart();
+  const [menuAbierto, setMenuAbierto] = useState(false);
+
+  const esAdmin =
+    String(usuario?.rol || usuario?.Rol || "").toLowerCase() === "admin";
+
+  useEffect(() => {
+    refrescarCarrito();
+  }, [usuario]);
+
+  useEffect(() => {
+    document.body.style.overflow = menuAbierto ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuAbierto]);
+
+  function cerrarSesion() {
+    setMenuAbierto(false);
+    logout();
+  }
+
+  return (
+    <>
+      <header className="navbar">
+        <Link to="/" className="navbar-logo">Viro Fenix</Link>
+
+        <nav className="navbar-links navbar-links-desktop">
+          <Link to="/">Inicio</Link>
+          <Link to="/coleccion">Colección</Link>
+          <Link to="/nosotros">Nosotros</Link>
+          <Link to="/contacto">Contacto</Link>
+          <Link to="/faq">FAQ</Link>
+        </nav>
+
+        <div className="navbar-actions">
+          {usuario ? (
+            <>
+              <Link to="/carrito" className="navbar-cart">
+                Carrito
+                {cantidadItems > 0 && (
+                  <span className="navbar-cart-badge">{cantidadItems}</span>
+                )}
+              </Link>
+
+              <Link to="/perfil" className="navbar-links-desktop">
+                Mi cuenta
+              </Link>
+
+              <Link to="/pedidos" className="navbar-links-desktop">
+                Mis pedidos
+              </Link>
+
+              {esAdmin && (
+                <Link to="/admin/usuarios" className="navbar-links-desktop">
+                  Admin
+                </Link>
+              )}
+
+              <button
+                onClick={cerrarSesion}
+                className="navbar-logout navbar-links-desktop"
+              >
+                Salir
+              </button>
+            </>
+          ) : (
+            <Link to="/login" className="navbar-links-desktop">
+              Iniciar sesión
+            </Link>
+          )}
+
+          <button
+            className="navbar-hamburger"
+            onClick={() => setMenuAbierto(true)}
+            aria-label="Abrir menú"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </header>
+
+      <div className={`navbar-drawer ${menuAbierto ? "navbar-drawer-abierto" : ""}`}>
+        <button
+          className="navbar-drawer-cerrar"
+          onClick={() => setMenuAbierto(false)}
+        >
+          ✕
+        </button>
+
+        <nav className="navbar-drawer-links">
+          <Link to="/" onClick={() => setMenuAbierto(false)}>Inicio</Link>
+          <Link to="/coleccion" onClick={() => setMenuAbierto(false)}>Colección</Link>
+          <Link to="/nosotros" onClick={() => setMenuAbierto(false)}>Nosotros</Link>
+          <Link to="/contacto" onClick={() => setMenuAbierto(false)}>Contacto</Link>
+          <Link to="/faq" onClick={() => setMenuAbierto(false)}>FAQ</Link>
+
+          {usuario ? (
+            <>
+              <Link to="/carrito" onClick={() => setMenuAbierto(false)}>Carrito</Link>
+              <Link to="/pedidos" onClick={() => setMenuAbierto(false)}>Mis pedidos</Link>
+              <Link to="/perfil" onClick={() => setMenuAbierto(false)}>Mi cuenta</Link>
+
+              {esAdmin && (
+                <Link
+                  to="/admin/usuarios"
+                  onClick={() => setMenuAbierto(false)}
+                >
+                  Panel admin
+                </Link>
+              )}
+
+              <button onClick={cerrarSesion}>Salir</button>
+            </>
+          ) : (
+            <Link to="/login" onClick={() => setMenuAbierto(false)}>
+              Iniciar sesión
+            </Link>
+          )}
+        </nav>
+
+        <div className="navbar-drawer-proximamente">
+          <p className="navbar-drawer-label">Próximamente</p>
+          <span>Blog</span>
+        </div>
+      </div>
+
+      {menuAbierto && (
+        <div
+          className="navbar-overlay"
+          onClick={() => setMenuAbierto(false)}
+        />
+      )}
+    </>
+  );
+}
+
+export default Navbar;
