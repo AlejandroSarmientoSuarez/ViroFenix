@@ -1,9 +1,11 @@
+
 const Pedido = require("../models/Pedido");
 const DetallePedido = require("../models/DetallePedido");
 const Producto = require("../models/Producto");
 const Usuario = require("../models/Usuario");
 const sequelize = require("../config/db");
 
+// LISTAR PEDIDOS
 async function listarPedidosAdmin(req, res) {
   try {
     const pedidos = await Pedido.findAll({
@@ -14,6 +16,12 @@ async function listarPedidosAdmin(req, res) {
 
     for (const pedido of pedidos) {
       const usuario = await Usuario.findByPk(pedido.UsuarioID);
+      let cliente = "Cliente eliminado";
+
+      if (usuario) {
+        cliente = usuario.Nombre + " " + usuario.Apellido;
+      }
+
       const detalles = await DetallePedido.findAll({
         where: { PedidoID: pedido.PedidoID }
       });
@@ -22,33 +30,38 @@ async function listarPedidosAdmin(req, res) {
 
       for (const detalle of detalles) {
         const producto = await Producto.findByPk(detalle.ProductoID);
+        let nombre = "Producto eliminado";
+
+        if (producto) {
+          nombre = producto.Nombre;
+        }
 
         items.push({
           ProductoID: detalle.ProductoID,
-          Nombre: producto ? producto.Nombre : "Producto eliminado",
+          Nombre: nombre,
           Cantidad: detalle.Cantidad,
           PrecioUnitario: detalle.PrecioUnitario
         });
       }
 
-      resultado.push({
-        ...pedido.toJSON(),
-        Cliente: usuario
-          ? `${usuario.Nombre} ${usuario.Apellido}`
-          : "Cliente eliminado",
-        items
-      });
+      const pedidoCompleto = pedido.toJSON();
+      pedidoCompleto.Cliente = cliente;
+      pedidoCompleto.items = items;
+      resultado.push(pedidoCompleto);
     }
 
     res.json({ status: "ok", data: resultado });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: "Error al listar pedidos" });
   }
 }
 
+// ACTUALIZAR ESTADO DEL PEDIDO
 async function actualizarEstadoPedido(req, res) {
-  const { estado } = req.body;
+  const estado = req.body.estado;
+
   const estados = ["Pendiente", "Pagado", "Enviado", "Entregado", "Cancelado"];
 
   if (!estados.includes(estado)) {
@@ -79,10 +92,11 @@ async function actualizarEstadoPedido(req, res) {
     if (!permitidos[pedido.Estado].includes(estado)) {
       await transaccion.rollback();
       return res.status(400).json({
-        mensaje: `No se puede cambiar de ${pedido.Estado} a ${estado}`
+        mensaje: "No se puede cambiar de " + pedido.Estado + " a " + estado
       });
     }
 
+    // DEVOLVER STOCK SI SE CANCELA
     if (estado === "Cancelado") {
       const detalles = await DetallePedido.findAll({
         where: { PedidoID: pedido.PedidoID },
@@ -96,22 +110,20 @@ async function actualizarEstadoPedido(req, res) {
         });
 
         if (producto) {
-          producto.StockActual += detalle.Cantidad;
+          producto.StockActual = producto.StockActual + detalle.Cantidad;
           await producto.save({ transaction: transaccion });
         }
       }
     }
 
-    const fechas = {};
+    // REGISTRAR FECHAS
+    const datos = { Estado: estado };
 
-    if (estado === "Pagado") fechas.FechaPago = new Date();
-    if (estado === "Enviado") fechas.FechaEnvio = new Date();
-    if (estado === "Entregado") fechas.FechaEntrega = new Date();
+    if (estado === "Pagado") datos.FechaPago = new Date();
+    if (estado === "Enviado") datos.FechaEnvio = new Date();
+    if (estado === "Entregado") datos.FechaEntrega = new Date();
 
-    await pedido.update(
-      { Estado: estado, ...fechas },
-      { transaction: transaccion }
-    );
+    await pedido.update(datos, { transaction: transaccion });
 
     await transaccion.commit();
 
@@ -119,6 +131,7 @@ async function actualizarEstadoPedido(req, res) {
       mensaje: "Estado del pedido actualizado",
       data: pedido
     });
+
   } catch (error) {
     await transaccion.rollback();
     console.error(error);
@@ -126,6 +139,7 @@ async function actualizarEstadoPedido(req, res) {
   }
 }
 
+// EXPORTAR FUNCIONES
 module.exports = {
   listarPedidosAdmin,
   actualizarEstadoPedido
