@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import {
   listarPedidosAdmin,
@@ -22,12 +23,20 @@ export default function AdminPedidos() {
   async function cargar() {
     try {
       const respuesta = await listarPedidosAdmin();
-      setPedidos(respuesta.data || []);
+
+      if (respuesta.data) {
+        setPedidos(respuesta.data);
+      } else {
+        setPedidos([]);
+      }
+
     } catch (error) {
-      setMensaje(
-        error.response?.data?.mensaje ||
-        "No se pudieron cargar los pedidos."
-      );
+      if (error.response && error.response.data && error.response.data.mensaje) {
+        setMensaje(error.response.data.mensaje);
+      } else {
+        setMensaje("No se pudieron cargar los pedidos.");
+      }
+
     } finally {
       setCargando(false);
     }
@@ -40,24 +49,31 @@ export default function AdminPedidos() {
   async function cambiarEstado(id, estado) {
     try {
       await actualizarEstadoPedido(id, estado);
-      setMensaje(`Pedido #${id}: estado actualizado.`);
+
+      setMensaje("Pedido #" + id + ": estado actualizado.");
+
       await cargar();
+
     } catch (error) {
-      setMensaje(
-        error.response?.data?.mensaje ||
-        "No se pudo cambiar el estado."
-      );
+      if (error.response && error.response.data && error.response.data.mensaje) {
+        setMensaje(error.response.data.mensaje);
+      } else {
+        setMensaje("No se pudo cambiar el estado.");
+      }
     }
   }
 
   return (
     <main className="admin-pedidos">
 
-        <nav className="admin-navegacion">
+      <nav className="admin-navegacion">
         <Link to="/admin/usuarios">Cuentas</Link>
-        <Link to="/admin/pedidos" className="admin-nav-activo">Pedidos</Link>
+        <Link to="/admin/pedidos" className="admin-nav-activo">
+          Pedidos
+        </Link>
         <Link to="/admin/stock">Stock</Link>
-        </nav>
+      </nav>
+
       <header>
         <div>
           <h1>Gestión de pedidos</h1>
@@ -68,7 +84,9 @@ export default function AdminPedidos() {
       </header>
 
       {mensaje && (
-        <p className="ap-mensaje" role="status">{mensaje}</p>
+        <p className="ap-mensaje" role="status">
+          {mensaje}
+        </p>
       )}
 
       {cargando ? (
@@ -77,39 +95,48 @@ export default function AdminPedidos() {
         <p>No hay pedidos registrados.</p>
       ) : (
         <div className="ap-lista">
+
           {pedidos.map((pedido) => (
             <article className="ap-card" key={pedido.PedidoID}>
+
               <div className="ap-cabecera">
                 <div>
                   <strong>Pedido #{pedido.PedidoID}</strong>
+
                   <p>
                     {pedido.Cliente} ·{" "}
                     {new Date(pedido.FechaCreacion).toLocaleDateString("es-AR")}
                   </p>
                 </div>
 
-                <span className={`ap-estado ap-${pedido.Estado.toLowerCase()}`}>
+                <span className={"ap-estado ap-" + pedido.Estado.toLowerCase()}>
                   {pedido.Estado}
                 </span>
               </div>
 
               <p>
-                <b>Contacto:</b> {pedido.EmailContacto || "Sin email"}
+                <b>Contacto:</b>{" "}
+                {pedido.EmailContacto
+                  ? pedido.EmailContacto
+                  : "Sin email"}
               </p>
 
               <p>
-                <b>Dirección:</b> {pedido.DireccionEnvio || "No indicada"}
+                <b>Dirección:</b>{" "}
+                {pedido.DireccionEnvio
+                  ? pedido.DireccionEnvio
+                  : "No indicada"}
               </p>
 
               <div className="ap-items">
-                {(pedido.items || []).map((item, i) => (
-                  <p key={`${item.ProductoID}-${i}`}>
+
+                {pedido.items && pedido.items.map((item, i) => (
+                  <p key={item.ProductoID + "-" + i}>
                     {item.Nombre} × {item.Cantidad} — $
-                    {(
-                      Number(item.PrecioUnitario) * item.Cantidad
-                    ).toFixed(2)}
+                    {(Number(item.PrecioUnitario) * item.Cantidad).toFixed(2)}
                   </p>
                 ))}
+
               </div>
 
               <div className="ap-pie">
@@ -117,11 +144,13 @@ export default function AdminPedidos() {
                   Total: ${Number(pedido.Total).toFixed(2)}
                 </strong>
 
-                {siguientesEstados[pedido.Estado]?.length > 0 && (
+                {siguientesEstados[pedido.Estado] &&
+                  siguientesEstados[pedido.Estado].length > 0 && (
+
                   <select
                     defaultValue=""
                     onChange={(e) => {
-                      if (e.target.value) {
+                      if (e.target.value !== "") {
                         cambiarEstado(pedido.PedidoID, e.target.value);
                         e.target.value = "";
                       }
@@ -134,24 +163,36 @@ export default function AdminPedidos() {
                         {estado}
                       </option>
                     ))}
+
                   </select>
                 )}
               </div>
 
               {(pedido.FechaPago || pedido.FechaEnvio || pedido.FechaEntrega) && (
                 <small className="ap-fechas">
+
                   {pedido.FechaPago &&
-                    `Pagado: ${new Date(pedido.FechaPago).toLocaleDateString("es-AR")} `}
+                    "Pagado: " +
+                    new Date(pedido.FechaPago).toLocaleDateString("es-AR")}
+
                   {pedido.FechaEnvio &&
-                    `· Enviado: ${new Date(pedido.FechaEnvio).toLocaleDateString("es-AR")} `}
+                    " · Enviado: " +
+                    new Date(pedido.FechaEnvio).toLocaleDateString("es-AR")}
+
                   {pedido.FechaEntrega &&
-                    `· Entregado: ${new Date(pedido.FechaEntrega).toLocaleDateString("es-AR")}`}
+                    " · Entregado: " +
+                    new Date(pedido.FechaEntrega).toLocaleDateString("es-AR")}
+
                 </small>
               )}
+
             </article>
           ))}
+
         </div>
       )}
+
     </main>
   );
 }
+

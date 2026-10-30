@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import {
   listarStockAdmin,
@@ -15,12 +16,20 @@ export default function AdminStock() {
   async function cargar() {
     try {
       const respuesta = await listarStockAdmin();
-      setProductos(respuesta.data || []);
+
+      if (respuesta.data) {
+        setProductos(respuesta.data);
+      } else {
+        setProductos([]);
+      }
+
     } catch (error) {
-      setMensaje(
-        error.response?.data?.mensaje ||
-        "No se pudo cargar el stock."
-      );
+      if (error.response && error.response.data && error.response.data.mensaje) {
+        setMensaje(error.response.data.mensaje);
+      } else {
+        setMensaje("No se pudo cargar el stock.");
+      }
+
     } finally {
       setCargando(false);
     }
@@ -39,32 +48,46 @@ export default function AdminStock() {
     }
 
     try {
-      const respuesta = await reponerStock(producto.ProductoID, cantidad);
+      const respuesta = await reponerStock(
+        producto.ProductoID,
+        cantidad
+      );
 
       setMensaje(respuesta.mensaje);
 
-      setCantidades({
-        ...cantidades,
-        [producto.ProductoID]: ""
-      });
+      const nuevasCantidades = Object.assign({}, cantidades);
+      nuevasCantidades[producto.ProductoID] = "";
+
+      setCantidades(nuevasCantidades);
 
       await cargar();
+
     } catch (error) {
-      setMensaje(
-        error.response?.data?.mensaje ||
-        "No se pudo reponer el stock."
-      );
+      if (error.response && error.response.data && error.response.data.mensaje) {
+        setMensaje(error.response.data.mensaje);
+      } else {
+        setMensaje("No se pudo reponer el stock.");
+      }
     }
   }
 
-  const alertas = productos.filter((p) => p.StockActual <= 5).length;
+  let alertas = 0;
+
+  for (let i = 0; i < productos.length; i++) {
+    if (productos[i].StockActual <= 5) {
+      alertas++;
+    }
+  }
 
   return (
     <main className="admin-stock">
+
       <nav className="admin-navegacion">
         <Link to="/admin/usuarios">Cuentas</Link>
         <Link to="/admin/pedidos">Pedidos</Link>
-        <Link to="/admin/stock" className="admin-nav-activo">Stock</Link>
+        <Link to="/admin/stock" className="admin-nav-activo">
+          Stock
+        </Link>
       </nav>
 
       <header>
@@ -79,7 +102,9 @@ export default function AdminStock() {
       </header>
 
       {mensaje && (
-        <p className="as-mensaje" role="status">{mensaje}</p>
+        <p className="as-mensaje" role="status">
+          {mensaje}
+        </p>
       )}
 
       {cargando ? (
@@ -104,7 +129,7 @@ export default function AdminStock() {
                   <td>{p.Nombre}</td>
 
                   <td>
-                    <span className={`as-estado as-${p.Estado.toLowerCase()}`}>
+                    <span className={"as-estado as-" + p.Estado.toLowerCase()}>
                       {p.Estado}
                     </span>
                   </td>
@@ -116,15 +141,24 @@ export default function AdminStock() {
                     <input
                       type="number"
                       min="1"
-                      max={Math.max(0, p.StockMaximo - p.StockActual)}
-                      value={cantidades[p.ProductoID] || ""}
-                      placeholder="Cantidad"
-                      onChange={(e) =>
-                        setCantidades({
-                          ...cantidades,
-                          [p.ProductoID]: e.target.value
-                        })
+                      max={
+                        p.StockMaximo > p.StockActual
+                          ? p.StockMaximo - p.StockActual
+                          : 0
                       }
+                      value={
+                        cantidades[p.ProductoID]
+                          ? cantidades[p.ProductoID]
+                          : ""
+                      }
+                      placeholder="Cantidad"
+                      onChange={(e) => {
+                        const nuevasCantidades = Object.assign({}, cantidades);
+
+                        nuevasCantidades[p.ProductoID] = e.target.value;
+
+                        setCantidades(nuevasCantidades);
+                      }}
                     />
                   </td>
 
@@ -151,6 +185,7 @@ export default function AdminStock() {
         La base de datos actualiza automáticamente el estado y registra
         el movimiento.
       </p>
+
     </main>
   );
 }
