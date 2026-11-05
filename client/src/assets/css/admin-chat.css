@@ -1,0 +1,19 @@
+.admin-chat-container { max-width: 1200px; margin: 35px auto; padding: 0 20px 50px; }
+.admin-chat-container > p { color: #666; }
+.admin-chat-error { color: #b3243b !important; }
+.admin-chat-layout { display: grid; grid-template-columns: 280px 1fr; min-height: 480px; border: 1px solid #ddd; background: white; }
+.admin-chat-lista { padding: 15px; border-right: 1px solid #ddd; }
+.admin-chat-lista h2, .admin-chat-conversacion h2 { margin-top: 0; }
+.admin-chat-cliente { display: block; width: 100%; text-align: left; padding: 12px; margin-bottom: 8px; border: 1px solid #ddd; background: white; cursor: pointer; }
+.admin-chat-cliente small { display: block; color: #666; }
+.admin-chat-cliente.seleccionado { border-color: #0f52ba; background: #edf3ff; }
+.admin-chat-conversacion { display: flex; flex-direction: column; padding: 15px; min-width: 0; }
+.admin-chat-mensajes { flex: 1; min-height: 300px; max-height: 500px; overflow-y: auto; }
+.admin-chat-mensaje { background: #f0f0f0; padding: 10px; margin: 10px 0; max-width: 80%; overflow-wrap: anywhere; }
+.admin-chat-mensaje p { margin: 5px 0; }
+.admin-chat-mensaje small { color: #666; }
+.admin-chat-mio { margin-left: auto; background: #dbeafe; }
+.admin-chat-formulario { display: flex; gap: 8px; margin-top: 10px; }
+.admin-chat-formulario input { flex: 1; min-width: 0; padding: 10px; border: 1px solid #ccc; }
+.admin-chat-formulario button { padding: 10px 16px; border: 0; background: #111827; color: white; cursor: pointer; }
+@media (max-width: 700px) { .admin-chat-layout { grid-template-columns: 1fr; } .admin-chat-lista { border-right: 0; border-bottom: 1px solid #ddd; } }

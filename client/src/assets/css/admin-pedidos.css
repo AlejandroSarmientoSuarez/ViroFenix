@@ -1,0 +1,141 @@
+.admin-pedidos,
+.admin-stock {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 24px;
+  color: #202020;
+  min-height: 55vh;
+}
+
+.admin-pedidos header,
+.admin-stock header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.admin-pedidos h1,
+.admin-stock h1 {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 36px);
+}
+
+.admin-pedidos header p,
+.admin-stock header p {
+  color: #777;
+  margin: 8px 0;
+}
+
+.admin-pedidos button,
+.admin-stock button {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  background: #171717;
+  color: white;
+  cursor: pointer;
+}
+
+.admin-pedidos button:disabled,
+.admin-stock button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ap-lista {
+  display: grid;
+  gap: 16px;
+}
+
+.ap-card {
+  border: 1px solid #e6e2de;
+  border-radius: 14px;
+  padding: 20px;
+  background: white;
+}
+
+.ap-cabecera,
+.ap-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ap-cabecera p,
+.ap-card > p {
+  color: #666;
+  margin: 7px 0;
+}
+
+.ap-estado,
+.as-estado {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 20px;
+  background: #eee;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ap-pendiente,
+.as-pocasunidades {
+  background: #fff1d2;
+  color: #895a00;
+}
+
+.ap-pagado {
+  background: #e3efff;
+  color: #245a9b;
+}
+
+.ap-enviado {
+  background: #e9e3ff;
+  color: #6245a8;
+}
+
+.ap-entregado,
+.as-disponible {
+  background: #dff5e6;
+  color: #216c3b;
+}
+
+.ap-cancelado,
+.as-agotado {
+  background: #ffe3e3;
+  color: #a12e2e;
+}
+
+.ap-items {
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  margin: 14px 0;
+  padding: 8px 0;
+}
+
+.ap-items p {
+  margin: 8px 0;
+}
+
+.ap-pie select {
+  padding: 9px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+}
+
+.ap-fechas {
+  display: block;
+  margin-top: 14px;
+  color: #777;
+}
+
+.ap-mensaje,
+.as-mensaje {
+  padding: 12px 14px;
+  background: #f2f4f6;
+  border-radius: 8px;
+  margin: 14px 0;
+}

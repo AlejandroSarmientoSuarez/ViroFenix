@@ -1,0 +1,332 @@
+.producto-detalle-container {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 50px 40px 80px;
+}
+
+.producto-detalle-imagen-wrap {
+  position: sticky;
+  top: 100px;
+  align-self: start;
+}
+
+.producto-detalle-imagen {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  background: var(--paper-alt);
+}
+
+.producto-detalle-info h1 {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 12px;
+}
+
+.producto-detalle-precio {
+  font-size: 18px;
+  color: var(--gold);
+  margin: 0 0 24px;
+}
+
+.producto-detalle-descripcion {
+  color: var(--stone);
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+.producto-detalle-agotado {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  padding: 6px 12px;
+  margin-bottom: 20px;
+}
+
+.producto-detalle-cantidad {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.producto-detalle-cantidad button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.producto-detalle-cantidad button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.producto-detalle-agregar {
+  width: 100%;
+  height: 50px;
+  border: none;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.producto-detalle-agregar:hover {
+  background: var(--gold);
+}
+
+.producto-detalle-loading {
+  text-align: center;
+  padding: 100px 20px;
+  color: var(--stone);
+}
+
+@media (max-width: 768px) {
+  .producto-detalle-container {
+    grid-template-columns: 1fr;
+    padding: 30px 20px 60px;
+  }
+  .producto-detalle-imagen-wrap {
+    position: static;
+  }
+}
+
+/* Sistema de reseñas */
+.resenas-seccion {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--line);
+  padding-top: 42px;
+  margin-top: 10px;
+}
+.resenas-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+.resenas-eyebrow {
+  color: var(--gold);
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  font-weight: 600;
+}
+.resenas-encabezado h2 {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  margin: 8px 0 0;
+}
+.resenas-promedio { text-align: right; display: grid; justify-items: end; gap: 3px; }
+.resenas-promedio strong { font-size: 28px; color: var(--ink); font-weight: 500; }
+.resenas-promedio > span { color: var(--stone); font-size: 12px; }
+.estrella { color: #d9d4cb; }
+.estrella.activa { color: #c49a52; }
+.resenas-estrellas-resumen { font-size: 18px; letter-spacing: 2px; }
+.resenas-formulario {
+  background: var(--paper-alt);
+  padding: 26px;
+  margin-bottom: 30px;
+}
+.resenas-formulario h3 { font-size: 18px; font-weight: 500; margin: 0 0 18px; color: var(--ink); }
+.resenas-label { display: block; font-size: 12px; color: var(--ink); margin: 16px 0 8px; }
+.resenas-selector-estrellas { display: flex; align-items: center; gap: 5px; }
+.resenas-selector-estrellas button {
+  border: 0; background: transparent; padding: 0 2px; font-size: 30px; line-height: 1.2; cursor: pointer;
+}
+.resenas-selector-estrellas span { color: var(--stone); font-size: 12px; margin-left: 8px; }
+.resenas-formulario textarea {
+  display: block; width: 100%; min-height: 110px; resize: vertical; box-sizing: border-box;
+  border: 1px solid var(--line); background: var(--paper); color: var(--ink); padding: 13px;
+  font: inherit; font-size: 13px; outline: none;
+}
+.resenas-formulario textarea:focus { border-color: var(--gold); }
+.resenas-formulario-pie { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 12px; }
+.resenas-formulario-pie small { color: var(--stone); font-size: 11px; }
+.resenas-formulario-pie button, .resenas-login-nota button {
+  border: 0; padding: 13px 20px; background: var(--ink); color: var(--paper); cursor: pointer;
+  font-size: 11px; letter-spacing: .7px; text-transform: uppercase;
+}
+.resenas-formulario-pie button:hover, .resenas-login-nota button:hover { background: var(--gold); }
+.resenas-formulario-pie button:disabled { opacity: .6; cursor: wait; }
+.resenas-error { color: var(--danger); font-size: 12px; margin-bottom: 0; }
+.resenas-exito { color: #36744b; font-size: 12px; margin-bottom: 0; }
+.resenas-nota, .resenas-login-nota { padding: 18px 20px; background: var(--paper-alt); color: var(--stone); font-size: 13px; margin-bottom: 28px; }
+.resenas-login-nota { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.resenas-login-nota p { margin: 0; }
+.resenas-lista { display: grid; }
+.resena-item { padding: 22px 0; border-bottom: 1px solid var(--line); }
+.resena-item:first-child { border-top: 1px solid var(--line); }
+.resena-item-cabecera { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+.resena-item-cabecera strong { color: var(--ink); font-size: 13px; font-weight: 600; }
+.resena-item-cabecera time { color: var(--stone); font-size: 11px; white-space: nowrap; }
+.resena-estrellas { font-size: 15px; letter-spacing: 2px; margin-top: 5px; }
+.resena-item > p { color: var(--stone); font-size: 13px; line-height: 1.7; margin: 12px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.resenas-vacias { color: var(--stone); font-size: 13px; padding: 20px 0; }
+@media (max-width: 768px) {
+  .resenas-seccion { padding-top: 30px; }
+  .resenas-encabezado { align-items: flex-start; }
+  .resenas-encabezado h2 { font-size: 24px; }
+  .resenas-formulario { padding: 18px; }
+  .resenas-login-nota { align-items: flex-start; flex-direction: column; }
+}
+
+/* Selector de estrellas accesible, grande y cómodo al tacto */
+.resenas-selector-estrellas {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+.resenas-selector-estrellas .resena-estrella-boton {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 58px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: #cbd0d8;
+  font-size: 42px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform .15s ease, color .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+  touch-action: manipulation;
+}
+.resenas-selector-estrellas .resena-estrella-boton:hover,
+.resenas-selector-estrellas .resena-estrella-boton:focus-visible {
+  color: #e2a52b;
+  border-color: #e2a52b;
+  background: #fff9e9;
+  transform: translateY(-2px) scale(1.04);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(226, 165, 43, .18);
+}
+.resenas-selector-estrellas .resena-estrella-boton.activa {
+  color: #e0a126;
+  background: #fff5d9;
+  border-color: #e0a126;
+}
+.resenas-calificacion-texto {
+  color: var(--stone);
+  font-size: 14px;
+  margin-left: 8px;
+  min-width: 150px;
+}
+.resenas-ayuda-login {
+  margin: 12px 0 0;
+  color: var(--stone);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.resenas-formulario textarea {
+  min-height: 140px;
+  font-size: 15px;
+  border-radius: 8px;
+  padding: 15px;
+}
+.resenas-formulario-pie button, .resenas-login-nota button {
+  min-height: 46px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.resenas-estrellas-resumen { font-size: 25px; letter-spacing: 3px; }
+.resena-estrellas { font-size: 22px; letter-spacing: 3px; }
+@media (max-width: 520px) {
+  .resenas-selector-estrellas { gap: 6px; }
+  .resenas-selector-estrellas .resena-estrella-boton { width: 46px; height: 50px; font-size: 35px; }
+  .resenas-calificacion-texto { width: 100%; margin: 5px 0 0; }
+  .resenas-formulario-pie { align-items: flex-start; flex-direction: column; }
+  .resenas-formulario-pie button { width: 100%; }
+}
+
+
+/* Corrección escritorio: evita que la imagen sticky tape el formulario de reseñas */
+.producto-detalle-container {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: start;
+  width: 100%;
+  box-sizing: border-box;
+}
+.producto-detalle-imagen-wrap {
+  position: relative;
+  top: auto;
+  min-width: 0;
+  width: 100%;
+}
+.producto-detalle-imagen {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+.producto-detalle-info,
+.resenas-seccion {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.resenas-seccion {
+  position: relative;
+  z-index: 1;
+  grid-column: 1 / -1;
+  width: 100%;
+  clear: both;
+}
+.resenas-formulario,
+.resenas-formulario textarea,
+.resenas-formulario-pie {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.resenas-selector-estrellas {
+  position: relative;
+  z-index: 2;
+}
+.resenas-selector-estrellas .resena-estrella-boton {
+  flex: 0 0 54px;
+  user-select: none;
+}
+@media (max-width: 900px) {
+  .producto-detalle-container {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    padding: 30px 20px 60px;
+  }
+  .producto-detalle-imagen-wrap {
+    position: relative;
+    top: auto;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .resenas-seccion {
+    grid-column: 1;
+  }
+}
+@media (max-width: 520px) {
+  .resenas-selector-estrellas .resena-estrella-boton {
+    flex-basis: 46px;
+  }
+}
